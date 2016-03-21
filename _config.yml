@@ -1,5 +1,5 @@
 # Site settings
-title: 读立写生
+title: Chengcen
 header-img: "img/green.jpg"
 tagline: "cn"  
 description: "陈素封|读而立·写而生"  
@@ -8,9 +8,9 @@ url: "http://cnfeat"
 
 # About/contact
 owner: 
-  name: " CnFeat"
-  email: CnFeat@gmail.com
-  bio: "写就是写的报酬"
+  name: " Chengcen "
+  email: sccnju@gmail.com
+  bio: "Just do it"
 
 # Data
 gavatar: http://dreamofbook.qiniudn.com/Az..png
