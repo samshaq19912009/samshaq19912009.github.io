@@ -10,7 +10,7 @@ use_math: true
 
 
 
-# Native Bayes #
+# Native Bayes 
 
 In GDA, the feature vector x is continous
 
