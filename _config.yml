@@ -26,8 +26,8 @@ zhihu_username:
 # Build settings  
 # use Github Flavored Markdown !important  
 # document: http://jekyllrb.com/docs/configuration/#kramdown  
-# markdown: kramdown
-markdown: maruku
+markdown: kramdown
+#markdown: maruku
 
 highlighter: rouge
 permalink: pretty
