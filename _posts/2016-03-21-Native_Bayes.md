@@ -11,7 +11,7 @@ use_math: true
 
 
 
-#Native Bayes
+#Native Bayes#
 
 In GDA, the feature vector x is continous
 
@@ -34,7 +34,7 @@ $$p(y=1|x) = \frac {p(x|y=1)p(y=1)}{p(x)}$$
 
 **Discretize**
 
-##Laplace smoothing 
+##Laplace smoothing##
 
 **Avoid zero in the denominator**
 
