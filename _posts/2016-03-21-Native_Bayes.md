@@ -20,7 +20,7 @@ Here deals with discrete value
 ##Text Classification
 
 model
-$ p(x,y) $ 
+
 
 if **vocabulry** has 5000 word, end up with $(2^{5000} - 1)$-dimensioanl parameters
 
