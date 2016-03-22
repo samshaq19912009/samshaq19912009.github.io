@@ -11,15 +11,15 @@ use_math: true
 
 
 
-# Native Bayes
+#Native Bayes
 
 In GDA, the feature vector x is continous
 
 Here deals with discrete value
 
-## Text Classification
+##Text Classification
 
-model p(x|y) 
+model $p(x|y)$ 
 
 if **vocabulry** has 5000 word, end up with $(2^{5000} - 1)$-dimensioanl parameters
 
@@ -33,7 +33,7 @@ $$p(y=1|x) = \frac {p(x|y=1)p(y=1)}{p(x)}$$
 
 **Discretize**
 
-## Laplace smoothing 
+##Laplace smoothing 
 
 **Avoid zero in the denominator**
 
