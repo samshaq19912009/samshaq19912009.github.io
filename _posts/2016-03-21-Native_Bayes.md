@@ -8,7 +8,7 @@ description: Native Bayes
 use_math: true
 ---
 
-
+<h1> this is a header </h1>
 
 
 # Native Bayes #
@@ -17,7 +17,7 @@ In GDA, the feature vector x is continous
 
 Here deals with discrete value
 
-## Text Classification##
+## Text Classification ##
 
 model
 
