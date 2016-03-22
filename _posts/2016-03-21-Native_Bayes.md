@@ -17,7 +17,7 @@ In GDA, the feature vector x is continous
 
 Here deals with discrete value
 
-##Text Classification
+## Text Classification##
 
 model
 
