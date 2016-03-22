@@ -5,6 +5,7 @@ date: 2016-03-21
 categories: blog
 tags: [Machine Learning,Notes]
 description: Native Bayes
+use_math: true
 ---
 
 
