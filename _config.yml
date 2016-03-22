@@ -4,7 +4,7 @@ header-img: "img/green.jpg"
 tagline: "cn"  
 description: "adfadfasdfads"  
 baseurl: ""
-url: "http://cnfeat"  
+url: "samshaq19912009.github.io"  
 
 # About/contact
 owner: 
@@ -43,7 +43,7 @@ defaults:
       type: "posts"
     values:
       layout: "post"
-      author: "CnFeat"
+      author: "Chengcen"
       header-img: "img/green.jpg" # We don't want posts without a header image, that whould mean white on white
 
 # Comments 
