@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 如何正确地练习写作
+title: Native Bayes notes
 date: 2016-03-21
 categories: blog
 tags: [Machine Learning,Notes]
