@@ -8,7 +8,6 @@ description: Native Bayes
 use_math: true
 ---
 
-<h1> this is a header </h1>
 
 
 # Native Bayes #
