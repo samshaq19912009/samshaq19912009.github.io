@@ -1,0 +1,95 @@
+---
+layout: post
+title: SVM
+date: 2016-03-21
+categories: blog
+tags: [Machine Learning,Notes]
+description: Support Vector Machine
+---
+
+# Support Vector Machine #
+
+## Notation ##
+
+$$ h_{\omega, b} = g(\omega^{T}x + b) $$
+
+## Functional margins
+
+$$ \gamma^{(i)} = y^{i} (\omega^{T}x + b) $$
+
+## Geometric margins ##
+
+$$ \gamma^{(i)} = y^{i} \frac{(\omega^{T}x + b)}{|| \omega ||}  $$
+
+The functional margins **equals** the geometric margin when $|| \omega|| $ is 1.
+
+## The optimal margin classifier ##
+
+**Separating Hyperplane**
+
+$$ \gamma = min_{i=1,...m} \gamma^{i} $$
+
+**Maximum problem**
+
+$$  max_{\gamma, \omega, b} \quad    \gamma $$
+$$	     s.t. y^{i} (\omega^{T}x + b) \geq \gamma ,i=1.2..m  $$      $$ || \omega = 1|| $$
+
+**Transform into**
+
+
+$$  max_{\gamma, \omega, b} \quad    \frac{\gamma}{|| \omega ||} $$
+$$	     s.t. y^{i} (\omega^{T}x + b) \geq \gamma ,i=1.2..m  $$      
+
+
+Using the constraint to fix $ \gamma = 1 $
+
+**Optimal margin classifier**
+
+$$  min_{\gamma, \omega, b} \quad    \frac{1}{2}{|| \omega ||^{2}} $$
+$$	     s.t. y^{i} (\omega^{T}x + b) \geq 1,i=1.2..m  $$  
+
+## Lagrange duality ##
+
+
+
+## Kernels ##
+
+Original input value : **attributes** 
+
+New quantity : **features**
+
+**feature mapping** : map the attribute to feature
+
+Define the correspoding **Kernel** 
+
+$$ K(x,z) = \phi(x)^{T} \phi(z) $$
+
+**Important Note :** $K(x,z)$ inexpensive to calculate
+
+
+Genearally speaking, the Kernel $K(x,z) = (x^{T}z + c)^d$ mapping to (n+d, d) dimensional space -- taking $ O(n) $ time  compared with $ O(n^d) $ time 
+
+
+### Intution fro kernel ###
+
+measurement of how similar $\phi(x)$ and $\phi(z)$
+
+**Gaussian Kernel**
+
+$$ K(x,z) = \exp(-\frac{||x-z||^2}{2\sigma^2}) $$
+
+**Mercer Theorem**
+
+K is a valid kernel ---- symmetric positive semi-definite
+
+
+
+
+
+
+
+
+
+
+
+
