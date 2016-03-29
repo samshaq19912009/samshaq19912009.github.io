@@ -1,4 +1,12 @@
 
+---
+layout: post
+title: Perceptron
+date: 2016-03-23
+categories: blog
+tags: [Machine Learning,Notes]
+description: Perceptron
+---
 
 ## 1. The perceptron and large margin classifiers
 
