@@ -66,7 +66,20 @@ where
   a = 7 b= 2 d= 2 -> $b^d < a$ -> case 3
   $$T(n) = O(n^{log_2{7}})$$
   
-  
+### Proof 
+At each level $j=0,1,2,...log_b{n}$ there are $a^j$ subproblems, each of size of $n/b^j$
+
+$$ \mbox{Total} \leq cn^d \cdot \sum_{j=0}^{log_b n} (\frac{a}{b^d})^j   $$
+
+**Upper bound** for each level j : $cn^d \times (\frac{a}{b^d})^j  $
+
+a = rate of subproblem proliferation (RSP)
+
+$b^d$ = rate of work shrinkage (RWS)
+
+1. RSP = RWS $\rightarrow$ Same amout of work each level(like merge sort) expect $0(n^d log n)$
+2. RSP < RWS $\rightarrow$ less amout of work each level(most work at root) migt expect $0(n^d log n)$
+3. RSP > RWS $\rightarrow$ more amout of work each level(most work at leaves) migt expect $0(\mbox{# of leaves})$
   
   
 	
