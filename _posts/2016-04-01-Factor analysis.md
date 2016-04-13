@@ -104,25 +104,38 @@ $$l(\mu,\Lambda,\Psi) = log \prod_{i=1}^m \frac{1}{(2\pi)^{n/2}(\Lambda \Lambda^
 ## EM for factor analysis
 
 The derivation for the E-step is easy, we need to compute $Q_i(z^{(i)}) = p(z^{(i)}:x^{(i)};\mu, \Lambda, \Psi)$, using the conditional distribution of a Gaussian, we have that
+
+
 $$\mu_{z^{(i)} : x^{(i)}} = \Lambda^T (\Lambda \Lambda^T + \Psi)^{-1} (x^{(i)}- \mu)$$
+
 
 $$\Sigma_{z^{(i)} : x^{(i)}} = I - \Lambda^T (\Lambda \Lambda^T + \Psi)^{-1} \Lambda$$
 
 So 
+
 $$Q_i(z^{(i)}) = \frac{1}{(2\pi)^{k/2}(\Sigma_{z^{(i)} : x^{(i)}})^{1/2}} \exp(-\frac{1}{2}(z^{(i)}- \mu_{z^{(i)} : x^{(i)}})^T (\Sigma_{z^{(i)} : x^{(i)}})^{-1}(z^{(i)}- \mu_{z^{(i)} : x^{(i)}})
 $$
 
+
 Now for the M-step, here we need to maximize
+
 $$\sum_{i=1}^m \int_{z^{(i)}}Q_i(z^{(i)})\log \frac{p(x^{(i)},z^{(i)};\mu, \Lambda, \Psi)}{Q_i(z^{(i)})}d z^{(i)}
 $$
+
 First we try to maximize with respect to $\Lambda$. 
 
 We can simply this equation as an expectaction value as follows
+
 $$\sum_{i=1}^m E_{z^{(i)} \sim Q_{i}} [\log p(x^{(i)},z^{(i)};\mu, \Lambda, \Psi) + \log p(z^{(i)}) - \log Q_i(z^{(i)})] 
 $$
+
 Dropping out terms that do not depend on the parameters,
+
 $$\sum_{i=1}^m E[\log p(x^{(i)}:z^{(i)};\mu, \Lambda, \Psi)]$$
+
 $$= \sum_{i=1}^m E[\log \frac{1}{(2\pi)^{n/2}(\Psi)^{1/2}}\exp(-\frac{1}{2}((x^{(i)}- \mu - \Lambda z^{(i)})^T (\Psi)^{-1}(x^{(i)}- \mu) - \Lambda z^{(i)}))]
 $$
+
+
 $$= \sum_{i=1}^m E[-\frac{1}{2} \log \Psi -\frac{n}{2} \log (2\pi) - \frac{1}{2}((x^{(i)}- \mu - \Lambda z^{(i)})^T (\Psi)^{-1}(x^{(i)}- \mu) - \Lambda z^{(i)})]
 $$
