@@ -25,11 +25,11 @@ Thus, $w_i \in \mathbb{R}^n$ and the j-th source can be recovered by computing $
 
 ## ICA ambiguities
 
-### Permuatation matrix
+**Permuatation matrix**
 
-### Scaling problem
+**Scaling problem**
 
-### Rotation (for Guassian)
+**Rotation for Guassian**
 
 ## Densities and linear transformations
 
@@ -45,7 +45,7 @@ All that remains is to specify a density for the individual sources $p_s$
 
 Recall that, given a real-valued random variable $z$, its cumulative distribtuion function(cdf) $F$ is defined by $F(z_0) = P(z \leq z_0) = \int_{-\infty}^{z_0}p_z(z) dz$. Also the density of $z$ can be found from the cdf by taking its derivative:$p_z(z) = F^{'}(z)$.
 
-Using the **sigmoid function** $g(s) = 1/(1 + e^{-s})$, hence $p_s(s) = g^{'}(s)$.
+Using the **sigmoid function** $g(s) = 1/(1 + e^{-s})$ as the **cdf** for $p_s(s)$. hence $p_s(s) = g^{'}(s)$.
 
 The square matrix $W$ is the parameter in our model. Given a training set $\{x^{(i)}; i=1,...m  \}$, the log likelihood is given by 
 $$l(W) = \sum_{i=1}^m (\sum_{j=1}^n \log g^{'}(w_j^Tx^{(i)}) + \log W) $$

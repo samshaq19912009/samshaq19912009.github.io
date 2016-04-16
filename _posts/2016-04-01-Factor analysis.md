@@ -59,7 +59,7 @@ $$ \Sigma_{1,2} = \Sigma_{11} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{21} $$
 
 ## The factor analysis model
 
-**Remark** while PCA focuses on preserving the observed variance, Factor Analysis focuses on preserving the observed correlation
+**Remark:** while PCA focuses on preserving the observed variance, Factor Analysis focuses on preserving the observed correlation
 
 In the factor analysis model, we posit a joint distribution on (x,z) as follows, where $z \in \mathbb{R}^k$ is a latent random variable
 $$z \sim N(0,I)$$
@@ -102,23 +102,23 @@ I & \Lambda^T\\
 $$
 Hence, we also see that the marginal distribution of x is give by $x \sim N(\mu, \Lambda \Lambda^T + \Psi )$. Thus given a training set, we can write the log likelihood of the parameters:
 
+
 $$l(\mu,\Lambda,\Psi) = log \prod_{i=1}^m \frac{1}{(2\pi)^{n/2}(\Lambda \Lambda^T + \Psi)^{1/2}}\exp(-\frac{1}{2}((x^{(i)}- \mu)^T (\Lambda \Lambda^T + \Psi)^{-1}(x^{(i)}- \mu)) $$ 
 
-## Simple model
+### Remark
 
-If we simply fix the $\Psi = \sigma^2 I$, the factor analysis will 
-
+We can simplify the model by setting $\Psi = \sigma^2 I$. The FA will approach to standard PCA as $\sigma^2 \rightarrow 0$
 
 
 ## EM for factor analysis
 
 The derivation for the E-step is easy, we need to compute $Q_i(z^{(i)}) = p(z^{(i)}:x^{(i)};\mu, \Lambda, \Psi)$, using the conditional distribution of a Gaussian, we have that
 
-
 $$\mu_{z^{(i)} : x^{(i)}} = \Lambda^T (\Lambda \Lambda^T + \Psi)^{-1} (x^{(i)}- \mu)$$
 
 
 $$\Sigma_{z^{(i)} : x^{(i)}} = I - \Lambda^T (\Lambda \Lambda^T + \Psi)^{-1} \Lambda$$
+
 
 So 
 
@@ -145,10 +145,5 @@ $$\sum_{i=1}^m E[\log p(x^{(i)}:z^{(i)};\mu, \Lambda, \Psi)]$$
 $$= \sum_{i=1}^m E[\log \frac{1}{(2\pi)^{n/2}(\Psi)^{1/2}}\exp(-\frac{1}{2}((x^{(i)}- \mu - \Lambda z^{(i)})^T (\Psi)^{-1}(x^{(i)}- \mu) - \Lambda z^{(i)}))]
 $$
 
-
 $$= \sum_{i=1}^m E[-\frac{1}{2} \log \Psi -\frac{n}{2} \log (2\pi) - \frac{1}{2}((x^{(i)}- \mu - \Lambda z^{(i)})^T (\Psi)^{-1}(x^{(i)}- \mu) - \Lambda z^{(i)})]
-
-
-
-
 $$

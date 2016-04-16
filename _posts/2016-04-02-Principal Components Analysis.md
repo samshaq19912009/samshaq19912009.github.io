@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Principal Component Analysis
-date: 2016-04-01
+date: 2016-04-02
 categories: blog
 tags: [Machine Learning,Notes]
 description: PCA
@@ -32,3 +32,10 @@ u_k^T x^{(i)}
 \end{pmatrix} \in \mathbb{R}^k
 $$
 Thus, whereas $x^{(i)} \in \mathbb{R}^n $, the vector$y^{(i)}$ now gives a lower k-dimensional representation. PCA is therefore also refered as a **dimensinality reduction** algorithm.
+
+To find these principal components:
+> First find the eigenvectors of the covariance matrix $s = x^T x / n $ 
+>
+> Rank the eigenvalue
+> 
+> Also can perform the SVD on the covariance matrix and find the singular value
