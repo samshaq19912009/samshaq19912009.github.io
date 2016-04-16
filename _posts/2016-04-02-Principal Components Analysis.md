@@ -34,8 +34,10 @@ $$
 Thus, whereas $x^{(i)} \in \mathbb{R}^n $, the vector$y^{(i)}$ now gives a lower k-dimensional representation. PCA is therefore also refered as a **dimensinality reduction** algorithm.
 
 To find these principal components:
-> First find the eigenvectors of the covariance matrix $s = x^T x / n $ 
->
-> Rank the eigenvalue
-> 
-> Also can perform the SVD on the covariance matrix and find the singular value
+
+
+1. First find the eigenvectors of the covariance matrix $s = x^T x / n $ 
+
+2. Rank the eigenvalue
+
+3. Also can perform the SVD on the covariance matrix and find the singular value
