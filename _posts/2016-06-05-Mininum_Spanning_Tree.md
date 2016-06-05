@@ -100,7 +100,7 @@ Running Time: O(E $\log V$)
 
 ### Python Implementation
 
-```
+```Python
 from u import UnionFind
 
 def MinimumSpanningTree(G):
