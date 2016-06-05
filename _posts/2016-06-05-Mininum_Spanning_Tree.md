@@ -14,9 +14,6 @@ A minimum spanning tree is a spanning tree of a connected, undirected graph. It 
 
 
 
-![alt text](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Minimum_spanning_tree.svg/300px-Minimum_spanning_tree.svg.png "MST")
-
-
 
 
 
