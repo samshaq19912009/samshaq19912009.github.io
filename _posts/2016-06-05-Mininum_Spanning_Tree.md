@@ -11,8 +11,12 @@ description: MST Prim
 
 A minimum spanning tree is a spanning tree of a connected, undirected graph. It connects all the vertices together with the minimal total weighting for its edges. A single graph can have many different spanning trees. **No cycle allowed**
 
-<p align="center">
+
+
+
 ![alt text](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Minimum_spanning_tree.svg/300px-Minimum_spanning_tree.svg.png "MST")
+
+
 
 
 
