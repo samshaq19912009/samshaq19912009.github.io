@@ -1,0 +1,40 @@
+---
+layout: post
+title: Weigthed Independet Set
+date: 2016-06-06
+categories: blog
+tags: [Algorithms,Notes]
+description: Dynamic Programming, WIS
+---
+
+
+
+```Python
+
+def WIS(W):
+    ##Give an weight set , choose the max independent set using DP
+    A = [0 for i in range(len(W)+1)]
+    A[0] = 0
+    A[1] = W[0]
+    for i in range(1, len(W)):
+        A[i+1] = max(A[i], A[i-1]+W[i])
+
+    return A
+
+def find_WIS(W, A):
+    ##Given the best solution A on W, calculate the optimal set
+    i = len(W)
+    S = []
+    while (i>=1):
+        if (A[i-1] >= A[i-2] + W[i-1]):
+            i -= 1
+        else:
+            S.append(W[i-1])
+            i -= 2
+     
+    return S
+
+
+
+
+```
