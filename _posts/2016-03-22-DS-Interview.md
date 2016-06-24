@@ -36,8 +36,7 @@ item click-through-rate  predicted rate
 on each of them. A few days later, catch 300 rabbits and found 60 with 
 labels. Estimate how many rabbits are there?  
 
-8. Given 10 coins with 1 unfair coin and 9 fair coins. The unfair coin has &
-#8532; prob. to be head. Now random select 1 coin and throw it 3 times. You 
+8. Given 10 coins with 1 unfair coin and 9 fair coins. The unfair coin has 0.8532; prob. to be head. Now random select 1 coin and throw it 3 times. You 
 observe head, head, tail. What’s the probability that the selected coin is 
 the unfair one? 
 
