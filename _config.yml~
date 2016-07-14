@@ -1,8 +1,8 @@
 # Site settings
 title: Chengcen
-header-img: "img/seagull.jpg"
+header-img: "img/green.jpg"
 tagline: "cn"  
-description: ""  
+description: "This is my blog"  
 baseurl: ""
 url: "samshaq19912009.github.io"  
 
