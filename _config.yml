@@ -1,13 +1,14 @@
 # Site settings
 title: Chengcen
+SEOTitle: Chengcen's Blog
 header-img: "img/seagull.jpg"
-tagline: "cn"  
-description: ""  
+tagline: "cn"
+description: ""
 baseurl: ""
-url: "samshaq19912009.github.io"  
+url: "samshaq19912009.github.io"
 
 # About/contact
-owner: 
+owner:
   name: " Chengcen "
   email: sccnju@gmail.com
   bio: "Just do it"
@@ -16,16 +17,16 @@ owner:
 gavatar: http://dreamofbook.qiniudn.com/Az..png
 favicon: img/favicon.png
 
-douban_username:  
-twitter_username: 
-github_username: 
-facebook_username: 
-weibo_username: 
-zhihu_username: 
+douban_username:
+twitter_username:
+github_username:
+facebook_username:
+weibo_username:
+zhihu_username:
 
-# Build settings  
-# use Github Flavored Markdown !important  
-# document: http://jekyllrb.com/docs/configuration/#kramdown  
+# Build settings
+# use Github Flavored Markdown !important
+# document: http://jekyllrb.com/docs/configuration/#kramdown
 markdown: kramdown
 #markdown: maruku
 
@@ -40,7 +41,7 @@ timezone: Asia/Shanghai
 # Defaults for posts
 defaults:
   -
-    scope: 
+    scope:
       path: ""
       type: "posts"
     values:
@@ -48,16 +49,16 @@ defaults:
       author: "Chengcen"
       header-img: "img/green.jpg" # We don't want posts without a header image, that whould mean white on white
 
-# Comments 
+# Comments
 comments :
   provider : duoshuo
   duoshuo :
-    short_name : 
+    short_name :
   disqus :
-      short_name : 
+      short_name :
 
 # Analytics and webmaster tools stuff goes here
-google_analytics: 
+google_analytics:
 google_verify:
 # https://ssl.bing.com/webmaster/configure/verify/ownership Option 2 content= goes here
 bing_verify:

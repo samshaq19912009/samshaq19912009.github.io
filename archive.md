@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Archive"
-description: "笔耕不辍"
+description: "继续学习"
 header-img: "img/orange.jpg"
 ---
 
