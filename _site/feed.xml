@@ -1,0 +1,2500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Chengcen</title>
+    <description></description>
+    <link>samshaq19912009.github.io/</link>
+    <atom:link href="samshaq19912009.github.io/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Thu, 21 Jul 2016 07:21:58 +0800</pubDate>
+    <lastBuildDate>Thu, 21 Jul 2016 07:21:58 +0800</lastBuildDate>
+    <generator>Jekyll v3.1.6</generator>
+    
+      <item>
+        <title>CNN 读书笔记（1）</title>
+        <description>&lt;h2 id=&quot;image-classification&quot;&gt;Image Classification&lt;/h2&gt;
+
+&lt;h3 id=&quot;motivation&quot;&gt;Motivation&lt;/h3&gt;
+
+&lt;p&gt;Assigning an input image one label from a fixed set of categories,one of the core problems in Computer Vision.&lt;/p&gt;
+
+&lt;h3 id=&quot;example&quot;&gt;Example&lt;/h3&gt;
+
+&lt;p&gt;takes a single image and assigns probabilities to 4 labels, {cat, dog, hat, mug}. In this example, the cat image is &lt;strong&gt;248 pixels wide&lt;/strong&gt;, &lt;strong&gt;400 pixels tall&lt;/strong&gt;, and has three color channels Red,Green,Blue (or RGB for short). Therefore, the image consists of 248 x 400 x 3 numbers, or a total of &lt;strong&gt;297,600&lt;/strong&gt; numbers.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/classify.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;challenges&quot;&gt;Challenges&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/challenges.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;data-driven-approach&quot;&gt;Data-driven approach.&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Data-driven approach&lt;/strong&gt; : relying on first accumulating a training dataset of labeled images. Here is an example of what such a dataset might look like:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/trainset.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;nearest-neighbor-classifier&quot;&gt;Nearest Neighbor Classifier&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Train: no need to train,just memorize all the training data X_train, y_train&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Calculate the distance between each X_test and X_train&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Collect k most smallest y_train, do a majority to determine y_test&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;the-choice-of-distance&quot;&gt;The choice of distance:&lt;/h3&gt;
+
+&lt;p&gt;L1-norm or L2-norm ?&lt;/p&gt;
+
+&lt;p&gt;$
+d_2 (I_1, I_2) = \sqrt{\sum_{p} \left( I^p_1 - I^p_2 \right)^2}
+$&lt;/p&gt;
+
+&lt;h3 id=&quot;vectorize-your-code&quot;&gt;Vectorize your code!&lt;/h3&gt;
+
+&lt;h4 id=&quot;code-1-compute-distance-with-two-loops-native-solution&quot;&gt;Code 1: Compute distance with two loops: native solution&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;  def compute_distances_two_loops(self, X):
+    &quot;&quot;&quot;
+    Compute the distance between each test point in X and each training point
+    in self.X_train using a nested loop over both the training data and the
+    test data.
+
+    Inputs:
+    - X: A numpy array of shape (num_test, D) containing test data.
+
+    Returns:
+    - dists: A numpy array of shape (num_test, num_train) where dists[i, j] 
+    - is the Euclidean distance between the ith test point and the jth training
+      point.
+    &quot;&quot;&quot;
+    num_test = X.shape[0]
+    num_train = self.X_train.shape[0]
+    dists = np.zeros((num_test, num_train))
+    for i in xrange(num_test):
+        for j in xrange(num_train):
+            dists[i][j] = np.linalg.norm(X[i]-self.X_train[j])
+
+
+    return dists
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;#### Code 2: Compute distance with one loop– not much faster&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt; def compute_distances_one_loop(self, X):
+    &quot;&quot;&quot;
+    Compute the distance between each test point in X and each training point
+    in self.X_train using a single loop over the test data.
+
+    Input / Output: Same as compute_distances_two_loops
+    &quot;&quot;&quot;
+    num_test = X.shape[0]
+    num_train = self.X_train.shape[0]
+    dists = np.zeros((num_test, num_train))
+    for i in xrange(num_test):
+        dists[i,:] = np.sqrt(np.sum(np.square(self.X_train - X[i]),axis=-1))
+
+    return dists
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&quot;code-3-compute-distance-without-loop----much-faster&quot;&gt;Code 3 Compute distance without loop – much faster&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;  def compute_distances_no_loops(self, X):
+    &quot;&quot;&quot;
+    Compute the distance between each test point in X and each training point
+    in self.X_train using no explicit loops.
+
+    Input / Output: Same as compute_distances_two_loops
+    &quot;&quot;&quot;
+    num_test = X.shape[0]
+    num_train = self.X_train.shape[0]
+    dists = np.zeros((num_test, num_train))
+    product = np.dot(X, self.X_train.T)
+    test_sum = np.square(X).sum(axis=1)
+    train_sum = np.square(self.X_train).sum(axis=1)
+    dists = np.sqrt(-2*product + np.matrix(test_sum).T + np.matrix(train_sum))
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&quot;speed-compare&quot;&gt;Speed Compare&lt;/h4&gt;
+
+&lt;p&gt;Two loop version took 23.563113 seconds&lt;/p&gt;
+
+&lt;p&gt;One loop version took 49.459447 seconds&lt;/p&gt;
+
+&lt;p&gt;No loop version took 0.311029 seconds&lt;/p&gt;
+
+&lt;h3 id=&quot;cross-validation---hyperparameter-tuning&quot;&gt;Cross validation - hyperparameter tuning&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/cvplot.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Sun, 17 Jul 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/07/17/CNN_part_1/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/07/17/CNN_part_1/</guid>
+        
+        <category>Machine Learning</category>
+        
+        <category>Notes</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>RNN 算法简介</title>
+        <description>&lt;p&gt;RNN(Recurrent Neural Network)被运用到了很多自然语言处理（NLP）工作中，并且取得了非常好的效果。这里我们将要实现一个以RNN为基础的语言模型。这一语言模型有两个主要的用途，第一，根据任意给定的语句，给定其出现在固定位置的可能性，这一概率可以用来判断机器生成的句子的语法以及语义正确的概率，这一模型主要被应用在翻译系统中。 第二， 语言模型可以生成新的段落。 给定一段莎士比亚的文字，可以生成一段具有莎士比亚风格的段落。&lt;/p&gt;
+
+&lt;h2 id=&quot;rnn&quot;&gt;什么是 RNN?&lt;/h2&gt;
+
+&lt;p&gt;RNN最重要的思想，是利用具有顺序的信息。在传统的neural network中， 我们假定了每一个输入（输出）都是独立的，但是在实际应用中，这并不符合现实。例如，在一个句子里，我们需要根据之前的单词来预测下一个单词。这也就是RNN中&lt;strong&gt;recurrent&lt;/strong&gt;的来源，在RNN model中，每一个都执行一样的任务，而每一次的输入都依赖于上一次运行的输出。另一种思考的方法是， RNN model是有记忆的， 在运行时依赖于已经得到的信息。下图是一个典型的RNN model 示意图。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://d3kbpzbmcynnmx.cloudfront.net/wp-content/uploads/2015/09/rnn.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;上图展示了一个RNN model 被展开之后的情形。 这里的展开指的是将所有的network展开。例如，如果这一系列是5个单词的句子，这时network就是一个5层的神经网络，每一个层代表一个Word。图中的公式意为：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;$x_t$是在time step t的输入，例如，$x_1$代表句中第二个单词的向量&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;$s_t$是在time step t的隐藏变量， 代表之前提到的RNN model的“记忆”，  $s_t$由之前的隐藏变量和现在步骤的输入来计算， 记为 $s_t = f(U x_t + W s_{t-1} )$。 $s_{-1}$通常被初始化为零。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;$o_t$是在time step t的输出，当我们想要预测句中下一个单词的时候，将会输出词汇表中各个单词的概率： $o_t = softmax(V s_t)$&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;$s_t$可以被当做RNN model的“记忆”来储存之前步骤中的信息。每一步的输出 $o_t$都只由同时的信息的来完成&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;另外，传统的深度学习网络，在每一层的网络都使用不同的参数，与之不同的是， RNN model 在每一步都使用同样的参数（U, V, W)。事实上，在每一步我们都采用相同的步骤，但使用不同的input。这可以极大的减少需要调节的参数的数目。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;rnn-1&quot;&gt;RNN的用途&lt;/h2&gt;
+
+&lt;p&gt;在很多自然语言处理任务中， RNN都有很成功的应用。其中，大部分的RNN model都是基于&lt;a href=&quot;https://en.wikipedia.org/wiki/Long_short-term_memory&quot;&gt;LSTM&lt;/a&gt;。以下介绍两种RNN的常见用途&lt;/p&gt;
+
+&lt;h3 id=&quot;section&quot;&gt;语言模型以及语句生成&lt;/h3&gt;
+
+&lt;p&gt;给定一语言序列，我们想要根据之前的语句来预测每一个单词生成的概率。语言模型可以来测定每一个句子的出现概率，从而被用来进行语言翻译（高概率的语句通常正确率更高）。通过预测下一个词句的概率，我们也可以得到一个生成模型，(generative model)，从而可以生成新的语句。根据我们的训练数据，我们可以生成&lt;strong&gt;各种各样的词句&lt;/strong&gt;。 在语言模拟中， 模型的输入通常是一串词句，输出为一串预测的词句。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;机器翻译&lt;/h3&gt;
+
+&lt;p&gt;机器翻译和语言模型类似，输入为源语言（德语）的一串词句，我们想要输出目标语言（英语）的一串词句。最关键的不同点在于，只有在所有的input都完成训练后，才会开始输出， 因为输出的词句中，第一个单词可能会依赖于完整句子的语义。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://d3kbpzbmcynnmx.cloudfront.net/wp-content/uploads/2015/09/Screen-Shot-2015-09-17-at-10.39.06-AM-1024x557.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;语音识别&lt;/h3&gt;
+
+&lt;p&gt;给定声波中的一串声音讯号， 我们可以来做出语音判断以及每一个判断输出的概率。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-3&quot;&gt;图像描述&lt;/h3&gt;
+
+&lt;p&gt;与CNN 模型共同使用后，RNN被用来进行对图像进行描述。如下图所示。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://d3kbpzbmcynnmx.cloudfront.net/wp-content/uploads/2015/09/Screen-Shot-2015-09-17-at-11.44.24-AM-1024x349.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;rnn-model&quot;&gt;训练 RNN model&lt;/h2&gt;
+
+&lt;p&gt;训练一个RNN model和训练其他的深度学习网络类似，我们依然采用backpropagation算法，但也有不同。每一步的参数都会被所有的步骤所公用，在每一步的梯度(gradient)都不仅仅依赖于当前一步的计算，同时也依赖于前一步。例如，为了计算t=4的梯度，我们需要backpropagate前三步并且将所得的梯度加和。这一算法被称为 Backpropagation Through Time (BPTT).&lt;/p&gt;
+
+&lt;h2 id=&quot;section-4&quot;&gt;语言模型&lt;/h2&gt;
+
+&lt;p&gt;我们的目标是使用RNN来建议一个语言模型。假定，我们有m个单词，语言模型可以用来预测这m个单词的概率为&lt;/p&gt;
+
+&lt;p&gt;$
+\begin{aligned}
+P(w_1,…,w_m) = \prod_{i=1}^{m}P(w_i \mid w_1,…, w_{i-1}) 
+\end{aligned}
+$&lt;/p&gt;
+
+&lt;p&gt;在句子里， 每一个句子出现的概率等于句子中单词出现概率的乘积。例如， 出现句子“He went to buy some stuff”的概率等于句子“some stull”的概率乘以句子“He went to buy”的概率。&lt;/p&gt;
+
+&lt;p&gt;我们想要知道的是， 为什么这个有用呢？ 为什么对于句子我们需要给定一个概率呢？&lt;/p&gt;
+
+&lt;p&gt;首先，这一model可以当做为一种scoring mechanism。 例如， 在机器翻译中，给定一个输入的语句，系统通常会产生多个可能的输出。我们可以利用语言模型来选择其中最可能的语句，直观地来看，最有可能的语句最后有很大的可能是语法正确的。相似的scoring mechanism也被用作在语音识别中。&lt;/p&gt;
+
+&lt;p&gt;但是， 解决语言模型也同时带来了一个副作用。因为我们可以根据之前出现的词句来推断词句出现的概率，这样，我们就可以生成新的词句。给定已经生成的词句，我们可以从计算所得的概率进行采样，重复这一过程直到一个新的语句。&lt;/p&gt;
+
+&lt;h2 id=&quot;section-5&quot;&gt;训练模型 预处理&lt;/h2&gt;
+
+&lt;p&gt;为了训练我们的语言模型，我们需要文本来进行训练。幸运的是，我们只需要纯文本训练即可，无需任何的标记。。我们下载了15000个reddit网站上的评论，这样， 我们生成的文本就会跟reddit的评论相似。和大多数机器学习的项目一样，我们首先需要进行对数据的预处理。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-6&quot;&gt;记号化文本&lt;/h3&gt;
+
+&lt;p&gt;我们需要基于词语来进行预测，因此，对于给定的纯文本，我们必须把评论记号化为句子，然后再把句子标记化为词语。这里， 使用NLTK的 word_tokenize 和 sent_tokenize&lt;/p&gt;
+
+&lt;h3 id=&quot;section-7&quot;&gt;去除少见词语&lt;/h3&gt;
+
+&lt;p&gt;大部分出现在文本中的词语只会出现少数的几次，显然在模型中将这些少见词语省略会极大的节约训练的时间。&lt;/p&gt;
+
+&lt;p&gt;在现有的model中， 我们把词汇表的数目限定在8000以下，即选定最长出现的8000个词语，把没有被选择进词汇表的词语都标记为UNKOWN_TOKEN.在训练的时候，这个UNKOWN_TOKEN也会被当做训练model中的一部分，在最终生成文本的时候，UNKOWN_TOKEN会被任意一个不在词汇表的词语所替代。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-8&quot;&gt;准备特殊开始结束记号&lt;/h3&gt;
+
+&lt;p&gt;我们同时希望学习什么样的词句可以用来开始和结束一段语句。为此，我们准备了特殊的SENTENCE_START 标记 以及特殊的SENTENCE_END 标记。 这样， 给定了一个SENTENCE_START，下一个可能的词语是什么？&lt;/p&gt;
+
+&lt;h3 id=&quot;section-9&quot;&gt;建立训练的矩阵&lt;/h3&gt;
+
+&lt;p&gt;RNN model的输入为向量，并不是字符串。所以，我们采用词语和下标的配对:index_to_word 和 word_to_index。例如， 词语“friendly”可能在下标2001. 一个训练的例子x为[0, 179, 341, 146], 其中， 0代表开始语句SENTENCE_TO_START，对应的y为[179, 341, 146,1]。这里，我们需要预测的是下一个词语，所以y实际上就是将x右移了一位并且添加了最后一个SENTENCE_END，换句话来说，在上面的例子中，179的后一个词语，就是341。&lt;/p&gt;
+
+&lt;h3 id=&quot;rnn-model-1&quot;&gt;建立RNN model&lt;/h3&gt;
+
+&lt;p&gt;现在我们可以来看看 RNN model到底是什么样子的了。每一个输入的x将会是一串词语（就像之前的例子一样），而每一个$x_t$会是一个单词，这里有一点需要注意，我们并不能直接把词语转换成下标然后进行矩阵运算，而是将每一个单词做成一个one-hot的向量，而这个向量的大小，就是之前所提到的vocabulary的大小，例如，一个下标为36的单词，就是所有除了36这一位皆为0，只有36位为1的单词。这样，每一个$x_t$都是一个向量，而每一个x都会是一个矩阵。考虑这一神经网络的最后输出$o_t$也会是一个向量，其向量大小就是vocabulary_size。而每一个o都为一个矩阵。&lt;/p&gt;
+
+&lt;p&gt;接下来，我们回顾一下之前提到的RNN model的具体公式。&lt;/p&gt;
+
+&lt;p&gt;$
+\begin{aligned}
+s_t &amp;amp;= \tanh(Ux_t + Ws_{t-1}) &lt;br /&gt;
+o_t &amp;amp;= \mathrm{softmax}(Vs_t)
+\end{aligned}
+$&lt;/p&gt;
+
+&lt;p&gt;在神经网络的学习中，将每一个变量的大小写出，是很有帮助的。这里，我们使用800作为vocabulary_size， 100作为hidden layer的大小，那么，训练中各变量的大小皆为以下所示：&lt;/p&gt;
+
+&lt;p&gt;$
+\begin{aligned}
+x_t &amp;amp; \in \mathbb{R}^{8000} &lt;br /&gt;
+o_t &amp;amp; \in \mathbb{R}^{8000} &lt;br /&gt;
+s_t &amp;amp; \in \mathbb{R}^{100} &lt;br /&gt;
+U &amp;amp; \in \mathbb{R}^{100 \times 8000} &lt;br /&gt;
+V &amp;amp; \in \mathbb{R}^{8000 \times 100} &lt;br /&gt;
+W &amp;amp; \in \mathbb{R}^{100 \times 100} &lt;br /&gt;
+\end{aligned}
+$&lt;/p&gt;
+
+&lt;p&gt;值得注意的是， U, V, W都是在模型中需要训练的参量。因此，这一模型需要学习的参数总量则为$2HC + H^2$，在这一例子中H为100， C为800， 那么总计需要学习的变量为1,610,00。由此我们也可以看出，这一模型的局限性。&lt;/p&gt;
+
+&lt;h4 id=&quot;section-10&quot;&gt;初始化&lt;/h4&gt;
+
+&lt;p&gt;为了定义我们的参数，我们首先定义一个RNN 的class。初始化U,V,W需要一点的技巧性，我们并不能把这些参数都初始化为0，这会导致每一层layer都会是一个对称的计算。这里，我们采用随机初始化的方式。在这方面已经有非常多的研究表明，参数初始化的方式依赖于activation function，&lt;a href=&quot;http://jmlr.org/proceedings/papers/v9/glorot10a/glorot10a.pdf&quot;&gt;推荐的&lt;/a&gt;一个方法是，对于tanh的activation function，初始化参数在区间 $\left[-\frac{1}{\sqrt{n}}, \frac{1}{\sqrt{n}}\right]$ 中，其中$n$ 为前一层layer的数目。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;class RNNNumpy:
+    
+    def __init__(self, word_dim, hidden_dim=100, bptt_truncate=4):
+        # Assign instance variables
+        self.word_dim = word_dim
+        self.hidden_dim = hidden_dim
+        self.bptt_truncate = bptt_truncate
+        # Randomly initialize the network parameters
+        self.U = np.random.uniform(-np.sqrt(1./word_dim), np.sqrt(1./word_dim), (hidden_dim, word_dim))
+        self.V = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (word_dim, hidden_dim))
+        self.W = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (hidden_dim, hidden_dim))
+        
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&quot;forward-propagation&quot;&gt;Forward Propagation&lt;/h4&gt;
+
+&lt;p&gt;跟其他neural network一样，我们采用 forward propogation 来预测输出。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def forward_propagation(self, x):
+    # The total number of time steps
+    T = len(x)
+    # During forward propagation we save all hidden states in s because need them later.
+    # We add one additional element for the initial hidden, which we set to 0
+    s = np.zeros((T + 1, self.hidden_dim))
+    s[-1] = np.zeros(self.hidden_dim)
+    # The outputs at each time step. Again, we save them for later.
+    o = np.zeros((T, self.word_dim))
+    # For each time step...
+    for t in np.arange(T):
+        # Note that we are indxing U by x[t]. This is the same as multiplying U with a one-hot vector.
+        s[t] = np.tanh(self.U[:,x[t]] + self.W.dot(s[t-1]))
+        o[t] = softmax(self.V.dot(s[t]))
+    return [o, s]
+
+RNNNumpy.forward_propagation = forward_propagation
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;从以上的forward propogation中，我们不仅输出了o，并且输出了hidden layer的s。s将会被用来计算梯度。每一个$o_t$是一个代表词语出现在词汇表中的概率，为了最后预测，我们选取最高概率的词语。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def predict(self, x):
+    # Perform forward propagation and return index of the highest score
+    o, s = self.forward_propagation(x)
+    return np.argmax(o, axis=1)
+
+RNNNumpy.predict = predict
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&quot;section-11&quot;&gt;计算损失函数&lt;/h4&gt;
+
+&lt;p&gt;为了训练我们的model，我们需要定义一个测量错误率的metric，这就是我们的损失函数(loss function)$L$,而我们选择参数$U, V, W$来最小化损失函数。一个经常被选取的是交叉熵&lt;a href=&quot;https://en.wikipedia.org/wiki/Cross_entropy#Cross-entropy_error_function_and_logistic_regression&quot;&gt;cross-entropy loss&lt;/a&gt;。给定一共N个训练样本，y代表真实值，o代表模型预测值，C代表vocabulary的size，损失函数为：&lt;/p&gt;
+
+&lt;p&gt;$
+\begin{aligned}
+L(y,o) = - \frac{1}{N} \sum_{n \in N} y_{n} \log o_{n}
+\end{aligned}
+$&lt;/p&gt;
+
+&lt;p&gt;在具体训练模型之前，让我们来看看随机初始化的损失函数应该多少，这会给我们的训练带来一个基础值作为参考。在模型中，我们有C个vocabulary，所以每一个单词出现的概率就应该是1/C， 这样，最后的损失函数值应该是：$L = -\frac{1}{N} N \log\frac{1}{C} = \log C$。下面的例子中，我们给定前1000个样本，来看看我们设计的损失函数与随机初始化是否相符合。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;# Limit to 1000 examples to save time
+print &quot;Expected Loss for random predictions: %f&quot; % np.log(vocabulary_size)
+print &quot;Actual loss: %f&quot; % model.calculate_loss(X_train[:1000], y_train[:1000])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;运行后，预期的随机初始化的误差值为8.987197，通过计算所得的误差值为8.987440，还是非常接近的！！！&lt;/p&gt;
+
+&lt;h4 id=&quot;sgd-and-backpropagation-through-time-bptt&quot;&gt;SGD and Backpropagation Through Time (BPTT)&lt;/h4&gt;
+
+&lt;p&gt;我们的目标是，通过调节参数U,V,W来找到损失函数的最小值，最常见的方法，是通过SGD（Stochastic Gradient Descent)算法。SGD算法的思想实际上非常简单，我们遍历所有的训练样本，每一次遍历，我们根据减少损失函数的方向来优化参数。 这一方向由损失函数的梯度来给出：$\frac{\partial L}{\partial U}, \frac{\partial L}{\partial V}, \frac{\partial L}{\partial W}$。SGD算法同时需要一个learning rate来定义优化梯度的速率。SGD算法不仅是神经网络中非常常见的算法，也经常被使用在其他的机器学习算法中。关于SGD算法的具体补充，可以参考这个链接&lt;a href=&quot;http://cs231n.github.io/optimization-1/&quot;&gt;地址&lt;/a&gt;。&lt;/p&gt;
+
+&lt;p&gt;根据SGD算法，计算梯度成为非常重要的一步。在其他的神经网络中，我们采用backpropagation算法。在RNN model中，需要对backpropagation进行一些改动，称为BPTT(Backpropagation Through Time)算法。因为参数在每一层的运算中都是通用的，在每一步的输出中，梯度的计算并不只由当前的计算步骤决定，也跟之前的步骤决定。这里，我们只给出BPTT最后的算法：给定输入的x和y，给出梯度$\frac{\partial L}{\partial U}, \frac{\partial L}{\partial V}, \frac{\partial L}{\partial W}$。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def bptt(self, x, y):
+    T = len(y)
+    # Perform forward propagation
+    o, s = self.forward_propagation(x)
+    # We accumulate the gradients in these variables
+    dLdU = np.zeros(self.U.shape)
+    dLdV = np.zeros(self.V.shape)
+    dLdW = np.zeros(self.W.shape)
+    delta_o = o
+    delta_o[np.arange(len(y)), y] -= 1.
+    # For each output backwards...
+    for t in np.arange(T)[::-1]:
+        dLdV += np.outer(delta_o[t], s[t].T)
+        # Initial delta calculation
+        delta_t = self.V.T.dot(delta_o[t]) * (1 - (s[t] ** 2))
+        # Backpropagation through time (for at most self.bptt_truncate steps)
+        for bptt_step in np.arange(max(0, t-self.bptt_truncate), t+1)[::-1]:
+            # print &quot;Backpropagation step t=%d bptt step=%d &quot; % (t, bptt_step)
+            dLdW += np.outer(delta_t, s[bptt_step-1])              
+            dLdU[:,x[bptt_step]] += delta_t
+            # Update delta for next step
+            delta_t = self.W.T.dot(delta_t) * (1 - s[bptt_step-1] ** 2)
+    return [dLdU, dLdV, dLdW]
+
+RNNNumpy.bptt = bptt
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&quot;gradient-checking&quot;&gt;Gradient Checking&lt;/h4&gt;
+
+&lt;p&gt;每次我们进行backprogation的运算中，进行&lt;em&gt;梯度检查（gradient checking）&lt;/em&gt;是非常重要的，这可以让我们来确认梯度算法的正确性。梯度检查是根据梯度的运算结果与此刻该点的斜率类似， 如以下公式所示。&lt;/p&gt;
+
+&lt;p&gt;$
+\begin{aligned}
+\frac{\partial L}{\partial \theta} \approx \lim_{h \to 0} \frac{J(\theta + h) - J(\theta -h)}{2h}
+\end{aligned}
+$&lt;/p&gt;
+
+&lt;p&gt;接下来我们需要对计算所得的梯度进行gradient check，如果没有较大偏差的话，那么说明我们的算法是正确的。值得注意的是，这一检查需要计算每一个参数的梯度，在大多数情况下，这将极大的增加运算量。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def gradient_check(self, x, y, h=0.001, error_threshold=0.01):
+    # Calculate the gradients using backpropagation. We want to checker if these are correct.
+    bptt_gradients = model.bptt(x, y)
+    # List of all parameters we want to check.
+    model_parameters = [&#39;U&#39;, &#39;V&#39;, &#39;W&#39;]
+    # Gradient check for each parameter
+    for pidx, pname in enumerate(model_parameters):
+        # Get the actual parameter value from the mode, e.g. model.W
+        parameter = operator.attrgetter(pname)(self)
+        print &quot;Performing gradient check for parameter %s with size %d.&quot; % (pname, np.prod(parameter.shape))
+        # Iterate over each element of the parameter matrix, e.g. (0,0), (0,1), ...
+        it = np.nditer(parameter, flags=[&#39;multi_index&#39;], op_flags=[&#39;readwrite&#39;])
+        while not it.finished:
+            ix = it.multi_index
+            # Save the original value so we can reset it later
+            original_value = parameter[ix]
+            # Estimate the gradient using (f(x+h) - f(x-h))/(2*h)
+            parameter[ix] = original_value + h
+            gradplus = model.calculate_total_loss([x],[y])
+            parameter[ix] = original_value - h
+            gradminus = model.calculate_total_loss([x],[y])
+            estimated_gradient = (gradplus - gradminus)/(2*h)
+            # Reset parameter to original value
+            parameter[ix] = original_value
+            # The gradient for this parameter calculated using backpropagation
+            backprop_gradient = bptt_gradients[pidx][ix]
+            # calculate The relative error: (|x - y|/(|x| + |y|))
+            relative_error = np.abs(backprop_gradient - estimated_gradient)/(np.abs(backprop_gradient) + np.abs(estimated_gradient))
+            # If the error is to large fail the gradient check
+            if relative_error &amp;gt; error_threshold:
+                print &quot;Gradient Check ERROR: parameter=%s ix=%s&quot; % (pname, ix)
+                print &quot;+h Loss: %f&quot; % gradplus
+                print &quot;-h Loss: %f&quot; % gradminus
+                print &quot;Estimated_gradient: %f&quot; % estimated_gradient
+                print &quot;Backpropagation gradient: %f&quot; % backprop_gradient
+                print &quot;Relative Error: %f&quot; % relative_error
+                return 
+            it.iternext()
+        print &quot;Gradient check for parameter %s passed.&quot; % (pname)
+
+RNNNumpy.gradient_check = gradient_check
+
+# To avoid performing millions of expensive calculations we use a smaller vocabulary size for checking.
+grad_check_vocab_size = 100
+np.random.seed(10)
+model = RNNNumpy(grad_check_vocab_size, 10, bptt_truncate=1000)
+model.gradient_check([0,1,2,3], [1,2,3,4])
+
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;#### SGD Implementation&lt;/p&gt;
+
+&lt;p&gt;现在我们可以开始完成SGD函数了。具体步骤分为两步，第一步，一个&lt;code class=&quot;highlighter-rouge&quot;&gt;sdg_step&lt;/code&gt;函数用来计算梯度并且更新参数。第二步，遍历每一个训练样本，调整learning rate。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;# Performs one step of SGD.
+def numpy_sdg_step(self, x, y, learning_rate):
+    # Calculate the gradients
+    dLdU, dLdV, dLdW = self.bptt(x, y)
+    # Change parameters according to gradients and learning rate
+    self.U -= learning_rate * dLdU
+    self.V -= learning_rate * dLdV
+    self.W -= learning_rate * dLdW
+
+RNNNumpy.sgd_step = numpy_sdg_step
+
+
+
+
+# Outer SGD Loop
+# - model: The RNN model instance
+# - X_train: The training data set
+# - y_train: The training data labels
+# - learning_rate: Initial learning rate for SGD
+# - nepoch: Number of times to iterate through the complete dataset
+# - evaluate_loss_after: Evaluate the loss after this many epochs
+def train_with_sgd(model, X_train, y_train, learning_rate=0.005, nepoch=100, evaluate_loss_after=5):
+    # We keep track of the losses so we can plot them later
+    losses = []
+    num_examples_seen = 0
+    for epoch in range(nepoch):
+        # Optionally evaluate the loss
+        if (epoch % evaluate_loss_after == 0):
+            loss = model.calculate_loss(X_train, y_train)
+            losses.append((num_examples_seen, loss))
+            time = datetime.now().strftime(&#39;%Y-%m-%d %H:%M:%S&#39;)
+            print &quot;%s: Loss after num_examples_seen=%d epoch=%d: %f&quot; % (time, num_examples_seen, epoch, loss)
+            # Adjust the learning rate if loss increases
+            if (len(losses) &amp;gt; 1 and losses[-1][1] &amp;gt; losses[-2][1]):
+                learning_rate = learning_rate * 0.5  
+                print &quot;Setting learning rate to %f&quot; % learning_rate
+            sys.stdout.flush()
+        # For each training example...
+        for i in range(len(y_train)):
+            # One SGD step
+            model.sgd_step(X_train[i], y_train[i], learning_rate)
+            num_examples_seen += 1
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;完成了！ 现在我们可以对RNN model进行测试了。具体代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;np.random.seed(10)
+model = RNNNumpy(vocabulary_size)
+%timeit model.sgd_step(X_train[10], y_train[10], 0.005)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里我们可以看到， 一个训练样本需要200多ms来完成，而我们有80000个样本，这意味着完成训练需要长达几个小时，多次迭代则需要几天的时间。有很多种优化模型的方法，而使用GPU进行运算就是其中的一种。当然，我们可以先选择少量的样本来用CPU进行运算&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+np.random.seed(10)
+# Train on a small subset of the data to see what happens
+model = RNNNumpy(vocabulary_size)
+losses = train_with_sgd(model, X_train[:100], y_train[:100], nepoch=10, evaluate_loss_after=1)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到的是，经过每一步，损失函数都在减少，证明我们的model确实有了效用！&lt;/p&gt;
+
+&lt;h3 id=&quot;training-our-network-with-theano-and-the-gpu&quot;&gt;Training our Network with Theano and the GPU&lt;/h3&gt;
+
+&lt;p&gt;在向量运算中，如果使用Theano以及GPU运算，会极大的缩小运算的时间，这里我们不做过多的展开，直接参照之前的&lt;a href=&quot;http://www.wildml.com/2015/09/speeding-up-your-neural-network-with-theano-and-the-gpu/&quot;&gt;tutorial&lt;/a&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;from rnn_theano import RNNTheano, gradient_check_theano
+np.random.seed(10)
+
+
+# To avoid performing millions of expensive calculations we use a smaller vocabulary size for checking.
+
+
+grad_check_vocab_size = 5
+model = RNNTheano(grad_check_vocab_size, 10)
+gradient_check_theano(model, [0,1,2,3], [1,2,3,4])
+np.random.seed(10)
+
+
+model = RNNTheano(vocabulary_size)
+%timeit model.sgd_step(X_train[10], y_train[10], 0.005)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;此时，我们可以发现，运算时间为50ms，以及缩小为之前的四分之一。接下来，我们就可以开始训练模型并且生成文本了。为了节约时间，我们载入之前训练好的模型参数。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;from utils import load_model_parameters_theano, save_model_parameters_theano
+
+model = RNNTheano(vocabulary_size, hidden_dim=50)
+# losses = train_with_sgd(model, X_train, y_train, nepoch=50)
+# save_model_parameters_theano(&#39;./data/trained-model-theano.npz&#39;, model)
+load_model_parameters_theano(&#39;./data/trained-model-theano.npz&#39;, model)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;生成文字的最终代码为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+def generate_sentence(model):
+    # We start the sentence with the start token
+    new_sentence = [word_to_index[sentence_start_token]]
+    # Repeat until we get an end token
+    while not new_sentence[-1] == word_to_index[sentence_end_token]:
+        next_word_probs = model.forward_propagation(new_sentence)
+        sampled_word = word_to_index[unknown_token]
+        # We don&#39;t want to sample unknown words
+        while sampled_word == word_to_index[unknown_token]:
+            samples = np.random.multinomial(1, next_word_probs[-1])
+            sampled_word = np.argmax(samples)
+        new_sentence.append(sampled_word)
+    sentence_str = [index_to_word[x] for x in new_sentence[1:-1]]
+    return sentence_str
+
+num_sentences = 10
+senten_min_length = 7
+
+for i in range(num_sentences):
+    sent = []
+    # We want long sentences, not sentences with one or two words
+    while len(sent) &amp;lt; senten_min_length:
+        sent = generate_sentence(model)
+    print &quot; &quot;.join(sent)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我们列出几个输出的样本为&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;no to blame their stuff go at all .&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;consider via under gear but equal every game .&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;no similar work on the ui birth a ce nightmare .&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;the challenging what is absolutely hard .&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;me do you research getting +2 .&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;ugh is much good , no .&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;me so many different lines hair .&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;probably not very a bot or gain .&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;correct this is affected so why ?&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;register but a grown gun environment .&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;可以看到的是，这几个输出并不能做到符合语法和语义的双重满足，实际上，我们现有模型（Vanial RNN)最大的问题在于不能训练相隔几个单词内词语的关系。在接下来的分析中，我们会逐步介绍BPTT算法的详细步骤，以及在NLP中更常见的LSTMs模型。&lt;/p&gt;
+</description>
+        <pubDate>Sun, 10 Jul 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/07/10/RNN_tutorial/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/07/10/RNN_tutorial/</guid>
+        
+        <category>Machine Learning</category>
+        
+        <category>Notes</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Mac上配置Hive指南</title>
+        <description>&lt;p&gt;今天纠结了一下午的Hive。到处找资料配置，还是把自己的坑列出来，希望对别人有用吧。。&lt;/p&gt;
+
+&lt;p&gt;首先，安装hive之前需要安装Hadoop。这个就不多说了。反正在Mac上都是无脑的brew install。。。。然后再bash_profile里面加入path。。。&lt;/p&gt;
+
+&lt;p&gt;值得注意的是，运行hive&lt;strong&gt;需要Hadoop已经运行了！&lt;/strong&gt;。这个就已经坑了我半个小时。。插一句，Hadoop的运行命令为&lt;strong&gt;hstart&lt;/strong&gt;。另外可以用&lt;strong&gt;jps&lt;/strong&gt;来检查Hadoop的运行情况。&lt;/p&gt;
+
+&lt;h3 id=&quot;section&quot;&gt;第一步&lt;/h3&gt;
+
+&lt;p&gt;粗暴简单，你懂得。（如果你还没装brew，请出门左拐装完homebrew再回来）&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;brew install hive
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;第二步， 配置文件&lt;/h3&gt;
+
+&lt;p&gt;配置bash profile,这里的hadoop.version.no和hive.version.no都是版本号，我的是2.7.2和2.0&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;emacs ~/.bash_profile
+
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HADOOP_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/local/Cellar/hadoop/hadoop.version.no
+&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HIVE_HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/local/Cellar/hive/hive.version.no/libexec
+&lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; ~/.bash_profile
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;hdfs&quot;&gt;第三步 创建HDFS文件&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hdfs dfs -mkdir /user/hive/warehouse
+hdfs dfs -mkdir -p /user/hive/warehouse
+hdfs dfs -chmod g+w /tmp
+hdfs dfs -chmod g+w /user/hive/warehouse
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;hive-sitexml--hcatout&quot;&gt;配置 hive-site.xml 和 hcat.out&lt;/h3&gt;
+
+&lt;p&gt;这个hive-site.xml非常重要，在我的系统里，这个文件在&lt;strong&gt;/usr/local/Cellar/hive/2.0.1/libexec/conf&lt;/strong&gt;，就把下面的代码放入即可，不要手贱乱配置。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;configuration&amp;gt;
+ &amp;lt;property&amp;gt;
+  &amp;lt;name&amp;gt;hive.exec.scratchdir&amp;lt;/name&amp;gt;
+  &amp;lt;value&amp;gt;/tmp/hive-${user.name}&amp;lt;/value&amp;gt;
+  &amp;lt;description&amp;gt;Scratch space for Hive jobs&amp;lt;/description&amp;gt;
+ &amp;lt;/property&amp;gt;
+&amp;lt;/configuration&amp;gt;
+
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;hcat.out这个我也不知道有啥用。。。反正就配置吧。。。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;mkdir -p hcatalog/var/log
+touch hcatalog/var/log/hcat.out
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h4 id=&quot;hivepath&quot;&gt;配置hive的path&lt;/h4&gt;
+
+&lt;p&gt;最后在你的bash_profile里面加入hive的path。。。。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+export HIVE_HOME=/usr/local/Cellar/hive/2.0.1/libexec
+
+export PATH=/usr/local/Cellar/hive/2.0.1/bin:$PATH
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;第四步 运行吧！少年！&lt;/h3&gt;
+
+&lt;p&gt;如果一切正常的话，就可以运行了！！！！&lt;/p&gt;
+
+&lt;p&gt;输入&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hive
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;就可以看到进入了hive的界面。&lt;/p&gt;
+
+&lt;p&gt;如果提示不成功，提示为&lt;strong&gt;Hive installation issues: Hive metastore database is not initialized&lt;/strong&gt;，可以参考如下&lt;a href=&quot;http://stackoverflow.com/questions/35655306/hive-installation-issues-hive-metastore-database-is-not-initialized&quot;&gt;post&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;schematool -initSchema -dbType derby
+
+# 如果以上命令不成功，就先run下面这个
+mv metastore_db metastore_db.tmp
+
+# run完上面那个，再run
+schematool -initSchema -dbType derby
+
+
+# 最后再尝试hive
+
+hive
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;section-3&quot;&gt;第五步 例子&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;hive&amp;gt; CREATE TABLE pokes (foo INT, bar STRING);
+&amp;gt; OK
+&amp;gt; Time taken: 0.098 seconds
+hive&amp;gt; CREATE TABLE invites (foo INT, bar STRING) PARTITIONED BY (ds STRING);
+&amp;gt; OK
+&amp;gt; Time taken: 0.077 seconds
+hive&amp;gt; SHOW TABLES;
+&amp;gt; OK
+&amp;gt; invites
+&amp;gt; pokes
+&amp;gt; u_data
+&amp;gt; Time taken: 0.093 seconds, Fetched: 3 row(s)
+
+hive&amp;gt; SHOW TABLES &#39;.*s&#39;;
+
+&amp;gt; OK
+&amp;gt; invites
+&amp;gt; pokes
+&amp;gt; Time taken: 0.034 seconds, Fetched: 2 row(s)
+
+hive&amp;gt; DESCRIBE invites;
+
+&amp;gt; OK
+
+&amp;gt; foo int
+&amp;gt; bar string
+&amp;gt; ds string
+&amp;gt;
+
+&amp;gt; # Partition Information
+&amp;gt; # col_name data_type comment
+&amp;gt;
+&amp;gt; ds string
+
+&amp;gt; Time taken: 0.08 seconds, Fetched: 8 row(s)
+
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;section-4&quot;&gt;第六步 还是一个例子&lt;/h3&gt;
+
+&lt;p&gt;另外，也可以从local data中导入数据，具体代码如下&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# 先下载数据
+wget http://files.grouplens.org/datasets/movielens/ml–100k.zip
+unzip ml–100k.zip
+
+
+#再在hive里面录入
+
+
+hive&amp;gt; CREATE TABLE u_data (
+  userid INT,
+  movieid INT,
+  rating INT,
+  unixtime STRING)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY &#39;\t&#39;
+STORED AS TEXTFILE;
+
+hive&amp;gt; LOAD DATA LOCAL INPATH &#39;../ml–100k/u.data&#39; OVERWRITE INTO TABLE u_data;
+
+&amp;gt; Loading data to table default.u_data
+&amp;gt; Table default.u_data stats: [numFiles=1, numRows=0, totalSize=1979173, rawDataSize=0]
+&amp;gt; OK
+&amp;gt; Time taken: 0.498 seconds
+
+hive&amp;gt; SELECT COUNT(*) FROM u_data;
+
+&amp;gt; Query ID = marekbejda_20150329143434_59ae5f17-bb06–4a6e-a029–4a03da1a4be0
+&amp;gt; Total jobs = 1
+&amp;gt; Launching Job 1 out of 1
+&amp;gt; Number of reduce tasks determined at compile time:
+
+&amp;gt; In order to change the average load for a reducer (in bytes):
+set hive.exec.reducers.bytes.per.reducer=number
+
+&amp;gt; In order to limit the maximum number of reducers:
+set hive.exec.reducers.max=number
+
+&amp;gt; In order to set a constant number of reducers:
+set mapreduce.job.reduces=number
+
+&amp;gt; Job running in-process (local Hadoop)
+&amp;gt; 2015–03–29 14:34:55,170 Stage–1 map = 100%, reduce = 100
+&amp;gt; Ended Job = job_local1972666714_0001
+
+&amp;gt; MapReduce Jobs Launched:
+&amp;gt; Stage-Stage–1: HDFS Read: 3958346 HDFS Write: 3958346 SUCCESS
+&amp;gt; Total MapReduce CPU Time Spent: 0 msec
+&amp;gt; OK
+&amp;gt; 100000
+&amp;gt; Time taken: 2.228 seconds, Fetched: 1 row(s)
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;遗憾的是到这一步我一直不成功，具体报错为&lt;strong&gt;Failed with exception Unable to move source file:/Users/Sakamoto/Downloads/ml-100k/u.data to destination hdfs://localhost:9000/user/hive/warehouse/u_data/u.data&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;FAILED: Execution Error, return code 1 from org.apache.hadoop.hive.ql.exec.MoveTask&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;谷歌了很久也不知道为啥。就酱紫吧&lt;/p&gt;
+
+&lt;p&gt;本文参考链接为&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://amodernstory.com/2015/03/29/installing-hive-on-mac/comment-page-1/#comment-1553&quot;&gt;一个人写的博客&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://cwiki.apache.org/confluence/display/Hive/GettingStarted#GettingStarted-InstallationandConfiguration&quot;&gt;官方文档&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://noobergeek.wordpress.com/2013/11/09/simplest-way-to-install-and-configure-hive-for-mac-osx-lion/&quot;&gt;另一个人写的博客&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://mp.weixin.qq.com/s?__biz=MzIzODExMDE5MA==&amp;amp;mid=2694182433&amp;amp;idx=1&amp;amp;sn=687b754cddc7255026434c683f487ac0#rd&quot;&gt;Hive 简要操作指南&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 28 Jun 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/06/28/Hive/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/06/28/Hive/</guid>
+        
+        <category>Hive</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Bit conversion</title>
+        <description>&lt;p&gt;&lt;img src=&quot;https://qph.ec.quoracdn.net/main-qimg-e3ff59ab4b0e6928de0fa8387c2075f8&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;World bytes table:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;1 Bit = Binary Digit;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;8 Bits = 1 Byte;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;1000 Bytes = 1 Kilobyte;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;1000 Kilobytes = 1 Megabyte;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;1000 Megabytes = 1 Gigabyte;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;1000 Gigabytes = 1 Terabyte;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;1000 Terabytes = 1 Petabyte;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;1000 Petabytes = 1 Exabyte;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;1000 Exabytes = 1 Zettabyte;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;1000 Zettabyte = 1 Yottabyte;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;1000 Yottabyte = 1 Brontobyte.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Mon, 27 Jun 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/06/27/Bit_conversion/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/06/27/Bit_conversion/</guid>
+        
+        <category>Bit</category>
+        
+        <category>Interview</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>十七道海量数据处理面试题与Bit-map详解</title>
+        <description>&lt;p&gt;本文为转载，&lt;a href=&quot;http://blog.csdn.net/v_july_v/article/details/6685962&quot;&gt;原文地址&lt;/a&gt;可以参考。&lt;/p&gt;
+
+&lt;h1 id=&quot;section&quot;&gt;第一部分、十五道海量数据处理面试题&lt;/h1&gt;
+
+&lt;h3 id=&quot;ab50urlurl644gaburl&quot;&gt;1. 给定a、b两个文件，各存放50亿个url，每个url各占64字节，内存限制是4G，让你找出a、b文件共同的url？&lt;/h3&gt;
+
+&lt;p&gt;方案1：可以估计每个文件安的大小为50G×64=320G，远远大于内存限制的4G。所以不可能将其完全加载到内存中处理。考虑采取分而治之的方法&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;遍历a，对每个url求hash. 为$\textit{hash}(url)%100$， 然后根据所取得的值将url分别存储到1000个小文件。每个文件大小为300M 左右。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;遍历文件b，采取和a相同的方式将url分别存储到1000小文件中。这样处理后，所有可能相同的url都在对应的小文件中，不对应的小文件不可能有相同的url。然后我们只要求出1000对小文件中相同的url即可。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;求每对小文件中相同的url时，可以把其中一个小文件的url存储到hash_set中。然后遍历另一个小文件的每个url，看其是否在刚才构建的hash_set中，如果是，那么就是共同的url，存到文件里面就可以了&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;方案2：如果允许有一定的错误率，可以使用Bloom filter，4G内存大概可以表示340亿bit。将其中一个文件中的url使用Bloom filter映射为这340亿bit，然后挨个读取另外一个文件的url，检查是否与Bloom filter，如果是，那么该url应该是共同的url（注意会有一定的错误率）&lt;/p&gt;
+
+&lt;p&gt;注意&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;hash后要判断每个文件大小，如果hash分的不均衡有文件较大，还应继续hash分文件，换个hash算法第二次再分较大的文件，一直分到没有较大的文件为止。这样文件标号可以用A1-2表示（第一次hash编号为1，文件较大所以参加第二次hash，编号为2）&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;由于1存在，第一次hash如果有大文件，不能用直接set的方法。建议对每个文件都先用字符串自然顺序排序，然后具有相同hash编号的（如都是1-3，而不能a编号是1，b编号是1-1和1-2），可以直接从头到尾比较一遍。对于层级不一致的，如a1，b有1-1，1-2-1，1-2-2，层级浅的要和层级深的每个文件都比较一次，才能确认每个相同的uri。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;gqueryqueryquery&quot;&gt;2. 有10个文件，每个文件1G，每个文件的每一行存放的都是用户的query，每个文件的query都可能重复。要求你按照query的频度排序。&lt;/h3&gt;
+
+&lt;p&gt;方案1：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;顺序读取10个文件，按照hash(query)%10的结果将query写入到另外10个文件（a0,a1,a2,..a9)中。这样新生成的文件每个的大小大约也1G（假设hash函数是随机的）。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;找一台内存在2G左右的机器，依次对（a0,a1,a2,..a9)用hash_map(query, query_count)来统计每个query出现的次数。利用快速/堆/归并排序按照出现次数进行排序。将排序好的query和对应的query_cout输出到文件中。这样得到了10个排好序的文件(b0,b1,b2,b9）。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;对(b0,b1,b2。。。b9）进行排序。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;方案2：&lt;/p&gt;
+
+&lt;p&gt;一般query的总量是有限的，只是重复的次数比较多而已，可能对于所有的query，一次性就可以加入到内存了。这样，我们就可以采用trie树/hash_map等直接来统计每个query出现的次数，然后按出现次数做快速/堆/归并排序就可以了&lt;/p&gt;
+
+&lt;h3 id=&quot;g161m100&quot;&gt;3. 有一个1G大小的一个文件，里面每一行是一个词，词的大小不超过16字节，内存限制大小是1M。返回频数最高的100个词&lt;/h3&gt;
+
+&lt;p&gt;方案1：顺序读文件中，对于每个词x取hash，然后按照该值存到5000个小文件（记为x_0, x_1,…x_5000）中。这样每个文件大概是200k左右。如果其中的有的文件超过了1M大小，还可以按照类似的方法继续往下分，直到分解得到的小文件的大小都不超过1M。对每个小文件，统计每个文件中出现的词以及相应的频率（可以采用trie树/hash_map等），并取出出现频率最大的100个词（可以用含100个结点的最小堆），并把100词及相应的频率存入文件，这样又得到了5000个文件。下一步就是把这5000个文件进行归并（类似与归并排序）的过程了。&lt;/p&gt;
+
+&lt;h3 id=&quot;ip&quot;&gt;4. 海量日志数据，提取出某日访问百度次数最多的那个IP。&lt;/h3&gt;
+
+&lt;p&gt;方案1：首先是这一天，并且是访问百度的日志中的IP取出来，逐个写入到一个大文件中。注意到IP是32位的，最多有2^32个IP。同样可以采用映射的方法，比如模1000，把整个大文件映射为1000个小文件，再找出每个小文中出现频率最大的IP（可以采用hash_map进行频率统计，然后再找出频率最大的几个）及相应的频率。然后再在这1000个最大的IP中，找出那个频率最大的IP，即为所求。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;5. 在2.5亿个整数中找出不重复的整数，内存不足以容纳这2.5亿个整数。&lt;/h3&gt;
+
+&lt;p&gt;方案1：采用2-Bitmap（每个数分配2bit，00表示不存在，01表示出现一次，10表示多次，11无意义）进行，共需内存2^32*2bit=1GB内存，还可以接受。然后扫描这2.5亿个整数，查看Bitmap中相对应位，如果是00变01，01变10，10保持不变。所描完事后，查看bitmap，把对应位是01的整数输出即可。&lt;/p&gt;
+
+&lt;h3 id=&quot;top10&quot;&gt;6. 海量数据分布在100台电脑中，想个办法高效统计出这批数据的TOP10。&lt;/h3&gt;
+
+&lt;p&gt;方案1：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;在每台电脑上求出TOP10，可以采用包含10个元素的堆完成（TOP10小，用最大堆，TOP10大，用最小堆）。比如求TOP10大，我们首先取前10个元素调整成最小堆，如果发现，然后扫描后面的数据，并与堆顶元素比较，如果比堆顶元素大，那么用该元素替换堆顶，然后再调整为最小堆。最后堆中的元素就是TOP10大。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;求出每台电脑上的TOP10后，然后把这100台电脑上的TOP10组合起来，共1000个数据，再利用上面类似的方法求出TOP10就可以了。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;7. 怎么在海量数据中找出重复次数最多的一个？&lt;/h3&gt;
+
+&lt;p&gt;方案1：先做hash，然后求模映射为小文件，求出每个小文件中重复次数最多的一个，并记录重复次数。然后找出上一步求出的数据中重复次数最多的一个就是所求（具体参考前面的题）。&lt;/p&gt;
+
+&lt;h3 id=&quot;n&quot;&gt;8. 上千万或上亿数据（有重复），统计其中出现次数最多的前N个数据。&lt;/h3&gt;
+
+&lt;p&gt;方案1：上千万或上亿的数据，现在的机器的内存应该能存下。所以考虑采用hash_map/搜索二叉树/红黑树等来进行统计次数。然后就是取出前N个出现次数最多的
+数据了，可以用第6题提到的堆机制完成。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-3&quot;&gt;9. 1000万字符串，其中有些是重复的，需要把重复的全部去掉，保留没有重复的字符串。请怎么设计和实现？&lt;/h3&gt;
+
+&lt;p&gt;方案1：这题用trie树比较合适，hash_map也应该能行。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-4&quot;&gt;10. 一个文本文件，大约有一万行，每行一个词，要求统计出其中最频繁出现的前10个词，请给出思想，给出时间复杂度分析&lt;/h3&gt;
+
+&lt;p&gt;方案1：这题是考虑时间效率。用trie树统计每个词出现的次数，时间复杂度是O(n le)（le表示单词的平准长度）。然后是找出出现最频繁的前10个词，可以用堆来实现，前面的题中已经讲到了，时间复杂度是O(n lg10)。所以总的时间复杂度，是O(n le)与O(n lg10)中较大的哪一个&lt;/p&gt;
+
+&lt;h3 id=&quot;section-5&quot;&gt;11. 一个文本文件，找出前10个经常出现的词，但这次文件比较长，说是上亿行或十亿行，总之无法一次读入内存，问最优解&lt;/h3&gt;
+
+&lt;p&gt;方案1：首先根据用hash并求模，将文件分解为多个小文件，对于单个文件利用上题的方法求出每个文件件中10个最常出现的词。然后再进行归并处理，找出最终的10个最常出现的词。&lt;/p&gt;
+
+&lt;h3 id=&quot;w100&quot;&gt;12. 100w个数中找出最大的100个数。&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;方案1：采用局部淘汰法。选取前100个元素，并排序，记为序列L。然后一次扫描剩余的元素x，与排好序的100个元素中最小的元素比，如果比这个最小的要大，那么把这个最小的元素删除，并把x利用插入排序的思想，插入到序列L中。依次循环，知道扫描了所有的元素。复杂度为O(100w*100)。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;方案2：采用快速排序的思想，每次分割之后只考虑比轴大的一部分，知道比轴大的一部分在比100多的时候，采用传统排序算法排序，取前100个。复杂度为O(100w*100)。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;方案3：在前面的题中，我们已经提到了，用一个含100个元素的最小堆完成。复杂度为O(100w*lg100)。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;section-6&quot;&gt;13. 寻找热门查询：&lt;/h3&gt;
+
+&lt;p&gt;搜索引擎会通过日志文件把用户每次检索使用的所有检索串都记录下来，每个查询串的长度为1-255字节。假设目前有一千万个记录，这些查询串的重复读比较高，虽然总数是1千万，但是如果去除重复和，不超过3百万个。一个查询串的重复度越高，说明查询它的用户越多，也就越热门。请你统计最热门的10个查询串，要求使用的内存不能超过1G。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;请描述你解决这个问题的思路&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;请给出主要的处理流程，算法，以及算法的复杂度&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;方案1：采用trie树，关键字域存该查询串出现的次数，没有出现为0。最后用10个元素的最小推来对出现频率进行排序&lt;/p&gt;
+
+&lt;h3 id=&quot;nnonn2&quot;&gt;14. 一共有N个机器，每个机器上有N个数。每个机器最多存O(N)个数并对它们操作。如何找到N^2个数中的中数？&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;方案1：先大体估计一下这些数的范围，比如这里假设这些数都是32位无符号整数（共有2^32个）。我们把0到2^32-1的整数划分为N个范围段，每个段包含（2^32）/N个整数。比如，第一个段位0到2^32/N-1，第二段为（2^32）/N到（2^32）/N-1，…，第N个段为（2^32）（N-1）/N到2^32-1。然后，扫描每个机器上的N个数，把属于第一个区段的数放到第一个机器上，属于第二个区段的数放到第二个机器上，…，属于第N个区段的数放到第N个机器上。注意这个过程每个机器上存储的数应该是O(N)的。下面我们依次统计每个机器上数的个数，一次累加，直到找到第k个机器，在该机器上累加的数大于或等于（N^2）/2，而在第k-1个机器上的累加数小于（N^2）/2，并把这个数记为x。那么我们要找的中位数在第k个机器中，排在第（N^2）/2-x位。然后我们对第k个机器的数排序，并找出第（N^2）/2-x个数，即为所求的中位数的复杂度是O（N^2）的。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;方案2：先对每台机器上的数进行排序。排好序后，我们采用归并排序的思想，将这N个机器上的数归并起来得到最终的排序。找到第（N^2）/2个便是所求。复杂度是O（N^2*lgN^2）的。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+</description>
+        <pubDate>Mon, 27 Jun 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/06/27/%E5%8D%81%E4%B8%83%E9%81%93%E6%B5%B7%E9%87%8F%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E9%9D%A2%E8%AF%95%E9%A2%98%E4%B8%8EBit-map%E8%AF%A6%E8%A7%A3/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/06/27/%E5%8D%81%E4%B8%83%E9%81%93%E6%B5%B7%E9%87%8F%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E9%9D%A2%E8%AF%95%E9%A2%98%E4%B8%8EBit-map%E8%AF%A6%E8%A7%A3/</guid>
+        
+        <category>Machine Learning</category>
+        
+        <category>Interview</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Bloom Filter 简介</title>
+        <description>&lt;h1 id=&quot;bloom-filter-&quot;&gt;Bloom Filter 简介&lt;/h1&gt;
+
+</description>
+        <pubDate>Sun, 26 Jun 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/06/26/Bloom_Filter/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/06/26/Bloom_Filter/</guid>
+        
+        <category>Algorithm</category>
+        
+        <category>Bloom Filter</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>LDA 简介</title>
+        <description>&lt;h1 id=&quot;lda-&quot;&gt;LDA 简介&lt;/h1&gt;
+
+&lt;p&gt;我们来学习一下LDA（Latent Dirichlet Allocation）模型。&lt;/p&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;按照wiki上的介绍，LDA由Blei, David M.、Ng, Andrew Y.、Jordan于2003年提出，是一种&lt;a href=&quot;https://zh.wikipedia.org/wiki/主题模型&quot;&gt;主题模型&lt;/a&gt;，它可以将文档集 中每篇文档的主题以概率分布的形式给出，从而通过分析一些文档抽取出它们的主题（分布）出来后，便可以根据主题（分布）进行主题聚类或文本分类。同时，它是一种典型的词袋模型，即一篇文档是由一组词构成，词与词之间没有先后顺序的关系。&lt;/p&gt;
+
+&lt;p&gt;一篇文档可以包含多个主题，文档中每一个词都由其中的一个主题生成。当人们需要生成一段文档的时候，首先确定假定这一段文档所包含的topic，而每一个topic都有包含的词汇。如下图所示，包含四个话题。
+&lt;img src=&quot;http://img.blog.csdn.net/20141117153816148&quot; alt=&quot;model&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;生成文档时，以一定的概率选取上述某个主题，再以一定的概率选取那个主题下的某个单词，不断的重复这两步，最终生成如下图所示的一篇文章&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117154035285&quot; alt=&quot;test&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;反之，在训练阶段，我们需要反推这一个过程，推断这一段文章是由什么主题组成的。假定们可能会认为作者先确定这篇文章的几个主题，然后围绕这几个主题遣词造句，表达成文。&lt;/p&gt;
+
+&lt;p&gt;LDA就是要干这事：根据给定的一篇文档，推测其主题分布。通过此模型生成的文档方式如下：&lt;/p&gt;
+
+&lt;p&gt;1.从狄利克雷分布$\alpha$中取样生成文档 i 的主题分布$\theta_i$&lt;/p&gt;
+
+&lt;p&gt;2.从主题的多项式分布$\theta_i$中取样生成文档i第 j 个词的主题$z_{ij}$&lt;/p&gt;
+
+&lt;p&gt;3.从狄利克雷分布$\beta$中取样生成主题对应的词语分布$\phi_{z_{ij}}$&lt;/p&gt;
+
+&lt;p&gt;4.从词语的多项式分布中采样最终生成词语$w_{ij}$&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117152903751&quot; alt=&quot;dict&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;binomial-distribution&quot;&gt;二项分布（Binomial distribution）&lt;/h4&gt;
+
+&lt;p&gt;二项分布是从伯努利分布推进的。伯努利分布，又称两点分布或0-1分布，是一个离散型的随机分布，其中的随机变量只有两类取值，非正即负{+，-}。而二项分布即重复n次的伯努利。简言之，只做一次实验，是伯努利分布，重复做了n次，是二项分布。二项分布的概率密度函数为&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117234739906&quot; alt=&quot;bi&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;multinomial-distribution&quot;&gt;多项分布（Multinomial Distribution）&lt;/h4&gt;
+
+&lt;p&gt;多项分布是指单次试验中的随机变量的取值不再是0-1的，而是有多种离散值可（1,2,3…,k）。比如投掷6个面的骰子实验，N次实验结果服从K=6的多项分布。其中&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117235427677&quot; alt=&quot;pro&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;多项分布的概率密度函数为：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117235452512&quot; alt=&quot;mulit&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;beta-beta-distribution&quot;&gt;Beta 分布（Beta distribution）&lt;/h4&gt;
+
+&lt;p&gt;给定参数$\alpha$和$\beta$，取值为[0,1]的随机变量x的概率密度函数为&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117235056953&quot; alt=&quot;beta&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其中&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117235115532&quot; alt=&quot;gamma&quot; /&gt;,&lt;img src=&quot;http://img.blog.csdn.net/20141117235123035&quot; alt=&quot;gamma&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;注意其中的Gamma函数。&lt;/p&gt;
+
+&lt;h4 id=&quot;dirichlet-dirichlet-distributionbeta&quot;&gt;Dirichlet 分布（Dirichlet distribution）是beta分布在高维度上的推广&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117235506350&quot; alt=&quot;Dir&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其中&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117235524695&quot; alt=&quot;dir1&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;gamma--beta-&quot;&gt;Gamma 函数与 Beta 分布&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;问题1&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;给定$x_1, x_2, x_n…..$为均匀[0,1]分布的随机变量，将这n的变量随机排序后，$x_k$的分布为？&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117174509835&quot; alt=&quot;gamma&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;取定$\alpha=k$和$\beta = n-k+1$&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117180513843&quot; alt=&quot;fromgamama&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;beta&quot;&gt;Beta分布&lt;/h2&gt;
+
+&lt;p&gt;以上已经介绍过Beta分布的基本数学公式以及概率含义，为了理解 Beta 分布和 二项分布的共轭关系，我们重新回到上面一个问题&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;问题2&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;给定$x_1, x_2, x_n…..$为均匀[0,1]分布的随机变量，将这n的变量随机排序后，$ p = X_k$&lt;/p&gt;
+
+&lt;p&gt;给定$y_1, y_2, y_n…..$为均匀[0,1]分布的随机变量, Y 中有 m1 比 P 小， m2 比 p 大，&lt;/p&gt;
+
+&lt;p&gt;求问p对Y的条件概率？？？&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117183714937&quot; alt=&quot;pY&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;先验分布&lt;/strong&gt; + &lt;strong&gt;样本信息&lt;/strong&gt; = &lt;strong&gt;后验分布&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;我们知道，这一问题的先验分布为Beta分布，样本信息为[0,1]二项分布&lt;/p&gt;
+
+&lt;p&gt;类比以上问题，我们可以得到以下等式&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117185216670&quot; alt=&quot;x1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;更一般的关系为&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117185325671&quot; alt=&quot;con&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;由此，我们可以得到 &lt;strong&gt;针对于这种观测到的数据符合二项分布，参数的先验分布和后验分布都是Beta分布的情况&lt;/strong&gt;，&lt;strong&gt;就是Beta-Binomial共轭&lt;/strong&gt;。换言之，Beta分布是二项式分布的共轭先验概率分布&lt;/p&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;共轭先验概率分布&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;在贝叶斯概率理论中，如果后验概率和先验概率满足同样的分布律，那么，先验分布和后验分布被叫做共轭分布，同时，先验分布叫做似然函数的共轭先验分布&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;举个例子。投掷一个非均匀硬币，可以使用参数为θ的伯努利模型，θ为硬币为正面的概率，那么结果x的分布形式为：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117224140453&quot; alt=&quot;re&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其共轭先验为beta分布，具有两个参数$\alpha$和$\beta$，称为超参数（hyperparameters）。且这两个参数决定了θ参数，其Beta分布形式为&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117230028113&quot; alt=&quot;re&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;然后计算后验概率为&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117230441640&quot; alt=&quot;re&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;可以看到，先验假设和后验分布同为Beta分布！&lt;/p&gt;
+
+&lt;p&gt;此外，如果变量符合Beta变量，平均值为：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117204010541&quot; alt=&quot;average&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;dirichlet-&quot;&gt;Dirichlet 分布&lt;/h2&gt;
+
+&lt;h3 id=&quot;dirichlet--1&quot;&gt;3.1 Dirichlet 分布&lt;/h3&gt;
+
+&lt;p&gt;根据wikipedia上的介绍，维度K ≥ 2（x1,x2…xK-1维，共K个）的狄利克雷分布在参数α1, …, αK &amp;gt; 0上、基于欧几里得空间里的勒贝格测度有个概率密度函数，定义为：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117232638381&quot; alt=&quot;average&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其中&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117233352295&quot; alt=&quot;average&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;dirichlet-multinomial-&quot;&gt;3.2 Dirichlet-Multinomial 共轭&lt;/h3&gt;
+
+&lt;p&gt;下面，在问题2的基础上继续深入，引出&lt;strong&gt;问题3&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;给定$x_1, x_2, x_n…..$为均匀[0,1]分布的随机变量，将这n的变量随机排序后，$x_k$的分布为？以三维变量为例， 这里我们只采用$x1$ $x2$为自由变量， 为了简化计算，取x3满足x1+x2+x3=1,但只有x1,x2是变量，如下图所示&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117234134290&quot; alt=&quot;fig3&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;从而有：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118003458723&quot; alt=&quot;fig3&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;继而我们可以得到联合分布为&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118003624156&quot; alt=&quot;fig3&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;观察上述式子的最终结果，可以看出上面这个分布其实就是3维形式的 Dirichlet 分布&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118003740698&quot; alt=&quot;fig3&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;整理变量后 分布密度可以写为&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118003817062&quot; alt=&quot;fig3&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;下面，跟问题2比较类似的是，加入观测，&lt;/p&gt;
+
+&lt;p&gt;给定$x_1, x_2, x_n…..$为均匀[0,1]分布的随机变量，将这n的变量随机排序后&lt;/p&gt;
+
+&lt;p&gt;令$p1=X(k1), p2=X(k2), p3 = 1 - p1 - p2$, 要求$P$的分布&lt;/p&gt;
+
+&lt;p&gt;给定$y_1, y_2, y_n…..$为均匀[0,1]分布的随机变量, Y 中有 m1 比 p1 小， m2 在 p1 和 p2 之间， 求问 P 对 y 的条件概率分布？？？&lt;/p&gt;
+
+&lt;p&gt;同样，根据Bayes定理，分为三步：&lt;/p&gt;
+
+&lt;p&gt;1.先验分布为Dir p1, p2, p3&lt;/p&gt;
+
+&lt;p&gt;2.观测为 m1, m2, m3&lt;/p&gt;
+
+&lt;p&gt;3.后验分布可以写为以下的形式：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118215146718&quot; alt=&quot;p&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;以上过程可以直观的表示为&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118220632031&quot; alt=&quot;p1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;可把从整数集合延拓到实数集合，从而得到更一般的表达式如下&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118220737504&quot; alt=&quot;p1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;针对于这种观测到的数据符合多项分布，&lt;strong&gt;参数的先验分布和后验分布都是Dirichlet 分布的情况，就是Dirichlet-Multinomial 共轭&lt;/strong&gt;。换言之，至此已经证明了Dirichlet分布的确就是多项式分布的共轭先验概率分布。
+意味着，如果我们为多项分布的参数p选取的先验分布是Dirichlet分布，那么以p为参数的多项分布用贝叶斯估计得到的后验分布仍然服从Dirichlet分布。&lt;/p&gt;
+
+&lt;p&gt;同样，与Beta分布类似， 期望值为&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117211142562&quot; alt=&quot;daver&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;lda&quot;&gt;4 主题模型LDA&lt;/h2&gt;
+
+&lt;p&gt;为了更好的理解LDA的模型，我们先来总结一下学到的知识哈。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Beta分布是二项式分布的共轭先验概率分布&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;对于非负$\alpha$和$\beta$, 我们有如下关系&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141117185325671&quot; alt=&quot;p1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;针对于这种观测到的数据符合二项分布，参数的先验分布和后验分布都是Beta分布的情况，就是Beta-Binomial 共轭&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;狄利克雷分布（Dirichlet分布）是多项式分布的共轭先验概率分布&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;把从整数集合延拓到实数集合，从而得到更一般的表达式如下&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118220737504&quot; alt=&quot;p1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;针对于这种观测到的数据符合多项分布，参数的先验分布和后验分布都是Dirichlet 分布的情况，就是 Dirichlet-Multinomial 共轭。&lt;/p&gt;
+
+&lt;p&gt;以及贝叶斯派思考问题的固定模式&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;先验分布&lt;/strong&gt; + &lt;strong&gt;样本信息&lt;/strong&gt; = &lt;strong&gt;后验分布&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;顺便提下频率派与贝叶斯派各自不同的思考方式：&lt;/p&gt;
+
+&lt;p&gt;频率派把需要推断的参数θ看做是固定的未知常数，即概率虽然是未知的，但最起码是确定的一个值，同时，样本X 是随机的，所以频率派重点研究样本空间，大部分的概率计算都是针对样本X 的分布；&lt;/p&gt;
+
+&lt;p&gt;而贝叶斯派的观点则截然相反，他们认为待估计的参数是随机变量，服从一定的分布，而样本X 是固定的，由于样本是固定的，所以他们重点研究的是参数的分布。&lt;/p&gt;
+
+&lt;p&gt;为了方便描述，首先定义一些变量：&lt;/p&gt;
+
+&lt;p&gt;w 表示词， V 表示所有单词的个数（固定值）&lt;/p&gt;
+
+&lt;p&gt;z 表示主题， k 是主题的个数（预先给定，固定值）&lt;/p&gt;
+
+&lt;p&gt;$D = {w1, w2,…., w_{M}}$ 表示语料库，其中的 M 是语料库中的文档数（固定值)&lt;/p&gt;
+
+&lt;p&gt;$w = {\omega_1, \omega_2,…., \omega_N}$, 其中的 N 表示一个文档中的词数（随机变量）。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;4.1 各种基础模型&lt;/h3&gt;
+
+&lt;h4 id=&quot;unigram-model&quot;&gt;4.4.1 Unigram model&lt;/h4&gt;
+
+&lt;p&gt;对于文档$w = {\omega_1, \omega_2,…., \omega_N}$， 用$p(\omega_n)$表示词汇 $\omega_n$ 的先验概率，生成文档$w_n$的概率为&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118233228339&quot; alt=&quot;p1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;其图模型为（图中被涂色的w表示可观测变量，N表示一篇文档中总共N个单词，M表示M篇文档）：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118233121976&quot; alt=&quot;p1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;或者&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118234545921&quot; alt=&quot;p1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;unigram model假设&lt;strong&gt;文本中的词服从Multinomial分布&lt;/strong&gt;，而我们已经知道Multinomial分布的先验分布为Dirichlet分布。&lt;/p&gt;
+
+&lt;p&gt;p是词服从的Multinomial分布的参数&lt;/p&gt;
+
+&lt;p&gt;α是Dirichlet分布（即Multinomial分布的先验分布）的参数。&lt;/p&gt;
+
+&lt;p&gt;一般α由经验事先给定，p由观察到的文本中出现的词学习得到，表示文本中出现每个词的概率。&lt;/p&gt;
+
+&lt;h3 id=&quot;plsa&quot;&gt;4.2 PLSA模型&lt;/h3&gt;
+
+&lt;h4 id=&quot;plsa-1&quot;&gt;4.2.1 pLSA模型下生成文档&lt;/h4&gt;
+
+&lt;p&gt;OK，在上面的Mixture of unigrams model中，我们假定一篇文档只有一个主题生成，可实际中，一篇文章往往有多个主题，只是这多个主题各自在文档中出现的概率大小不一样。比如介绍一个国家的文档中，往往会分别从教育、经济、交通等多个主题进行介绍。那么在pLSA中，文档是怎样被生成的呢&lt;/p&gt;
+
+&lt;p&gt;假设你要写M篇文档，由于一篇文档由各个不同的词组成，所以你需要确定每篇文档里每个位置上的词。再假定你一共有K个可选的主题，有V个可选的词，咱们来玩一个扔骰子的游戏。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;假设你每写一篇文档会制作一颗K面的“文档-主题”骰子（扔此骰子能得到K个主题中的任意一个），和K个V面的“主题-词项” 骰子（每个骰子对应一个主题，K个骰子对应之前的K个主题，且骰子的每一面对应要选择的词项，V个面对应着V个可选的词）。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;每写一个词，先扔该“文档-主题”骰子选择主题，得到主题的结果后，使用和主题结果对应的那颗“主题-词项”骰子，扔该骰子选择要写的词。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;上面这个投骰子产生词的过程简化下便是：“&lt;strong&gt;先以一定的概率选取主题，再以一定的概率选取词&lt;/strong&gt;”。这个随机遵循一定的概率分布。比如可能选取教育主题的概率是0.5，选取经济主题的概率是0.3，选取交通主题的概率是0.2，那么这3个主题的概率分布便是{教育：0.5，经济：0.3，交通：0.2}，&lt;strong&gt;我们把各个主题z在文档d中出现的概率分布称之为主题分布&lt;/strong&gt;，且是一个&lt;strong&gt;多项分布&lt;/strong&gt;。
+同样的，从主题分布中随机抽取出教育主题后，依然面对着3个词：大学、老师、课程，这3个词都可能被选中，但它们被选中的概率也是不一样的。比如大学这个词被选中的概率是0.5，老师这个词被选中的概率是0.3，课程被选中的概率是0.2，那么这3个词的概率分布便是{大学：0.5，老师：0.3，课程：0.2}，&lt;strong&gt;我们把各个词语w在主题z下出现的概率分布称之为词分布&lt;/strong&gt;，这个词分布也是一个&lt;strong&gt;多项分布&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;所以，&lt;strong&gt;选主题和选词都是两个随机的过程&lt;/strong&gt;，先从主题分布{教育：0.5，经济：0.3，交通：0.2}中抽取出主题：教育，然后从该主题对应的词分布{大学：0.5，老师：0.3，课程：0.2}中抽取出词：大学。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141119110830531&quot; alt=&quot;pLSA&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;最后，你不停的重复扔“文档-主题”骰子和”主题-词项“骰子，重复N次（产生N个词），完成一篇文档，重复这产生一篇文档的方法M次，则完成M篇文档。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;上述过程抽象出来即是PLSA的文档生成模型。在这个过程中，我们并未关注词和词之间的出现顺序，所以pLSA是一种&lt;strong&gt;Bag of Words 词袋方法&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;该模型假设一组共现(co-occurrence)词项关联着一个隐含的主题类别&lt;/p&gt;
+
+&lt;p&gt;给定word和document， 生成word的概率为以下的模式。 所以pLSA中生成文档的整个过程便是选定文档生成主题，确定主题生成词。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://en.wikipedia.org/api/rest_v1/media/math/render/svg/d0b8f7081eedd7947d1f374ff9265defb263d987&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;###4.2.1 根据文档反推其主题分布&lt;/p&gt;
+
+&lt;p&gt;反过来，既然文档已经产生，那么如何根据已经产生好的文档反推其主题呢？这个利用看到的文档推断其隐藏的主题（分布）的过程（其实也就是产生文档的逆过程），便是主题建模的目的：自动地发现文档集中的主题（分布）&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Plsi_1.svg/478px-Plsi_1.svg.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;文档d和词w是我们得到的样本（样本随机，参数虽未知但固定，所以pLSA属于&lt;strong&gt;频率派思想&lt;/strong&gt;。 可观测得到，所以对于任意一篇文档，其 $P(w_j,d_i) $ 是已知的。&lt;/p&gt;
+
+&lt;p&gt;从而可以根据大量已知的文档-词项信息 $P(w_j,d_i) $, 得到 文档-主题 $P(z_k,d_i) $ 和主题 词项  $P(w_j , z_k) $&lt;/p&gt;
+
+&lt;p&gt;如以下公式所示&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141124221914437&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;故得到文档中每个词的生成概率为：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141119005004510&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;此时，我们的参数θ 为 ($P(z_k,d_i) $  和 $P(w_j , z_k) $）。 因为该待估计的参数中含有隐变量z，所以我们可以考虑EM算法。&lt;/p&gt;
+
+&lt;p&gt;假定用$\phi_k$表示词表$V$在主题$z_k$上的一个多项分布，则$\phi_k$可以表示成一个向量，每个元素$\phi_{k j}$表示词项$w_j$出现在主题$z_k$中的概率，即&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141119231639109&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;假定用$\theta_i$表示主题$z_j$在文档$d_i$上的一个多项分布，则$\theta_i$可以表示成一个向量，每个元素$\theta_{i k}$表示主题$z_k$出现在文档$d_i$的概率，即&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141119231850031&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这样我们把问题简化成了两个矩阵&lt;/p&gt;
+
+&lt;p&gt;$
+\Phi = [\phi_1, \phi_2, \phi_k],   z_k \in Z$&lt;/p&gt;
+
+&lt;p&gt;$
+\Theta = [\theta_1, \theta_2, \theta_k],   d_i \in D$&lt;/p&gt;
+
+&lt;p&gt;由于词和词之间是相互独立的，所以整篇文档N个词的分布为&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141212232331064&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;再由于文档和文档之间也是相互独立的，所以整个语料库中词的分布为（整个语料库M篇文档，每篇文档N个词）&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141212233703984&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;从而得到整个语料库的词分布的对数似然函数&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141119232348890&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;现在，我们需要最大化上述这个对数似然函数来求解参数$\phi_{k j}$和$\theta_{i k}$。对于这种含有隐变量的最大似然估计，可以使用EM算法。EM算法，分为两个步骤：先E-step，后M-step。&lt;/p&gt;
+
+&lt;p&gt;具体步骤这里省略。。。。。&lt;/p&gt;
+
+&lt;h3 id=&quot;lda--1&quot;&gt;4.3 LDA 模型&lt;/h3&gt;
+
+&lt;h4 id=&quot;plsalda&quot;&gt;4.3.1 pLSA跟LDA的对比：生成文档与参数估计&lt;/h4&gt;
+
+&lt;p&gt;在pLSA模型中，我们按照如下的步骤得到“文档-词项”的生成模型：&lt;/p&gt;
+
+&lt;p&gt;1.按照概率$P(d_i)$选择一篇文档&lt;/p&gt;
+
+&lt;p&gt;2.选定文档$d_i$后，确定文章的主题分布&lt;/p&gt;
+
+&lt;p&gt;3.从主题分布中按照概率$P(z_k, d_i)$选择一个隐含的主题类别&lt;/p&gt;
+
+&lt;p&gt;4.选定$z_k$后，确定主题下的词分布&lt;/p&gt;
+
+&lt;p&gt;5.从词分布中$P(w_j, z_k)$按照概率选择一个词&lt;/p&gt;
+
+&lt;p&gt;在 LDA 模型中，&lt;/p&gt;
+
+&lt;p&gt;1.按照先验概率$P(d_i)$选择一篇文档$d_i$&lt;/p&gt;
+
+&lt;p&gt;2.从&lt;strong&gt;狄利克雷分布（即Dirichlet分布）&lt;/strong&gt;$\alpha$中取样生成文档 $d_i$的主题分布$\theta_i$，换言之，主题分布$\theta_i$由超参数为$\alpha$的Dirichlet分布生成&lt;/p&gt;
+
+&lt;p&gt;3.从主题的多项式分布$\theta_i$中取样生成文档$d_i$第 j 个词的主题$z_{i j}$&lt;/p&gt;
+
+&lt;p&gt;4.从&lt;strong&gt;狄利克雷分布&lt;/strong&gt;（即Dirichlet分布）$\beta$中取样生成主题$z_{i j}$对应的词语分布$\phi_{i j}$，换言之，词语分布由参数为$\beta$的Dirichlet分布生成&lt;/p&gt;
+
+&lt;p&gt;5.从词语的多项式分布$\phi_{i j}$中采样最终生成词语$w_{i j}$&lt;/p&gt;
+
+&lt;p&gt;从上面两个过程可以看出，LDA在PLSA的基础上，为主题分布和词分布分别加了两个&lt;strong&gt;Dirichlet先验&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;继续拿之前讲解PLSA的例子进行具体说明。如前所述，在PLSA中，选主题和选词都是两个随机的过程，先从主题分布{教育：0.5，经济：0.3，交通：0.2}中抽取出主题：教育，然后从该主题对应的词分布{大学：0.5，老师：0.3，课程：0.2}中抽取出词：大学&lt;/p&gt;
+
+&lt;p&gt;而在LDA中，选主题和选词依然都是两个随机的过程，依然可能是先从主题分布{教育：0.5，经济：0.3，交通：0.2}中抽取出主题：教育，然后再从该主题对应的词分布{大学：0.5，老师：0.3，课程：0.2}中抽取出词：大学。&lt;/p&gt;
+
+&lt;p&gt;那PLSA跟LDA的区别在于什么地方呢？区别就在于：&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;PLSA中，主题分布和词分布是唯一确定的，能明确的指出主题分布可能就是{教育：0.5，经济：0.3，交通：0.2}，词分布可能就是{大学：0.5，老师：0.3，课程：0.2}。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;LDA中，主题分布和词分布不再唯一确定不变，即无法确切给出。例如主题分布可能是{教育：0.5，经济：0.3，交通：0.2}，也可能是{教育：0.6，经济：0.2，交通：0.2}，到底是哪个我们不再确定（即不知道），因为它是随机的可变化的。但再怎么变化，也依然服从一定的分布，即主题分布跟词分布由Dirichlet先验随机确定。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;在pLSA中， 文档d产生主题z的概率，主题z产生单词w的概率都是两个固定的值。如下图所示&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141206001916157&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;但在LDA中， 我们不再认为主题分布（各个主题在文档中出现的概率分布）和词分布（各个词语在某个主题下出现的概率分布）是唯一确定的（而是随机变量），而是有很多种可能。但一篇文档总得对应一个主题分布和一个词分布吧，怎么办呢？LDA为它们弄了两个Dirichlet先验参数，这个Dirichlet先验为某篇文档随机抽取出某个主题分布和词分布&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141127192035125&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;LDA在pLSA的基础上给这两参数加了两个&lt;strong&gt;先验分布的参数&lt;/strong&gt;（贝叶斯化）：一个主题分布的先验分布Dirichlet分布，和一个词语分布的先验分布Dirichlet分布&lt;/p&gt;
+
+&lt;h4 id=&quot;lda-1&quot;&gt;4.3.2 LDA生成文档过程的进一步理解&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;LDA生成文档的过程中，先从dirichlet先验中“随机”抽取出主题分布，然后从主题分布中“随机”抽取出主题&lt;/strong&gt;，最后从确定后的主题对应的词分布中“随机”抽取出词。&lt;/p&gt;
+
+&lt;p&gt;那么，dirichlet先验到底是如何“随机”抽取主题分布的呢？&lt;/p&gt;
+
+&lt;p&gt;事实上，从dirichlet分布中随机抽取主题分布，这个过程不是完全随机的。为了说清楚这个问题，咱们得回顾下dirichlet分布。事实上，如果我们取3个事件的话，可以建立一个三维坐标系，类似xyz三维坐标系，这里，我们把3个坐标轴弄为p1、p2、p3，如下图所示&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141128165431218&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;可以想象到，空间里有很多这样的点(p1,p2,p3)，意味着有很多的主题分布可供选择，那dirichlet分布如何选择主题分布呢？把上面的斜三角形放倒，映射到底面的平面上，便得到如下所示的一些彩图（3个彩图中，每一个点对应一个主题分布，高度代表某个主题分布被dirichlet分布选中的概率，且选不同的，dirichlet 分布会偏向不同的主题分布&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118174935062&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;我们来看上图中左边这个图，高度就是代表dirichlet分布选取某个坐标点(p1,p2,p3)（这个点就是一个主题分布）的概率大小。如下图所示，平面投影三角形上的三个顶点上的点：A=(0.9,0.05,0.05)、B=(0.05,0.9,0.05)、C=(0.05,0.05,0.9)各自对应的主题分布被dirichlet分布选中的概率值很大，而平面三角形内部的两个点：D、E对应的主题分布被dirichlet分布选中的概率值很小。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141128172421973&quot; alt=&quot;&quot; /&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141128172441161&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;plsalda-1&quot;&gt;4.3.3 pLSA跟LDA的概率图对比&lt;/h3&gt;
+
+&lt;p&gt;接下来，对比下LDA跟pLSA的概率模型图模型，左图是pLSA，右图是LDA（右图不太规范，z跟w都得是小写， 其中，阴影圆圈表示可观测的变量，非阴影圆圈表示隐变量，箭头表示两变量间的条件依赖性conditional dependency，方框表示重复抽样，方框右下角的数字代表重复抽样的次数）&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141118234229125&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;而对于LDA model：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141120172828681&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;对应到上面右图的LDA，只有W / w是观察到的变量，其他都是隐变量或者参数，其中，Φ表示词分布，Θ表示主题分布， 是主题分布Θ的先验分布（即Dirichlet 分布）的参数，是词分布Φ的先验分布（即Dirichlet 分布）的参数，N表示文档的单词总数，M表示文档的总数&lt;/p&gt;
+
+&lt;p&gt;对于一篇文档d中的每一个单词，LDA根据先验知识确定某篇文档的主题分布θ，然后从该文档所对应的多项分布（主题分布）θ中抽取一个主题z，接着根据先验知识确定当前主题的词语分布ϕ，然后从主题z所对应的多项分布（词分布）ϕ中抽取一个单词w。然后将这个过程重复N次，就产生了文档d。&lt;/p&gt;
+
+&lt;p&gt;1.假定语料库中共有M篇文章，每篇文章下的Topic的主题分布是一个从参数为的&lt;strong&gt;Dirichlet先验分布&lt;/strong&gt;中采样得到的&lt;strong&gt;Multinomial分布&lt;/strong&gt;，每个Topic下的词分布是一个从参数为的Dirichlet先验分布中采样得到的Multinomial分布。&lt;/p&gt;
+
+&lt;p&gt;2.对于某篇文章中的第n个词，首先从该文章中出现的每个主题的&lt;strong&gt;Multinomial分布&lt;/strong&gt;（主题分布）中选择或采样一个主题，然后再在这个主题对应的词的&lt;strong&gt;Multinomial分布&lt;/strong&gt;（词分布）中选择或采样一个词。不断重复这个随机生成过程，直到M篇文章全部生成完成。&lt;/p&gt;
+
+&lt;p&gt;综上，M 篇文档会对应于 M 个独立的 Dirichlet-Multinomial 共轭结构，K 个 topic 会对应于 K 个独立的 Dirichlet-Multinomial 共轭结构。&lt;/p&gt;
+
+&lt;p&gt;其中，$\alpha$→θ→z 表示生成文档中的所有词对应的主题，显然 $\alpha$→θ 对应的是&lt;strong&gt;Dirichlet 分布&lt;/strong&gt;，θ→z 对应的是 &lt;strong&gt;Multinomial 分布&lt;/strong&gt;，所以整体是一个 &lt;strong&gt;Dirichlet-Multinomial&lt;/strong&gt; 共轭结构，如下图所示&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141120174743000&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;类似的，β→φ→w，容易看出， 此时β→φ对应的是 Dirichlet 分布， φ→w 对应的是 Multinomial 分布， 所以整体也是一个Dirichlet-Multinomial 共轭结构，如下图所示&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://img.blog.csdn.net/20141120174912796&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;plsalda-2&quot;&gt;4.3.4 pLSA跟LDA参数估计方法的对比&lt;/h3&gt;
+
+&lt;p&gt;上面对比了pLSA跟LDA生成文档的不同过程，下面，咱们反过来，假定文档已经产生，反推其主题分布。那么，它们估计未知参数所采用的方法又有什么不同呢&lt;/p&gt;
+
+&lt;p&gt;在pLSA中，我们使用EM算法去估计“主题-词项”矩阵Φ（由$P(w_j, z_k)$转换得到）和“文档-主题”矩阵Θ（由$P(z_k, d_i)$转换得到）这两个参数，而且这两参数都是个固定的值，只是未知，使用的思想其实就是极大似然估计MLE。&lt;/p&gt;
+
+&lt;p&gt;而在LDA中，估计Φ、Θ这两未知参数可以用&lt;strong&gt;变分(Variational inference)-EM算法&lt;/strong&gt;，也可以用&lt;strong&gt;gibbs采样&lt;/strong&gt;，前者的思想是&lt;strong&gt;最大后验估计MAP&lt;/strong&gt;（MAP与MLE类似，都把未知参数当作固定的值），后者的思想是&lt;strong&gt;贝叶斯估计&lt;/strong&gt;。贝叶斯估计是对MAP的扩展，但它与MAP有着本质的不同，即贝叶斯估计把待估计的参数看作是服从某种先验分布的随机变量。&lt;/p&gt;
+
+&lt;h3 id=&quot;gibbs-sampling-&quot;&gt;4.3.5 Gibbs sampling 采样估计&lt;/h3&gt;
+
+</description>
+        <pubDate>Thu, 23 Jun 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/06/23/LDA/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/06/23/LDA/</guid>
+        
+        <category>Machine Learning</category>
+        
+        <category>LDA</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>NLP tutorial 电影评论情感分析</title>
+        <description>&lt;h1 id=&quot;nlp-tutorial-&quot;&gt;NLP tutorial: 电影评论情感分析&lt;/h1&gt;
+
+&lt;p&gt;自然语言处理是用来处理语言文字的工具，目的是为了把自然語言轉化為計算機程序更易于處理的形式。这一篇tutorial是用来分析电影评论的情感（sentimental anaylysis）。&lt;/p&gt;
+
+&lt;h2 id=&quot;section&quot;&gt;读入数据&lt;/h2&gt;
+
+&lt;p&gt;首先需要录入data， train data有三行，id, sentiment(0 or 1)和reviews, 目的是根据review来预测sentiment。&lt;/p&gt;
+
+&lt;h3 id=&quot;section-1&quot;&gt;数据清理&lt;/h3&gt;
+
+&lt;p&gt;根据每一行的review，可以发现里面存在很多HTML的tag，这些tag需要去除。这里可以用BeautifulSoup来清理&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;# Import BeautifulSoup into your workspace
+from bs4 import BeautifulSoup             
+
+# Initialize the BeautifulSoup object on a single movie review     
+example1 = BeautifulSoup(train[&quot;review&quot;][0])  
+
+# Print the raw review and then the output of get_text(), for
+# comparison
+print train[&quot;review&quot;][0]
+print example1.get_text()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这样可以得到纯文字的文本。进行下一步的处理&lt;/p&gt;
+
+&lt;h3 id=&quot;section-2&quot;&gt;处理数字，标点&lt;/h3&gt;
+
+&lt;p&gt;在很多自然语言分析中，数字和标点符号可以有不同的含义。例如，感叹号可以在分析情感中起到作用，这里出于简化，我们把非字母的字符都去掉，可以使用正则表达式（regular expression)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;import re
+# Use regular expressions to do a find-and-replace
+letters_only = re.sub(&quot;[^a-zA-Z]&quot;,           # The pattern to search for
+                      &quot; &quot;,                   # The pattern to replace it with
+                      example1.get_text() )  # The text to search
+print letters_only
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;最后，我们再加入stop words，一些常见的单词不计入最后的数据&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;# Remove stop words from &quot;words&quot;
+words = [w for w in words if not w in stopwords.words(&quot;english&quot;)]
+print words
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;bag-of-words&quot;&gt;Bag of words&lt;/h2&gt;
+
+&lt;p&gt;Bag of words model:
+从所有的文档出提取出一个词汇表（vocabulary）， 然后对每一个文档统计每一个单词出现的频率。例如以下两个句子：&lt;/p&gt;
+
+&lt;p&gt;Sentence 1: “The cat sat on the hat”&lt;/p&gt;
+
+&lt;p&gt;Sentence 2: “The dog ate the cat and the hat”&lt;/p&gt;
+
+&lt;p&gt;根据以上两个句子，所得的vocabulary为：&lt;/p&gt;
+
+&lt;p&gt;{ the, cat, sat, on, hat, dog, ate, and }&lt;/p&gt;
+
+&lt;p&gt;这样， 每一个句子就转换为一个向量，&lt;/p&gt;
+
+&lt;p&gt;Sentence 1: { 2, 1, 1, 1, 1, 0, 0, 0 }&lt;/p&gt;
+
+&lt;p&gt;Sentence 2：{ 3, 1, 0, 0, 1, 1, 1, 1}&lt;/p&gt;
+
+&lt;p&gt;在这里处理电影评论的时候，由于总体vocabulary量过大，只选用最长出现的500个单词，利用scikit-learn的 &lt;a href=&quot;http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html&quot;&gt;CountVectorizer&lt;/a&gt;.具体代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;print &quot;Creating the bag of words...\n&quot;
+from sklearn.feature_extraction.text import CountVectorizer
+
+# Initialize the &quot;CountVectorizer&quot; object, which is scikit-learn&#39;s
+# bag of words tool.  
+vectorizer = CountVectorizer(analyzer = &quot;word&quot;,   \
+                             tokenizer = None,    \
+                             preprocessor = None, \
+                             stop_words = None,   \
+                             max_features = 5000)
+
+# fit_transform() does two functions: First, it fits the model
+# and learns the vocabulary; second, it transforms our training data
+# into feature vectors. The input to fit_transform should be a list of
+# strings.
+train_data_features = vectorizer.fit_transform(clean_train_reviews)
+
+# Numpy arrays are easy to work with, so convert the result to an
+# array
+train_data_features = train_data_features.toarray()
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如果想要得到vocabulary的具体feature，或者分析某一个Word在所有文档里出现的频率，可以使用如下代码&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;# Take a look at the words in the vocabulary
+vocab = vectorizer.get_feature_names()
+print vocab
+
+# Sum up the counts of each vocabulary word
+dist = np.sum(train_data_features, axis=0)
+
+# For each, print the vocabulary word and the number of times it
+# appears in the training set
+for tag, count in zip(vocab, dist):
+    print count, tag
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;random-forest&quot;&gt;Random Forest&lt;/h2&gt;
+
+&lt;p&gt;现在对于每一个review， 已经转换成了一个向量，接下来，使用&lt;a href=&quot;http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html&quot;&gt;Random Forest&lt;/a&gt;的方法来进行分类。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;print &quot;Training the random forest...&quot;
+from sklearn.ensemble import RandomForestClassifier
+
+# Initialize a Random Forest classifier with 100 trees
+forest = RandomForestClassifier(n_estimators = 100)
+
+# Fit the forest to the training set, using the bag of words as
+# features and the sentiment labels as the response variable
+#
+# This may take a few minutes to run
+forest = forest.fit( train_data_features, train[&quot;sentiment&quot;] )
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;训练好model后，就可以录入test data，重复之前我们对train data的pre-processing，再predict label&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;# Read the test data
+test = pd.read_csv(&quot;testData.tsv&quot;, header=0, delimiter=&quot;\t&quot;, \
+                   quoting=3 )
+
+# Verify that there are 25,000 rows and 2 columns
+print test.shape
+
+# Create an empty list and append the clean reviews one by one
+num_reviews = len(test[&quot;review&quot;])
+clean_test_reviews = []
+
+print &quot;Cleaning and parsing the test set movie reviews...\n&quot;
+for i in xrange(0,num_reviews):
+    if( (i+1) % 1000 == 0 ):
+        print &quot;Review %d of %d\n&quot; % (i+1, num_reviews)
+    clean_review = review_to_words( test[&quot;review&quot;][i] )
+    clean_test_reviews.append( clean_review )
+
+# Get a bag of words for the test set, and convert to a numpy array
+test_data_features = vectorizer.transform(clean_test_reviews)
+test_data_features = test_data_features.toarray()
+
+# Use the random forest to make sentiment label predictions
+result = forest.predict(test_data_features)
+
+# Copy the results to a pandas dataframe with an &quot;id&quot; column and
+# a &quot;sentiment&quot; column
+output = pd.DataFrame( data={&quot;id&quot;:test[&quot;id&quot;], &quot;sentiment&quot;:result} )
+
+# Use pandas to write the comma-separated output file
+output.to_csv( &quot;Bag_of_Words_model.csv&quot;, index=False, quoting=3 )
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;word-vector-model&quot;&gt;Word Vector Model&lt;/h2&gt;
+
+&lt;p&gt;接下来使用 word vector model,将每一个Word转换成一个vector，数据清理阶段与上一个model基本相同。&lt;/p&gt;
+
+&lt;p&gt;注意的是，这时候需要的是sentence！！！！所以不能直接把某一段paragraph直接换成Wordlist！！！！！&lt;/p&gt;
+
+&lt;p&gt;每一个review是一段paragraph，先把paragraph转换成每一个句子，使用&lt;strong&gt;tokenizer.tokenize&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+
+# Define a function to split a review into parsed sentences
+def review_to_sentences( review, tokenizer, remove_stopwords=False ):
+    # Function to split a review into parsed sentences. Returns a
+    # list of sentences, where each sentence is a list of words
+    #
+    # 1. Use the NLTK tokenizer to split the paragraph into sentences
+
+    raw_sentences = tokenizer.tokenize(unicode(review.strip(),errors=&#39;ignore&#39;))##convert paragraph into sentences
+
+    #
+    # 2. Loop over each sentence
+    sentences = []
+    for raw_sentence in raw_sentences:
+        # If a sentence is empty, skip it
+        if len(raw_sentence) &amp;gt; 0:
+            # Otherwise, call review_to_wordlist to get a list of words
+            sentences.append( review_to_wordlist( raw_sentence, \
+              remove_stopwords ))
+    #
+    # Return the list of sentences (each sentence is a list of words,
+    # so this returns a list of lists
+    return sentences
+
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;training-and-saving&quot;&gt;Training and Saving&lt;/h3&gt;
+
+&lt;p&gt;使用Python的genism package进行word2Vec训练，基本参数为&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;Context / window size&lt;/strong&gt; 每次训练时的context size？&lt;/p&gt;
+
+  &lt;p&gt;&lt;strong&gt;Word vector dimensionality&lt;/strong&gt; word vector的长度&lt;/p&gt;
+
+  &lt;p&gt;&lt;strong&gt;Downsampling of frequent words&lt;/strong&gt;：对常见Word的downsampling，提高模型准确率&lt;/p&gt;
+
+  &lt;p&gt;&lt;strong&gt;Minimum word count&lt;/strong&gt;：减少最终vocabulary的Word数目&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+# Import the built-in logging module and configure it so that Word2Vec
+# creates nice output messages
+import logging
+logging.basicConfig(format=&#39;%(asctime)s : %(levelname)s : %(message)s&#39;,\
+    level=logging.INFO)
+
+# Set values for various parameters
+num_features = 300    # Word vector dimensionality                      
+min_word_count = 40   # Minimum word count                        
+num_workers = 4       # Number of threads to run in parallel
+context = 10          # Context window size                                                                                    
+downsampling = 1e-3   # Downsample setting for frequent words
+
+# Initialize and train the model (this will take some time)
+from gensim.models import word2vec
+print &quot;Training model...&quot;
+model = word2vec.Word2Vec(sentences, workers=num_workers, \
+            size=num_features, min_count = min_word_count, \
+            window = context, sample = downsampling)
+
+# If you don&#39;t plan to train the model any further, calling
+# init_sims will make the model much more memory-efficient.
+model.init_sims(replace=True)
+
+# It can be helpful to create a meaningful model name and
+# save the model for later use. You can load it later using Word2Vec.load()
+model_name = &quot;300features_40minwords_10context&quot;
+model.save(model_name)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;模型训练完毕后，可以用模型来预测，模拟。例子如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;#哪一个单词和以下最不接近？
+
+model.doesnt_match(&quot;man woman child kitchen&quot;.split())
+
+#输出‘kitchen’
+
+
+model.doesnt_match(&quot;france england germany berlin&quot;.split())
+
+#输出‘Berlin’
+
+#哪些单词最接近？
+model.most_similar(&quot;man&quot;)
+
+#输出
+[(u&#39;woman&#39;, 0.6092387437820435),
+ (u&#39;lad&#39;, 0.6064352989196777),
+ (u&#39;lady&#39;, 0.57511305809021),
+ (u&#39;monk&#39;, 0.5583359599113464),
+ (u&#39;sailor&#39;, 0.534398078918457),
+ (u&#39;men&#39;, 0.5196300745010376),
+ (u&#39;farmer&#39;, 0.5171995162963867),
+ (u&#39;person&#39;, 0.5137056112289429),
+ (u&#39;guy&#39;, 0.501788854598999),
+ (u&#39;millionaire&#39;, 0.4980509281158447)]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;此外，可以看到，某一个单词的vector length都是300.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;len(model[&#39;computer&#39;])
+
+#输出300
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;more-fun-with-word-vector&quot;&gt;More fun with Word Vector&lt;/h2&gt;
+
+&lt;h3 id=&quot;from-words-to-paragraphs-attempt-1-vector-averaging&quot;&gt;From Words To Paragraphs, Attempt 1: Vector Averaging&lt;/h3&gt;
+
+&lt;p&gt;对于每一篇review， 长度都不固定，所以对于每一篇review，需要将每一个Word vector转换成段落的feature。&lt;/p&gt;
+
+&lt;p&gt;给定一段review，计算平均的Wordvector， 以下code中， mode.index2word输出原始的Word dictionary。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def makeFeatureVec(words, model, num_features):
+    # Function to average all of the word vectors in a given
+    # paragraph
+    #
+    # Pre-initialize an empty numpy array (for speed)
+    featureVec = np.zeros((num_features,),dtype=&quot;float32&quot;)
+    #
+    nwords = 0.
+    #
+    # Index2word is a list that contains the names of the words in
+    # the model&#39;s vocabulary. Convert it to a set, for speed
+    index2word_set = set(model.index2word)
+    #
+    # Loop over each word in the review and, if it is in the model&#39;s
+    # vocaublary, add its feature vector to the total
+    for word in words:
+        if word in index2word_set:
+            nwords = nwords + 1.
+            featureVec = np.add(featureVec,model[word])
+    #
+    # Divide the result by the number of words to get the average
+    featureVec = np.divide(featureVec,nwords)
+    return featureVec
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在这段code的基础上，给定很多review，输出平均的Word vector。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def getAvgFeatureVecs(reviews, model, num_features):
+    # Given a set of reviews (each one a list of words), calculate
+    # the average feature vector for each one and return a 2D numpy array
+    #
+    # Initialize a counter
+    counter = 0.
+    #
+    # Preallocate a 2D numpy array, for speed
+    reviewFeatureVecs = np.zeros((len(reviews),num_features),dtype=&quot;float32&quot;)
+    #
+    # Loop through the reviews
+    for review in reviews:
+       #
+       # Print a status message every 1000th review
+       if counter%1000. == 0.:
+           print &quot;Review %d of %d&quot; % (counter, len(reviews))
+       #
+       # Call the function (defined above) that makes average feature vectors
+       reviewFeatureVecs[counter] = makeFeatureVec(review, model, \
+           num_features)
+       #
+       # Increment the counter
+       counter = counter + 1.
+    return reviewFeatureVecs
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;根据以上的代码，可以计算把train data 和 test data转换成clean的review&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;# ****************************************************************
+# Calculate average feature vectors for training and testing sets,
+# using the functions we defined above. Notice that we now use stop word
+# removal.
+
+clean_train_reviews = []
+for review in train[&quot;review&quot;]:
+    clean_train_reviews.append( review_to_wordlist( review, \
+        remove_stopwords=True ))
+
+trainDataVecs = getAvgFeatureVecs( clean_train_reviews, model, num_features )
+
+print &quot;Creating average feature vecs for test reviews&quot;
+clean_test_reviews = []
+for review in test[&quot;review&quot;]:
+    clean_test_reviews.append( review_to_wordlist( review, \
+        remove_stopwords=True ))
+
+testDataVecs = getAvgFeatureVecs( clean_test_reviews, model, num_features )
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;让我们来检查一下最后得到的trainDataVecs和testDataVects的dimension。可以看到trainDataVecs的dimension为（25000， 300），意为我们有25000个training example，每个example为一个300维的word vector；同理, testDataVecs的dimension也为(25000， 300）。&lt;/p&gt;
+
+&lt;p&gt;和bag of word一样，我们可以采用random forest的方法去训练model，这里不再重复。&lt;/p&gt;
+
+&lt;h3 id=&quot;from-words-to-paragraphs-attempt-2-clustering&quot;&gt;From Words To Paragraphs, Attempt 2: Clustering&lt;/h3&gt;
+
+&lt;p&gt;Word2Vec将会输出相似语义词汇的cluster， 所以，另一个常用方法就是利用同一cluster之间词汇的相似性。 将向量按此分类叫做&lt;strong&gt;Vector quantization&lt;/strong&gt;.首先，利用&lt;a href=&quot;http://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html&quot;&gt;K-means algorithm&lt;/a&gt;来确定每一个cluster的center。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;from sklearn.cluster import KMeans
+import time
+
+start = time.time() # Start time
+
+# Set &quot;k&quot; (num_clusters) to be 1/5th of the vocabulary size, or an
+# average of 5 words per cluster
+word_vectors = model.syn0
+num_clusters = word_vectors.shape[0] / 5
+
+# Initalize a k-means object and use it to extract centroids
+kmeans_clustering = KMeans( n_clusters = num_clusters )
+idx = kmeans_clustering.fit_predict( word_vectors )
+
+# Get the end time and print how long the process took
+end = time.time()
+elapsed = end - start
+print &quot;Time taken for K Means clustering: &quot;, elapsed, &quot;seconds.&quot;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;由于cluster的数目过多，以上code需要很长时间来进行训练（在我的电脑上花了24分钟！），idx会是每一个word_vector对应的cluster number。定义一个dictionary，把每一个word map到index number上。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;# Create a Word / Index dictionary, mapping each vocabulary word to
+# a cluster number                                                                                            
+word_centroid_map = dict(zip( model.index2word, idx ))
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;根据以上的dictionary，我们可以把每一条review转换成bag of centroids.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def create_bag_of_centroids( wordlist, word_centroid_map ):
+    #
+    # The number of clusters is equal to the highest cluster index
+    # in the word / centroid map
+    num_centroids = max( word_centroid_map.values() ) + 1
+    #
+    # Pre-allocate the bag of centroids vector (for speed)
+    bag_of_centroids = np.zeros( num_centroids, dtype=&quot;float32&quot; )
+    #
+    # Loop over the words in the review. If the word is in the vocabulary,
+    # find which cluster it belongs to, and increment that cluster count
+    # by one
+    for word in wordlist:
+        if word in word_centroid_map:
+            index = word_centroid_map[word]
+            bag_of_centroids[index] += 1
+    #
+    # Return the &quot;bag of centroids&quot;
+    return bag_of_centroids
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;具体分析为，现在number of cluster为3295，对每一条review，转换为3295维的向量，此向量的i位置对应为，出现在第i个cluster的word的数目。&lt;/p&gt;
+
+&lt;p&gt;对每一条train和test的review，我们都可以做次变化，得到train_centroids和test_centroids。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;# Pre-allocate an array for the training set bags of centroids (for speed)
+train_centroids = np.zeros( (train[&quot;review&quot;].size, num_clusters), \
+    dtype=&quot;float32&quot; )
+
+# Transform the training set reviews into bags of centroids
+counter = 0
+for review in clean_train_reviews:
+    train_centroids[counter] = create_bag_of_centroids( review, \
+        word_centroid_map )
+    counter += 1
+
+# Repeat for test reviews
+test_centroids = np.zeros(( test[&quot;review&quot;].size, num_clusters), \
+    dtype=&quot;float32&quot; )
+
+counter = 0
+for review in clean_test_reviews:
+    test_centroids[counter] = create_bag_of_centroids( review, \
+        word_centroid_map )
+    counter += 1
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我们来检查一下train_centroids.shape，结果为(25000, 3295)，意为有25000个train sample， 每个sample为3295维的向量。比较之前的train sample维度为(25000, 300)。显然，cluster的方法保留了更多原有信息，也使得模型变得更加复杂。&lt;/p&gt;
+
+&lt;p&gt;同理，我们可以用Random Forest进行训练，与之前的code比较，此结果略差于bag of words model。&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;为什么利用word2vec得到的结果与之前的bag of words模型类似？最大的原因在于，利用average或者k-means methods，我们已经忽略了word的&lt;strong&gt;order&lt;/strong&gt;， 这样，这与bag of words的模型假设已经非常类似。&lt;/p&gt;
+
+&lt;p&gt;一些提高的建议：&lt;/p&gt;
+
+&lt;p&gt;1.使用更多的text来训练word2vec model。
+2.使用&lt;strong&gt;Paragraph Vector&lt;/strong&gt;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 20 Jun 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/06/20/NLP_tutorial/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/06/20/NLP_tutorial/</guid>
+        
+        <category>Machine Learning</category>
+        
+        <category>Notes</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>FP-growth Algorithm</title>
+        <description>&lt;h1 id=&quot;fp-growth-algorithm&quot;&gt;FP-growth Algorithm&lt;/h1&gt;
+
+&lt;h2 id=&quot;fp-trees-an-efficient-way-to-encode-data&quot;&gt;FP-trees: an efficient way to encode data&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;Pros&lt;/strong&gt;: Faster than Apriori&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cons&lt;/strong&gt;: Difficult to implement; certain datasets degrades performance&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Work with&lt;/strong&gt;: Nominal values&lt;/p&gt;
+
+&lt;p&gt;Unlike a search tree, an item can appear multiple times in the same tree. The FP- tree is used to store the frequency of occurrence for sets of items. Sets are stored as paths in the tree. Sets with similar items will share part of the tree. Only when they differ will the tree split. A node identifies a single item from the set and the number of times it occurred in this sequence. A path will tell you how many times a sequence occurred.&lt;/p&gt;
+
+&lt;p&gt;#&lt;img src=&quot;/Users/Sakamoto/Documents/blog/samshaq19912009.github.io/_posts/FPTree.png&quot; alt=&quot;alt text&quot; title=&quot;Logo Title Text 1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;General Approach&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Collect: Any method&lt;/li&gt;
+  &lt;li&gt;Prepare: Discrete data is needed&lt;/li&gt;
+  &lt;li&gt;Analyze: any method&lt;/li&gt;
+  &lt;li&gt;Train: Build an FP-Tree and mine the tree&lt;/li&gt;
+  &lt;li&gt;Use: This can be used to identify commonly occurring items that can be used to make decisions, suggest items, make forecasts, and so on&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;build-an-fp-tree&quot;&gt;Build an FP Tree&lt;/h2&gt;
+
+&lt;h3 id=&quot;initialize-the-fp-tree-data-strcuture&quot;&gt;Initialize the FP-Tree data strcuture&lt;/h3&gt;
+
+&lt;p&gt;Each tree node has several attributes: name, count, nodeLink, parent, and children.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;class treeNode:
+    def __init__(self, nameValue, numOccur, parentNode):
+        self.name = nameValue
+        self.count = numOccur
+        self.nodeLink = None
+        self.parent = parentNode      #needs to be updated
+        self.children = {} 
+    
+    def inc(self, numOccur):
+        self.count += numOccur
+        
+    def disp(self, ind=1):
+        print &#39;  &#39;*ind, self.name, &#39; &#39;, self.count
+        for child in self.children.values():
+            child.disp(ind+1)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;constructing-the-fp-tree&quot;&gt;Constructing the FP-tree&lt;/h3&gt;
+
+&lt;p&gt;Implement the header table to store the frequency of each itemset&lt;/p&gt;
+
+&lt;p&gt;Use the dictionary to store the header table. Also to keep track of the total count of every type of element in the FP-Tree&lt;/p&gt;
+
+&lt;p&gt;The main function to create the tree, given the dataset, first loop through the data and neglect non-frequent itemset.&lt;/p&gt;
+
+&lt;p&gt;Second through the dataset, update the tree with the header&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def createTree(dataSet, minSup=1): #create FP-tree from dataset but don&#39;t mine
+    headerTable = {}
+    #go over the dataset Twice
+    for trans in dataSet:
+        for item in trans:
+            headerTable[item] = headerTable.get(item, 0) + dataSet[trans]
+    for k in headerTable.keys():
+        if headerTable[k] &amp;lt; minSup:
+            del(headerTable[k])
+    freqItemSet = set(headerTable.keys())
+    #return freqItemSet, headerTable
+    if len(freqItemSet) == 0: return None, None
+    for k in headerTable:
+        headerTable[k] = [headerTable[k], None]
+    return headerTable
+    
+    #create the Tree
+    retTree = treeNode(&#39;Null Set&#39;, 1, None)
+    #return freqItemSet
+    for tranSet, count in dataSet.items():
+        
+        localD = {}
+        for item in tranSet:
+            if item in freqItemSet:
+                localD[item]= headerTable[item][0]
+                
+                
+        if len(localD) &amp;gt; 0:
+            orderedItems = [v[0] for v in sorted(localD.items(), key = lambda p:p[1], reverse=True)]
+            updateTree(orderedItems, retTree, headerTable, count)
+    
+    
+    return retTree, headerTable
+        
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Two helpful function, one is the updateTree.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+###Update the tree, add the node one by one
+
+def updateTree(items, inTree, headerTable, count):
+    if items[0] in inTree.children:
+        inTree.children[items[0]].inc(count)
+    else:
+        inTree.children[items[0]] = treeNode(items[0], count, inTree)
+        if headerTable[items[0]][1] == None:
+            headerTable[items[0]][1] = inTree.children[items[0]]
+        else:
+            updateHeader(headerTable[items[0]][1], inTree.children[items[0]])
+    
+    if len(items) &amp;gt; 1: #call tree on the remaining ordered items
+        updateTree(items[1::], inTree.children[items[0]], headerTable, count)
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Another function to recursive find the node header&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+def updateHeader(nodeToTest, targetNode):   #this version does not use recursion
+    while (nodeToTest.nodeLink != None):    #Do not use recursion to traverse a linked list!
+        nodeToTest = nodeToTest.nodeLink
+    nodeToTest.nodeLink = targetNode
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;mining-frequenct-items-from-an-fp-tree&quot;&gt;Mining frequenct items from an FP-Tree&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Get conditional pattern bases from the FP-Tree&lt;/li&gt;
+  &lt;li&gt;From the conditional pattern base, construct a conditional FP-Tree&lt;/li&gt;
+  &lt;li&gt;Recursively repeat steps 1 and 2 on until the tree contains a single item&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;extracting-conditional-pattern-bases&quot;&gt;Extracting conditional pattern bases&lt;/h3&gt;
+
+&lt;p&gt;First function to ascend the tree&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def ascendTree(leafNode, prefixPath): #ascends from leaf node to root
+    if leafNode.parent != None:
+        prefixPath.append(leafNode.name)
+        ascendTree(leafNode.parent, prefixPath)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Secondly, find the prefixPath and find the conditional paths&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+##Given the base pattern
+##find the conditional pattern bases
+##Use like findPrefixPath(&#39;x&#39;, myheader[&#39;x&#39;][1])
+
+def findPrefixPath(basePat, treeNode): #treeNode comes from header table
+    condPats = {}
+    while treeNode != None:
+        prefixPath = []
+        ascendTree(treeNode, prefixPath)
+        if len(prefixPath) &amp;gt; 1: 
+            condPats[frozenset(prefixPath[1:])] = treeNode.count
+        treeNode = treeNode.nodeLink
+    return condPats
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;creating-conditional-fp-tree&quot;&gt;Creating conditional FP-Tree&lt;/h3&gt;
+
+&lt;p&gt;For each of the frequent items, create a conditional FP-Tree.&lt;/p&gt;
+
+&lt;p&gt;Then recursively find frequent items, find conditional bases and generate another tree&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+def mineTree(inTree, headerTable, minSup, preFix, freqItemList):
+
+    bigL = [v[0] for v in sorted(headerTable.items(), key=lambda p: p[1])]#(sort header table)
+    for basePat in bigL:  #start from bottom of header table
+        newFreqSet = preFix.copy()
+        newFreqSet.add(basePat)
+        #print &#39;finalFrequent Item: &#39;,newFreqSet    #append to set
+        freqItemList.append(newFreqSet)
+        condPattBases = findPrefixPath(basePat, headerTable[basePat][1])
+        #print &#39;condPattBases :&#39;,basePat, condPattBases
+        #2. construct cond FP-tree from cond. pattern base
+        myCondTree, myHead = createTree(condPattBases, minSup)
+        #print &#39;head from conditional tree: &#39;, myHead
+        if myHead != None: #3. mine cond. FP-tree
+            #print &#39;conditional tree for: &#39;,newFreqSet
+            #myCondTree.disp(1)            
+            mineTree(myCondTree, myHead, minSup, newFreqSet, freqItemList)
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;1.Starts by sorting the items in the header table by their frequency of occurrence.&lt;/p&gt;
+
+&lt;p&gt;2.Each frequent item is added into freqItemList&lt;/p&gt;
+
+&lt;p&gt;3.Recursively call findPath to create a conditional base and then fed into createTree() function&lt;/p&gt;
+
+&lt;h1 id=&quot;find-co-occuring-words-in-a-tweet&quot;&gt;Find co-occuring words in a tweet&lt;/h1&gt;
+
+&lt;p&gt;1.Collect: Use the python-twitter module to access tweets.
+2.Prepare: Write a function to remove URLs, remove punctuation, convert to lowercase, and create a set of words from a string.
+3.Analyze: We’ll look at the prepared data in the Python shell to make sure it’s cor- rect.
+4.Train: We’ll use createTree() and mineTree(), developed earlier in this chap- ter, to perform the FP-growth algorithm.&lt;/p&gt;
+
+&lt;p&gt;First, use Python twitter api to get lots of tweets&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+def getLotsOfTweets(searchStr):
+    CONSUMER_KEY = &#39;&#39;
+    CONSUMER_SECRET = &#39;&#39;
+    ACCESS_TOKEN_KEY = &#39;&#39;
+    ACCESS_TOKEN_SECRET = &#39;&#39;
+    api = twitter.Api(consumer_key=CONSUMER_KEY, consumer_secret=CONSUMER_SECRET,
+                      access_token_key=ACCESS_TOKEN_KEY, 
+                      access_token_secret=ACCESS_TOKEN_SECRET)
+    #you can get 1500 results 15 pages * 100 per page
+    resultsPages = []
+    for i in range(1,15):
+        print &quot;fetching page %d&quot; % i
+        searchResults = api.GetSearch(searchStr, per_page=100, page=i)
+        resultsPages.append(searchResults)
+        sleep(6)
+    return resultsPages
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Use the regular expression to remove all the urls&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+def textParse(bigString):
+    urlsRemoved = re.sub(&#39;(http:[/][/]|www.)([a-z]|[A-Z]|[0-9]|[/.]|[~])*&#39;, &#39;&#39;, bigString)    
+    listOfTokens = re.split(r&#39;\W*&#39;, urlsRemoved)
+    return [tok.lower() for tok in listOfTokens if len(tok) &amp;gt; 2]
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Use the FP-algorithm to find frequent items&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def mineTweets(tweetArr, minSup=5):
+    parsedList = []
+    for i in range(14):
+        for j in range(100):
+            parsedList.append(textParse(tweetArr[i][j].text))
+    initSet = createInitSet(parsedList)
+    myFPtree, myHeaderTab = createTree(initSet, minSup)
+    myFreqList = []
+    mineTree(myFPtree, myHeaderTab, minSup, set([]), myFreqList)
+    return myFreqList
+
+&lt;/code&gt;&lt;/pre&gt;
+
+</description>
+        <pubDate>Thu, 16 Jun 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/06/16/FP_Tree/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/06/16/FP_Tree/</guid>
+        
+        <category>Machine Learning</category>
+        
+        <category>Notes</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Apriori algorithm</title>
+        <description>&lt;h1 id=&quot;apriori-algorithm&quot;&gt;Apriori algorithm&lt;/h1&gt;
+
+&lt;h2 id=&quot;assoication-analysis&quot;&gt;Assoication analysis&lt;/h2&gt;
+
+&lt;p&gt;Pros: Easy to code up&lt;/p&gt;
+
+&lt;p&gt;Cons: May be slow on large datasets&lt;/p&gt;
+
+&lt;p&gt;Works with: Numeric values, nominal values&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Support&lt;/strong&gt; the percentage of the dataset that contains this itemset&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Confidence&lt;/strong&gt;: an association rule like A -&amp;gt; B, the confidence of this rule is defined as  support(A)/support(B)&lt;/p&gt;
+
+&lt;h2 id=&quot;apriori-principle&quot;&gt;Apriori principle&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Collect: Any method&lt;/li&gt;
+  &lt;li&gt;Prepare: Any data type would work&lt;/li&gt;
+  &lt;li&gt;Analyze: Any method&lt;/li&gt;
+  &lt;li&gt;Train: Use the Apriori algorithm to find the frequent item&lt;/li&gt;
+  &lt;li&gt;Test: does not apply&lt;/li&gt;
+  &lt;li&gt;Use: find frequent itemsets and association rules&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Apriori principle&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;The Apriori principle says that if an itemset is frequent, then all of its subsets are frequent. Reversely, if an itemset is not frequent, then any bigger itemset contains it would not be frequent&lt;/p&gt;
+
+&lt;h2 id=&quot;finding-frequent-itemsets-with-the-apriori-algorithm&quot;&gt;Finding frequent itemsets with the Apriori algorithm&lt;/h2&gt;
+
+&lt;h3 id=&quot;generating-candidate-itemsets&quot;&gt;Generating candidate itemsets&lt;/h3&gt;
+
+&lt;p&gt;Ck : all the possible combination contains k elements&lt;/p&gt;
+
+&lt;p&gt;Lk : returned itemset with k+1 elements&lt;/p&gt;
+
+&lt;p&gt;C1 : candidate set 1, contains one item from the dataset&lt;/p&gt;
+
+&lt;p&gt;L0: successful candidate with one item&lt;/p&gt;
+
+&lt;p&gt;C2 : generated by L0, possible combinations with two items&lt;/p&gt;
+
+&lt;p&gt;L1 : successful candidation with two items&lt;/p&gt;
+
+&lt;p&gt;C3: formed by L1&lt;/p&gt;
+
+&lt;p&gt;…..&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+def loadDataSet():
+    return [[1, 3, 4], [2, 3, 5], [1, 2, 3, 5], [2, 5]]
+
+def createC1(dataSet):
+    C1 = []
+    for transaction in dataSet:
+        for item in transaction:
+            if not [item] in C1:
+                C1.append([item])
+                
+    C1.sort()
+    return map(frozenset, C1)#use frozen set so we
+                            #can use it as a key in a dict    
+                            
+##load the data first
+data = loadDataSet()
+D = map(set, data)
+
+C1 = createC1(data)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The code to generate Lk&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def scanD(D, Ck, minSupport):
+    ssCnt = {}
+    for tid in D:
+        for can in Ck:
+            if can.issubset(tid):
+                if not ssCnt.has_key(can): ssCnt[can]=1
+                else: ssCnt[can] += 1
+                    
+    numItems = float(len(D))
+    retList = []
+    supportData = {}
+    for key in ssCnt:
+        support = ssCnt[key]/numItems
+        if support &amp;gt;= minSupport:
+            retList.insert(0,key)
+        supportData[key] = support
+    return retList, supportData
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For each Lk generate Ck+1&lt;/p&gt;
+
+&lt;p&gt;the full algorithm is shown below&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def aprioriGen(Lk, k): #creates Ck
+    retList = []
+    lenLk = len(Lk)
+    for i in range(lenLk):
+        for j in range(i+1, lenLk): 
+            L1 = list(Lk[i])[:k-2]; L2 = list(Lk[j])[:k-2]
+            L1.sort(); L2.sort()
+            if L1==L2: #if first k-2 elements are equal
+                retList.append(Lk[i] | Lk[j]) #set union
+    return retList
+
+def apriori(dataSet, minSupport = 0.5):
+    C1 = createC1(dataSet)
+    D = map(set, dataSet)
+    L1, supportData = scanD(D, C1, minSupport)
+    L = [L1]
+    k = 2
+    while (len(L[k-2]) &amp;gt; 0):
+        Ck = aprioriGen(L[k-2], k)
+        Lk, supK = scanD(D, Ck, minSupport)#scan DB to get Lk
+        supportData.update(supK)
+        L.append(Lk)
+        k += 1
+    return L, supportData
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;mining-association-rules-from-frequent-item-sets&quot;&gt;Mining association rules from frequent item sets&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;levelwise&lt;/strong&gt; approach&lt;/p&gt;
+
+&lt;h3 id=&quot;function-1-calculate-confidence--start-with-size-2-itemset&quot;&gt;Function 1: calculate confidence–start with size 2 itemset&lt;/h3&gt;
+
+&lt;p&gt;Give the total set freqSet,&lt;/p&gt;
+
+&lt;p&gt;try every possible itemset in H&lt;/p&gt;
+
+&lt;p&gt;compute the confidence&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+def calcConf(freqSet, H, supportData, brl, minConf=0.7):
+    prunedH = [] #create new list to return
+    for conseq in H:
+        conf = supportData[freqSet]/supportData[freqSet-conseq] #calc confidence
+        if conf &amp;gt;= minConf: 
+            print freqSet-conseq,&#39;--&amp;gt;&#39;,conseq,&#39;conf:&#39;,conf
+            brl.append((freqSet-conseq, conseq, conf))
+            prunedH.append(conseq)
+    return prunedH
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;function-2-try-further-merge-into-larget-item-list&quot;&gt;Function 2: Try further merge into larget item list&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def rulesFromConseq(freqSet, H, supportData, brl, minConf=0.7):
+    m = len(H[0]) # m is the size of the input itemset
+    # try find m+1 itemset 
+    
+    if (len(freqSet) &amp;gt; (m + 1)): #try further merging
+        Hmp1 = aprioriGen(H, m+1)#create Hm+1 new candidates
+        Hmp1 = calcConf(freqSet, Hmp1, supportData, brl, minConf)
+        if (len(Hmp1) &amp;gt; 1):    #need at least two sets to merge
+            rulesFromConseq(freqSet, Hmp1, supportData, brl, minConf)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;function-3-combine-all-these-two-return-the-big-rule-list&quot;&gt;Function 3: Combine all these two, return the big rule list&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def generateRules(L, supportData, minConf=0.7):  #supportData is a dict coming from scanD
+    bigRuleList = []
+    for i in range(1, len(L)):#only get the sets with two or more items
+        for freqSet in L[i]:
+            H1 = [frozenset([item]) for item in freqSet]
+            if (i &amp;gt; 1):
+                rulesFromConseq(freqSet, H1, supportData, bigRuleList, minConf)
+            else:
+                calcConf(freqSet, H1, supportData, bigRuleList, minConf)
+    return bigRuleList         
+
+
+
+
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Wed, 15 Jun 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/06/15/Apriori_algorithm/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/06/15/Apriori_algorithm/</guid>
+        
+        <category>Apriori</category>
+        
+        <category>Machine Learning</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+  </channel>
+</rss>

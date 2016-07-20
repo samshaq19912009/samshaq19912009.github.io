@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>Regularization_model_selection - Chengcen</title>
+
+    <link rel="canonical" href="samshaq19912009.github.io/2016/03/26/Regularization_Model_Selection/">
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\(', '\)'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+    <!-- Icons -->
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+
+
+
+
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Chengcen</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/archive/">Archive</a>
+                </li>
+                
+                <li>
+                    <a href="/milestone/">milestone</a>
+                </li>
+                
+                <li>
+                    <a href="/tags/">Tags</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/green.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="Tags">
+                        
+                    </div>
+                    <h1>Regularization_model_selection</h1>
+                    
+                      
+                    <span class="meta">Posted by Chengcen on March 26, 2016</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
+
+                
+<h1 id="regularization-and-model-selection">Regularization and model selection</h1>
+
+<h2 id="cross-vallidation">1. Cross Vallidation</h2>
+
+<p><strong>Hold-out cross validation</strong></p>
+
+<ol>
+  <li>Random split S into $S_{train}$ and $S_{cv}$</li>
+  <li>Train each model on $S_{train}$ only</li>
+  <li>Select and output hypothesis with the smallest error $\hat\epsilon (h_{i})$ on the hold-out cross validation set</li>
+</ol>
+
+<p>cons : waste data</p>
+
+<p><strong>K-fold cross validation</strong></p>
+
+<ol>
+  <li>
+    <p>Random split S into k disjoint subset</p>
+  </li>
+  <li>
+    <p>For each model, we evalute the following</p>
+
+    <p>For $j = 1,……k$
+     Train the model on subsets without $S_{j}$, and test the hypothesis on $S_{j}$</p>
+  </li>
+  <li>
+    <p>Pickthe model with lowest estimated generalization error, and retrain that model on the entire data set S.</p>
+  </li>
+</ol>
+
+<p>Commonly used choice : $k=10$</p>
+
+<h2 id="feature-selection">2. Feature Selection</h2>
+
+<p><strong>Forward Seach</strong></p>
+
+<ol>
+  <li>Initiliza $\textit{F} = \emptyset$</li>
+  <li>
+    <p>Repeat {
+ (a) For i = 1,….n, if $i \notin \textit{F}, let F_{i} = F \cup {i} $ and use some version of cross validtion to evalute features $\textit{F}_{i}$</p>
+
+    <p>(b) Set $\textit{F}$ to the best feature found on step(a)</p>
+  </li>
+  <li>Selection and output the best feature subset that was evaluated during the entire search procedure.</li>
+</ol>
+
+<p>aka <strong>Wrapper model feature selection</strong></p>
+
+<p>Another method, <strong>backward search</strong></p>
+
+<p>cons : computationally expensive ~ $O(n^2)$</p>
+
+<p><strong>Filter feature selection</strong></p>
+
+<p>Compute some simple score $S_{i}$ that measure how informative each feature $x_{i}$ is about the class labels $y$.</p>
+
+<p><strong>Correlations</strong> between $x_{i}$ and $y$</p>
+
+<p><strong>Mutual information</strong>:
+<script type="math/tex">MI(x_{i},y) = \sum_{x \in \{0, 1\}} \sum_{y \in \{ 0, 1\}} p(x_{i},y) log \frac{p(x_{i},y)}{p(x_{i})p(y)}</script></p>
+
+<p><strong>Kullback-Leibler divergence</strong> : a measure of how difference the probability distributions $p(x_{i})p(y)$ and $p(x_{i},y)$ are.</p>
+
+<script type="math/tex; mode=display">MI(x_{i},y) = KL (p(x_{i},y) || p(x_{i})p(y) )</script>
+
+<h2 id="bayesian-statistics-and-regularization">3. Bayesian statistics and regularization</h2>
+
+<p>Fitting using maximum likelihood (ML)</p>
+
+<script type="math/tex; mode=display">\theta_{ML} = arg {max}_{\theta} \prod_{i=1}^{m} p (y^{(i)} | x^{(i)}; \theta   )</script>
+
+<p>The view of the $\theta$ as being <em>constant-valued but unknown</em> is <strong>frequentist</strong></p>
+
+<p><strong>Bayesian</strong> view of the world : $\theta$ as being a <em>random variable</em> whose value is unknown. Specify a <strong>prior distribution</strong> $p(\theta)$ “prior beliefs” about the parameter.</p>
+
+<p>Given a training set S, compute the <strong>posterior</strong> distribution on the parameters:</p>
+
+<script type="math/tex; mode=display">p( \theta | S) = \frac{p(S | \theta) p (\theta)} {p(S)}</script>
+
+<script type="math/tex; mode=display">= \frac{(\prod_{i=1}^{m} P(y^{i}  | x^{i},\theta))p(\theta)}                  {\int_{\theta} (\prod_{i=1}^{m} P(y^{i}  | x^{i},\theta))p(\theta) }</script>
+
+<table>
+  <tbody>
+    <tr>
+      <td>$P(y^{i}</td>
+      <td>x^{i},\theta)$ comes from whatever model used in the problem</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>When given a new example $x$ to make its predictions, compute the posterior distribution using :</p>
+
+<script type="math/tex; mode=display">P(y | x, S) = \int_{\theta} {P(y | x, \theta) p(\theta|S)}d\theta</script>
+
+<p>Then output</p>
+
+<script type="math/tex; mode=display">E(y | x, S) = \int_{\theta} y {P(y | x, S) }dy</script>
+
+<p>The posterior distribution hard to compute, replace with a single point estimate <strong>MAP(maximum a posteriori)</strong></p>
+
+<script type="math/tex; mode=display">\theta_{MAP} = arg {max}_{\theta} \prod_{i=1}^{m} p (y^{(i)} | x^{(i)}; \theta   ) p(\theta)</script>
+
+<p>$ \theta_{MAP}  vs \theta_{ML} $</p>
+
+<p>$ \theta_{MAP} $ have less norm, to be less susceptible to overfitting</p>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/blog/2016/03/23/Factor-analysis/" data-toggle="tooltip" data-placement="top" title="Factor Analysis">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/blog/2016/03/26/Reverse-List/" data-toggle="tooltip" data-placement="top" title="Reverse Linked List">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- Duoshuo Share start -->
+                <style>
+                    .ds-share{
+                        text-align: right;
+                    }
+                    
+                    @media only screen and (max-width: 700px) {
+                        .ds-share {
+
+                        }
+                    }
+                </style>
+
+                <div class="ds-share"
+                    data-thread-key="/2016/03/26/Regularization_Model_Selection" data-title="Regularization_model_selection"
+                    data-images="samshaq19912009.github.io/img/green.jpg"
+                    data-content="
+Regularization and model selection
+
+1. Cross Vallidation
+
+Hold-out cross val... | Microdust:Azeril's blog"
+                    data-url="samshaq19912009.github.io/2016/03/26/Regularization_Model_Selection/">
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- Duoshuo Share end-->
+
+
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread" data-thread-key="/2016/03/26/Regularization_Model_Selection" data-title="Regularization_model_selection" data-url="samshaq19912009.github.io/2016/03/26/Regularization_Model_Selection/"></div>
+                </div>
+                <!-- 多说评论框 end -->
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"cnfeat"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <!-- kill the Facebook and Weibo -->
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+                    
+                    <!--
+                    
+                    -->
+
+                    <!--
+                    
+                    -->
+
+                    
+                    <!--
+                    
+                    -->
+
+                </ul>
+                <p class="copyright text-muted">
+                &copy; 2016  Chengcen  ❖ Powered by Jekyll.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+
+<!-- Highlight.js -->
+<script>
+    async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js",function(){
+        hljs.initHighlightingOnLoad();
+    })
+</script>
+<link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+
+
+</body>
+
+</html>

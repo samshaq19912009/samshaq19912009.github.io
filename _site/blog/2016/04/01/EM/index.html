@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>EM Algorithm - Chengcen</title>
+
+    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/04/01/EM/">
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\(', '\)'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+    <!-- Icons -->
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+
+
+
+
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Chengcen</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/archive/">Archive</a>
+                </li>
+                
+                <li>
+                    <a href="/milestone/">milestone</a>
+                </li>
+                
+                <li>
+                    <a href="/tags/">Tags</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/green.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="Tags">
+                        
+                        <a class="tag" href="/Tags/#Machine Learning" title="Machine Learning">Machine Learning</a>
+                        
+                        <a class="tag" href="/Tags/#Notes" title="Notes">Notes</a>
+                        
+                    </div>
+                    <h1>EM Algorithm</h1>
+                    
+                      
+                    <span class="meta">Posted by Chengcen on April 1, 2016</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
+
+                <h1 id="mixtures-of-gaussians-and-the-em-algorithm">Mixtures of Gaussians and the EM algorithm</h1>
+
+<p>Given a training set ${x^{(1)},….x^{(m)} }$</p>
+
+<p>Model the data by specifying a joint distribution $p(x^{(i)}, z^{(i)}) = p(x^{(i)} z^{(i)}) p(z^{(i)}) $, Here $z^{(i)} \sim\mbox{Multinomail}(\phi)$ and the parameter $\phi_j$<br />
+gives $p(z^i) = j$ and $x^i | z^i = j \sim N(\mu_j,\Sigma_j)$</p>
+
+<p>The likelihood of our data
+<script type="math/tex">l(\phi, \mu, \Sigma) = \sum_{i=1}^m log p(x^{(i)}; \phi, \mu, \Sigma)  \\
+	= \sum_{i=1}^m log \sum_{z^{(i)}=1}^{k} p(x^{(i)}|z^{(i)}; \mu, \Sigma) p(z^i; \phi)</script></p>
+
+<p>Question: unknown z</p>
+
+<p><strong>Expectation-Maximization Algorithm</strong></p>
+
+<p>Repeat unitil convergence:</p>
+
+<p>(E-step) For each i,j set
+	<script type="math/tex">w^{(i)}_j = p(z^{(i)}=j  |  x^{(i)}; \phi,\mu,\Sigma)</script></p>
+
+<p>(M-step) Update the parameters:
+<script type="math/tex">\phi_j = \frac{1}{m} \sum_{i=1}^m w^{(i)}_j</script>
+<script type="math/tex">\mu_j = \frac{\sum_{i=1}^m w^{(i)}_j x^{(i)}}{\sum_{i=1}^m w^{(i)}_j}</script>
+<script type="math/tex">\Sigma_j = \frac{\sum_{i=1}^m w^{(i)}_j (x^{(i)}-\mu_j)(x^{(i)}-\mu_j)^T}{\sum_{i=1}^m w^{(i)}_j}</script></p>
+
+<h3 id="jensens-inequality">Jensen’s inequality</h3>
+<p><strong>Theorem</strong> Let f be a convex function, and let X be random variable, then:
+<script type="math/tex">E[f(X)] \geq f(E[X])</script></p>
+
+<p>Moreover, if f is strictly convex, then the equality sign only holds for X is a constant</p>
+
+<h3 id="em-algorithm-induction">EM algorithm induction</h3>
+
+<p>For each i, let $Q_i$ be some distribution over z’s. ($\sum_z Q_i(z) = 1$, $Q_i(z) \geq 0$)
+<script type="math/tex">\sum_i \log p(x^{(i)};\theta) = \sum_i \log \sum_{z^{(i)}} p(x^{(i)},z^{(i)};\theta)</script>
+<script type="math/tex">= \sum_i \log \sum_{z^{(i)}} Q_i(z^{(i)}) \frac{p(x^{(i)},z^{(i)};\theta) }{Q_i(z^{(i)})}</script> 
+<script type="math/tex">\geq \sum_i \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)},z^{(i)};\theta) }{Q_i(z^{(i)})}</script></p>
+
+<p>Notice that $\log(x)$ is a concave function and here $f(x) = \frac{p(x^{(i)},z^{(i)};\theta) }{Q_i(z^{(i)})} $</p>
+
+<p>Now for a particular $\theta$, try to make the lower-bound tight, requiring that 
+<script type="math/tex">\frac{p(x^{(i)},z^{(i)};\theta) }{Q_i(z^{(i)})} = c</script></p>
+
+<p>This can be done by choosing $ Q_i(z^{(i)}) \propto p(x^{(i)},z^{(i)};\theta)  $</p>
+
+<p>Moreover, since $\sum_z Q_i(z) = 1$, we know that
+<script type="math/tex">Q_i(z^{(i)}) = \frac{p(x^{(i)},z^{(i)};\theta)}{\sum_z p(x^{(i)},z^{(i)};\theta)} = p(z^{(i)}|x^{(i)};\theta)</script></p>
+
+<p>Thus, simply setting the $Q_i$ to be the posterior distribtuion of $z^{(i)}$</p>
+
+<p>How do we know the algorithm will converge?</p>
+
+<script type="math/tex; mode=display">l(\theta^{(t)}) = \sum_i \sum_{z^{(i)}} Q_i^t(z^{(i)}) \log \frac{p(x^{(i)},z^{(i)};\theta^{(t)}) }{Q_i(z^{(i)})}</script>
+
+<p>The parameter $\theta^{(t+1)}$ are then obtained by maximizing the right hand side of the equation above, thus,
+<script type="math/tex">l(\theta^{(t+1)}) \geq \sum_i \sum_{z^{(i)}} Q_i^t(z^{(i)}) \log \frac{p(x^{(i)},z^{(i)};\theta^{(t+1)}) }{Q_i(z^{(i)})}</script>
+<script type="math/tex">= \sum_i \sum_{z^{(i)}} Q_i^t(z^{(i)}) \log \frac{p(x^{(i)},z^{(i)};\theta^{(t)}) }{Q_i(z^{(i)})} = l(\theta^{(t)}</script></p>
+
+<p><strong>Remark</strong> If we define:
+<script type="math/tex">J(Q,\theta) = \sum_i \sum_{z^{(i)}} Q_i(z^{(i)}) \log \frac{p(x^{(i)},z^{(i)};\theta) }{Q_i(z^{(i)})}</script>
+The EM can also be viewed as a coordinate ascent on J, in which the E-step maximizes it with respect to Q. and the M-step maximizes it with respect to $\theta$.</p>
+
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/blog/2016/03/31/Quick_Sort/" data-toggle="tooltip" data-placement="top" title="Quick Sort">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/blog/2016/04/02/Independent-Components-Analysis/" data-toggle="tooltip" data-placement="top" title="Independent Component Analysis">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- Duoshuo Share start -->
+                <style>
+                    .ds-share{
+                        text-align: right;
+                    }
+                    
+                    @media only screen and (max-width: 700px) {
+                        .ds-share {
+
+                        }
+                    }
+                </style>
+
+                <div class="ds-share"
+                    data-thread-key="/blog/2016/04/01/EM" data-title="EM Algorithm"
+                    data-images="samshaq19912009.github.io/img/green.jpg"
+                    data-content="Mixtures of Gaussians and the EM algorithm
+
+Given a training set ${x^{(1)},….... | Microdust:Azeril's blog"
+                    data-url="samshaq19912009.github.io/blog/2016/04/01/EM/">
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- Duoshuo Share end-->
+
+
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread" data-thread-key="/blog/2016/04/01/EM" data-title="EM Algorithm" data-url="samshaq19912009.github.io/blog/2016/04/01/EM/"></div>
+                </div>
+                <!-- 多说评论框 end -->
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"cnfeat"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <!-- kill the Facebook and Weibo -->
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+                    
+                    <!--
+                    
+                    -->
+
+                    <!--
+                    
+                    -->
+
+                    
+                    <!--
+                    
+                    -->
+
+                </ul>
+                <p class="copyright text-muted">
+                &copy; 2016  Chengcen  ❖ Powered by Jekyll.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+
+<!-- Highlight.js -->
+<script>
+    async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js",function(){
+        hljs.initHighlightingOnLoad();
+    })
+</script>
+<link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+
+
+</body>
+
+</html>

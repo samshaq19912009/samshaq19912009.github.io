@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>Apriori algorithm - Chengcen</title>
+
+    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/06/15/Apriori_algorithm/">
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\(', '\)'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+    <!-- Icons -->
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+
+
+
+
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Chengcen</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/archive/">Archive</a>
+                </li>
+                
+                <li>
+                    <a href="/milestone/">milestone</a>
+                </li>
+                
+                <li>
+                    <a href="/tags/">Tags</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/green.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="Tags">
+                        
+                        <a class="tag" href="/Tags/#Apriori" title="Apriori">Apriori</a>
+                        
+                        <a class="tag" href="/Tags/#Machine Learning" title="Machine Learning">Machine Learning</a>
+                        
+                    </div>
+                    <h1>Apriori algorithm</h1>
+                    
+                      
+                    <span class="meta">Posted by Chengcen on June 15, 2016</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
+
+                <h1 id="apriori-algorithm">Apriori algorithm</h1>
+
+<h2 id="assoication-analysis">Assoication analysis</h2>
+
+<p>Pros: Easy to code up</p>
+
+<p>Cons: May be slow on large datasets</p>
+
+<p>Works with: Numeric values, nominal values</p>
+
+<p><strong>Support</strong> the percentage of the dataset that contains this itemset</p>
+
+<p><strong>Confidence</strong>: an association rule like A -&gt; B, the confidence of this rule is defined as  support(A)/support(B)</p>
+
+<h2 id="apriori-principle">Apriori principle</h2>
+
+<ol>
+  <li>Collect: Any method</li>
+  <li>Prepare: Any data type would work</li>
+  <li>Analyze: Any method</li>
+  <li>Train: Use the Apriori algorithm to find the frequent item</li>
+  <li>Test: does not apply</li>
+  <li>Use: find frequent itemsets and association rules</li>
+</ol>
+
+<p><strong>Apriori principle</strong>:</p>
+
+<p>The Apriori principle says that if an itemset is frequent, then all of its subsets are frequent. Reversely, if an itemset is not frequent, then any bigger itemset contains it would not be frequent</p>
+
+<h2 id="finding-frequent-itemsets-with-the-apriori-algorithm">Finding frequent itemsets with the Apriori algorithm</h2>
+
+<h3 id="generating-candidate-itemsets">Generating candidate itemsets</h3>
+
+<p>Ck : all the possible combination contains k elements</p>
+
+<p>Lk : returned itemset with k+1 elements</p>
+
+<p>C1 : candidate set 1, contains one item from the dataset</p>
+
+<p>L0: successful candidate with one item</p>
+
+<p>C2 : generated by L0, possible combinations with two items</p>
+
+<p>L1 : successful candidation with two items</p>
+
+<p>C3: formed by L1</p>
+
+<p>…..</p>
+
+<pre><code class="language-Python">
+def loadDataSet():
+    return [[1, 3, 4], [2, 3, 5], [1, 2, 3, 5], [2, 5]]
+
+def createC1(dataSet):
+    C1 = []
+    for transaction in dataSet:
+        for item in transaction:
+            if not [item] in C1:
+                C1.append([item])
+                
+    C1.sort()
+    return map(frozenset, C1)#use frozen set so we
+                            #can use it as a key in a dict    
+                            
+##load the data first
+data = loadDataSet()
+D = map(set, data)
+
+C1 = createC1(data)
+
+</code></pre>
+
+<p>The code to generate Lk</p>
+
+<pre><code class="language-Python">def scanD(D, Ck, minSupport):
+    ssCnt = {}
+    for tid in D:
+        for can in Ck:
+            if can.issubset(tid):
+                if not ssCnt.has_key(can): ssCnt[can]=1
+                else: ssCnt[can] += 1
+                    
+    numItems = float(len(D))
+    retList = []
+    supportData = {}
+    for key in ssCnt:
+        support = ssCnt[key]/numItems
+        if support &gt;= minSupport:
+            retList.insert(0,key)
+        supportData[key] = support
+    return retList, supportData
+
+</code></pre>
+
+<p>For each Lk generate Ck+1</p>
+
+<p>the full algorithm is shown below</p>
+
+<pre><code class="language-Python">def aprioriGen(Lk, k): #creates Ck
+    retList = []
+    lenLk = len(Lk)
+    for i in range(lenLk):
+        for j in range(i+1, lenLk): 
+            L1 = list(Lk[i])[:k-2]; L2 = list(Lk[j])[:k-2]
+            L1.sort(); L2.sort()
+            if L1==L2: #if first k-2 elements are equal
+                retList.append(Lk[i] | Lk[j]) #set union
+    return retList
+
+def apriori(dataSet, minSupport = 0.5):
+    C1 = createC1(dataSet)
+    D = map(set, dataSet)
+    L1, supportData = scanD(D, C1, minSupport)
+    L = [L1]
+    k = 2
+    while (len(L[k-2]) &gt; 0):
+        Ck = aprioriGen(L[k-2], k)
+        Lk, supK = scanD(D, Ck, minSupport)#scan DB to get Lk
+        supportData.update(supK)
+        L.append(Lk)
+        k += 1
+    return L, supportData
+
+</code></pre>
+
+<h2 id="mining-association-rules-from-frequent-item-sets">Mining association rules from frequent item sets</h2>
+
+<p><strong>levelwise</strong> approach</p>
+
+<h3 id="function-1-calculate-confidence--start-with-size-2-itemset">Function 1: calculate confidence–start with size 2 itemset</h3>
+
+<p>Give the total set freqSet,</p>
+
+<p>try every possible itemset in H</p>
+
+<p>compute the confidence</p>
+
+<pre><code class="language-Python">
+def calcConf(freqSet, H, supportData, brl, minConf=0.7):
+    prunedH = [] #create new list to return
+    for conseq in H:
+        conf = supportData[freqSet]/supportData[freqSet-conseq] #calc confidence
+        if conf &gt;= minConf: 
+            print freqSet-conseq,'--&gt;',conseq,'conf:',conf
+            brl.append((freqSet-conseq, conseq, conf))
+            prunedH.append(conseq)
+    return prunedH
+
+</code></pre>
+
+<h3 id="function-2-try-further-merge-into-larget-item-list">Function 2: Try further merge into larget item list</h3>
+
+<pre><code class="language-Python">def rulesFromConseq(freqSet, H, supportData, brl, minConf=0.7):
+    m = len(H[0]) # m is the size of the input itemset
+    # try find m+1 itemset 
+    
+    if (len(freqSet) &gt; (m + 1)): #try further merging
+        Hmp1 = aprioriGen(H, m+1)#create Hm+1 new candidates
+        Hmp1 = calcConf(freqSet, Hmp1, supportData, brl, minConf)
+        if (len(Hmp1) &gt; 1):    #need at least two sets to merge
+            rulesFromConseq(freqSet, Hmp1, supportData, brl, minConf)
+</code></pre>
+
+<h3 id="function-3-combine-all-these-two-return-the-big-rule-list">Function 3: Combine all these two, return the big rule list</h3>
+
+<pre><code class="language-Python">def generateRules(L, supportData, minConf=0.7):  #supportData is a dict coming from scanD
+    bigRuleList = []
+    for i in range(1, len(L)):#only get the sets with two or more items
+        for freqSet in L[i]:
+            H1 = [frozenset([item]) for item in freqSet]
+            if (i &gt; 1):
+                rulesFromConseq(freqSet, H1, supportData, bigRuleList, minConf)
+            else:
+                calcConf(freqSet, H1, supportData, bigRuleList, minConf)
+    return bigRuleList         
+
+
+
+
+</code></pre>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/blog/2016/06/06/dijstra/" data-toggle="tooltip" data-placement="top" title="Dijkstra Algorithm">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/blog/2016/06/16/FP_Tree/" data-toggle="tooltip" data-placement="top" title="FP-growth Algorithm">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- Duoshuo Share start -->
+                <style>
+                    .ds-share{
+                        text-align: right;
+                    }
+                    
+                    @media only screen and (max-width: 700px) {
+                        .ds-share {
+
+                        }
+                    }
+                </style>
+
+                <div class="ds-share"
+                    data-thread-key="/blog/2016/06/15/Apriori_algorithm" data-title="Apriori algorithm"
+                    data-images="samshaq19912009.github.io/img/green.jpg"
+                    data-content="Apriori algorithm
+
+Assoication analysis
+
+Pros: Easy to code up
+
+Cons: May be ... | Microdust:Azeril's blog"
+                    data-url="samshaq19912009.github.io/blog/2016/06/15/Apriori_algorithm/">
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- Duoshuo Share end-->
+
+
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread" data-thread-key="/blog/2016/06/15/Apriori_algorithm" data-title="Apriori algorithm" data-url="samshaq19912009.github.io/blog/2016/06/15/Apriori_algorithm/"></div>
+                </div>
+                <!-- 多说评论框 end -->
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"cnfeat"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <!-- kill the Facebook and Weibo -->
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+                    
+                    <!--
+                    
+                    -->
+
+                    <!--
+                    
+                    -->
+
+                    
+                    <!--
+                    
+                    -->
+
+                </ul>
+                <p class="copyright text-muted">
+                &copy; 2016  Chengcen  ❖ Powered by Jekyll.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+
+<!-- Highlight.js -->
+<script>
+    async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js",function(){
+        hljs.initHighlightingOnLoad();
+    })
+</script>
+<link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+
+
+</body>
+
+</html>

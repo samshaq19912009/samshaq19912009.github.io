@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>Factor Analysis - Chengcen</title>
+
+    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/03/23/Factor-analysis/">
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\(', '\)'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+    <!-- Icons -->
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+
+
+
+
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Chengcen</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/archive/">Archive</a>
+                </li>
+                
+                <li>
+                    <a href="/milestone/">milestone</a>
+                </li>
+                
+                <li>
+                    <a href="/tags/">Tags</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/green.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="Tags">
+                        
+                        <a class="tag" href="/Tags/#Machine Learning" title="Machine Learning">Machine Learning</a>
+                        
+                        <a class="tag" href="/Tags/#Notes" title="Notes">Notes</a>
+                        
+                    </div>
+                    <h1>Factor Analysis</h1>
+                    
+                      
+                    <span class="meta">Posted by Chengcen on March 23, 2016</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
+
+                <h1 id="factor-analysis">Factor Analysis</h1>
+
+<p>Consider the setting the dimension of the data n is larger than the training size m, if we still use the maximum likelihood estimators,</p>
+
+<script type="math/tex; mode=display">\mu = \frac{1}{m}\sum_{i=1}^m x^{(i)}</script>
+
+<script type="math/tex; mode=display">\Sigma = \frac{1}{m}\sum_{i=1}^m (x^{(i)} - \mu) (x^{(i)} - \mu)^T</script>
+
+<p>We would find the matrix $\Sigma$ is <strong>singular</strong></p>
+
+<h2 id="restriction-of-covariance-matrix">Restriction of covariance matrix</h2>
+
+<p>Fit a covariance matrix $\Sigma$ that is diagonal.
+<script type="math/tex">\Sigma_{jj} = \frac{1}{m}\sum_{i=1}^m (x^{(i)}_j - \mu_j)^2</script></p>
+
+<p>Another restriction on the covariance matrix : its diagonal entries must be equal. We have $\Sigma = \sigma^2 I$
+<script type="math/tex">\sigma^2 = \frac{1}{mn}\sum_{i=1}^m (x^{(i)}_j - \mu_j)^2</script></p>
+
+<p>If we were fitting a full, unconstrained, covariance matrix $\Sigma$ to data, it was necessary that $m \geq n+1$, now with these two constraints, we only need $m \geq 2$</p>
+
+<h2 id="marginals-and-conditions-of-gaussians">Marginals and conditions of Gaussians</h2>
+<p>Suppose we have a vector-valued random variables:</p>
+
+<p><script type="math/tex">x= \begin{pmatrix}
+x_1\\
+x_2
+\end{pmatrix}</script>
+whre $x_1 \in \mathbb{R}^r$, $x_2 \in \mathbb{R}^s$, and $x \in \mathbb{R}^{r+s}$. Suppose $x \sim N(\mu, \Sigma)$, where 
+<script type="math/tex">% <![CDATA[
+\mu= \begin{pmatrix}
+\mu_1\\
+\mu_2
+\end{pmatrix}, \Sigma = \begin{pmatrix}
+\Sigma_{11} & \Sigma_{12}\\
+\Sigma_{21} & \Sigma_{22}
+\end{pmatrix} %]]></script>
+And the covariance matrix of x should be 
+<script type="math/tex">% <![CDATA[
+Cov(x) = E\begin{pmatrix}
+(x_1 - \mu) (x_1- \mu)^T & (x_1 - \mu) (x_2- \mu)^T\\
+(x_2 - \mu) (x_1- \mu)^T & (x_2 - \mu) (x_2- \mu)^T
+\end{pmatrix} %]]></script></p>
+
+<p>The conditional distributon of $x_1$ given $x_2 $ is $N(\mu_{1,2}, \Sigma_{1,2})$
+where
+<script type="math/tex">\mu_{1,2} = \mu_1 + \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)</script>
+<script type="math/tex">\Sigma_{1,2} = \Sigma_{11} - \Sigma_{12} \Sigma_{22}^{-1} \Sigma_{21}</script></p>
+
+<h2 id="the-factor-analysis-model">The factor analysis model</h2>
+
+<p><strong>Remark:</strong> while PCA focuses on preserving the observed variance, Factor Analysis focuses on preserving the observed correlation</p>
+
+<p>In the factor analysis model, we posit a joint distribution on (x,z) as follows, where $z \in \mathbb{R}^k$ is a latent random variable
+<script type="math/tex">z \sim N(0,I)</script>
+<script type="math/tex">(x,z) \sim N(\mu + \Lambda z, \Psi)</script>
+Thus, we can image that each datapoint $x^{(i)}$ is generated by sampling a k dimension multivariate Gaussian $z^{(i)}$. Then it is mapped to a k-dimensional affine space of $\mathbb{R}^n$ by computing $\mu + \Lambda z^{(i)}$.</p>
+
+<p>Equivalently, we can therefore also define the factor analysis model according to
+<script type="math/tex">z \sim N(0,I)</script>
+<script type="math/tex">\epsilon \sim N(0,\Psi)</script>
+<script type="math/tex">x = \mu + \Lambda z + \epsilon</script></p>
+
+<p>Now the variable z and x have a joint Gaussian distribution
+<script type="math/tex">\begin{pmatrix}
+z\\
+x
+\end{pmatrix}  \sim N(\mu_{zx}, \Sigma)</script></p>
+
+<p>We know that $E[z] = 0$, also we have
+<script type="math/tex">E[x] = E[\mu + \Lambda z + \epsilon] = \mu</script></p>
+
+<p>Now since $z ~ N(O,I)$, we can easily find that $\Sigma_{zz} = Cov(z) = I$, Also
+<script type="math/tex">E[(z- E[z]) (x- E[x])^T] = E[z(\Lambda z + \epsilon)^T ] = \Lambda^T</script></p>
+
+<p>Similarly, we can find $\Sigma_{xx}$ as follows:
+<script type="math/tex">E[(x- E[x]) (x- E[x])^T] = \Lambda \Lambda^T + \Psi</script></p>
+
+<p>Putting everything together, we therefore have that 
+<script type="math/tex">% <![CDATA[
+\begin{pmatrix}
+z\\
+x
+\end{pmatrix}  \sim N(\begin{pmatrix}
+0\\
+\mu
+\end{pmatrix}, \begin{pmatrix}
+I & \Lambda^T\\
+\Lambda^T & \Lambda \Lambda^T + \Psi  
+\end{pmatrix}) %]]></script>
+Hence, we also see that the marginal distribution of x is give by $x \sim N(\mu, \Lambda \Lambda^T + \Psi )$. Thus given a training set, we can write the log likelihood of the parameters:</p>
+
+<script type="math/tex; mode=display">l(\mu,\Lambda,\Psi) = log \prod_{i=1}^m \frac{1}{(2\pi)^{n/2}(\Lambda \Lambda^T + \Psi)^{1/2}}\exp(-\frac{1}{2}((x^{(i)}- \mu)^T (\Lambda \Lambda^T + \Psi)^{-1}(x^{(i)}- \mu))</script>
+
+<h3 id="remark">Remark</h3>
+
+<p>We can simplify the model by setting $\Psi = \sigma^2 I$. The FA will approach to standard PCA as $\sigma^2 \rightarrow 0$</p>
+
+<h2 id="em-for-factor-analysis">EM for factor analysis</h2>
+
+<p>The derivation for the E-step is easy, we need to compute $Q_i(z^{(i)}) = p(z^{(i)}:x^{(i)};\mu, \Lambda, \Psi)$, using the conditional distribution of a Gaussian, we have that</p>
+
+<script type="math/tex; mode=display">\mu_{z^{(i)} : x^{(i)}} = \Lambda^T (\Lambda \Lambda^T + \Psi)^{-1} (x^{(i)}- \mu)</script>
+
+<script type="math/tex; mode=display">\Sigma_{z^{(i)} : x^{(i)}} = I - \Lambda^T (\Lambda \Lambda^T + \Psi)^{-1} \Lambda</script>
+
+<p>So</p>
+
+<script type="math/tex; mode=display">Q_i(z^{(i)}) = \frac{1}{(2\pi)^{k/2}(\Sigma_{z^{(i)} : x^{(i)}})^{1/2}} \exp(-\frac{1}{2}(z^{(i)}- \mu_{z^{(i)} : x^{(i)}})^T (\Sigma_{z^{(i)} : x^{(i)}})^{-1}(z^{(i)}- \mu_{z^{(i)} : x^{(i)}})</script>
+
+<p>Now for the M-step, here we need to maximize</p>
+
+<script type="math/tex; mode=display">\sum_{i=1}^m \int_{z^{(i)}}Q_i(z^{(i)})\log \frac{p(x^{(i)},z^{(i)};\mu, \Lambda, \Psi)}{Q_i(z^{(i)})}d z^{(i)}</script>
+
+<p>First we try to maximize with respect to $\Lambda$.</p>
+
+<p>We can simply this equation as an expectaction value as follows</p>
+
+<script type="math/tex; mode=display">\sum_{i=1}^m E_{z^{(i)} \sim Q_{i}} [\log p(x^{(i)},z^{(i)};\mu, \Lambda, \Psi) + \log p(z^{(i)}) - \log Q_i(z^{(i)})]</script>
+
+<p>Dropping out terms that do not depend on the parameters,</p>
+
+<script type="math/tex; mode=display">\sum_{i=1}^m E[\log p(x^{(i)}:z^{(i)};\mu, \Lambda, \Psi)]</script>
+
+<script type="math/tex; mode=display">= \sum_{i=1}^m E[\log \frac{1}{(2\pi)^{n/2}(\Psi)^{1/2}}\exp(-\frac{1}{2}((x^{(i)}- \mu - \Lambda z^{(i)})^T (\Psi)^{-1}(x^{(i)}- \mu) - \Lambda z^{(i)}))]</script>
+
+<script type="math/tex; mode=display">= \sum_{i=1}^m E[-\frac{1}{2} \log \Psi -\frac{n}{2} \log (2\pi) - \frac{1}{2}((x^{(i)}- \mu - \Lambda z^{(i)})^T (\Psi)^{-1}(x^{(i)}- \mu) - \Lambda z^{(i)})]</script>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/blog/2016/03/23/Learning_Theory/" data-toggle="tooltip" data-placement="top" title="Learning Theory">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2016/03/26/Regularization_Model_Selection/" data-toggle="tooltip" data-placement="top" title="Regularization_model_selection">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- Duoshuo Share start -->
+                <style>
+                    .ds-share{
+                        text-align: right;
+                    }
+                    
+                    @media only screen and (max-width: 700px) {
+                        .ds-share {
+
+                        }
+                    }
+                </style>
+
+                <div class="ds-share"
+                    data-thread-key="/blog/2016/03/23/Factor analysis" data-title="Factor Analysis"
+                    data-images="samshaq19912009.github.io/img/green.jpg"
+                    data-content="Factor Analysis
+
+Consider the setting the dimension of the data n is larger t... | Microdust:Azeril's blog"
+                    data-url="samshaq19912009.github.io/blog/2016/03/23/Factor-analysis/">
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- Duoshuo Share end-->
+
+
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread" data-thread-key="/blog/2016/03/23/Factor analysis" data-title="Factor Analysis" data-url="samshaq19912009.github.io/blog/2016/03/23/Factor-analysis/"></div>
+                </div>
+                <!-- 多说评论框 end -->
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"cnfeat"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <!-- kill the Facebook and Weibo -->
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+                    
+                    <!--
+                    
+                    -->
+
+                    <!--
+                    
+                    -->
+
+                    
+                    <!--
+                    
+                    -->
+
+                </ul>
+                <p class="copyright text-muted">
+                &copy; 2016  Chengcen  ❖ Powered by Jekyll.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+
+<!-- Highlight.js -->
+<script>
+    async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js",function(){
+        hljs.initHighlightingOnLoad();
+    })
+</script>
+<link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+
+
+</body>
+
+</html>

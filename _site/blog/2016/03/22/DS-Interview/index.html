@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>Data Science Interview Question - Chengcen</title>
+
+    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/03/22/DS-Interview/">
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\(', '\)'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+    <!-- Icons -->
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+
+
+
+
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Chengcen</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/archive/">Archive</a>
+                </li>
+                
+                <li>
+                    <a href="/milestone/">milestone</a>
+                </li>
+                
+                <li>
+                    <a href="/tags/">Tags</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/green.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="Tags">
+                        
+                        <a class="tag" href="/Tags/#Machine Learning" title="Machine Learning">Machine Learning</a>
+                        
+                        <a class="tag" href="/Tags/#知识管理" title="知识管理">知识管理</a>
+                        
+                    </div>
+                    <h1>Data Science Interview Question</h1>
+                    
+                      
+                    <span class="meta">Posted by Chengcen on March 22, 2016</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
+
+                <ol>
+  <li>
+    <p>Given a coin you don’t know it’s fair or unfair. Throw it 6 times and 
+get 1 tail and 5 head. Determine whether it’s fair or not. What’s your 
+confidence value?</p>
+  </li>
+  <li>
+    <p>Given Amazon data, how to predict which users are going to be top 
+shoppers in this holiday season.</p>
+  </li>
+  <li>
+    <p>Which regression methods are you familiar? How to evaluate regression 
+result?</p>
+  </li>
+  <li>
+    <p>Write down the formula for logistic regression. How to determine the 
+coefficients given the data?</p>
+  </li>
+  <li>
+    <p>How do you evaluate regression? 
+For example, in this particular case:
+item click-through-rate  predicted rate
+1       0.04        0.06
+2       0.68        0.78
+3       0.27        0.19
+4       0.52        0.57
+…</p>
+  </li>
+  <li>
+    <p>What’s the formula for SVM? What is decision boundary?</p>
+  </li>
+  <li>
+    <p>A field with unknown number of rabbits. Catch 100 rabbits and put a label
+on each of them. A few days later, catch 300 rabbits and found 60 with 
+labels. Estimate how many rabbits are there?</p>
+  </li>
+  <li>
+    <p>Given 10 coins with 1 unfair coin and 9 fair coins. The unfair coin has 0.8532; prob. to be head. Now random select 1 coin and throw it 3 times. You 
+observe head, head, tail. What’s the probability that the selected coin is 
+the unfair one?</p>
+  </li>
+  <li>
+    <p>What’s the formula for Naive Bayesian classifier? What’s the assumption
+in the formula? What kind of data is Naive Bayesian good at? What is not?</p>
+  </li>
+  <li>
+    <p>What is the real distribution of click-through rate of items? If you 
+want to build a predictor/classifier for this data, how do you do it? How do
+you divide the data?</p>
+  </li>
+  <li>
+    <p>You have a stream of data coming in, in the format as the following:
+item_id, views, clicks, time
+1            100     10         2013-11-28
+1            1000   350       2013-11-29
+1            200     14         2013-11-30
+2            127     13         2013-12-1
+…</p>
+  </li>
+</ol>
+
+<p>The same id are consecutive.</p>
+
+<p>Click through rate = clicks / views. 
+On every day, I want to output the item id when its click through rate is 
+larger than a given threshold. 
+For example, at day 1, item 1’s rate is 10/100=10%, day2, its (10+350)/(100
++1000)=0.32. day3 it is (10+350+14)/(100+1000+200)=0.28. 
+If my threshold is 0.3, then at day 1, I don’t output. On day2 I output. On
+day3, I don’t output.</p>
+
+<ol>
+  <li>
+    <p>Given a dictionary and a string. Write a function, if every word is in 
+the dictionary return true, otherwise return false.</p>
+  </li>
+  <li>
+    <p>Generate all the permutation of a string. 
+For example, abc, acb, cba, …</p>
+  </li>
+  <li>
+    <p>We want to add a new feature to our product. How to determine if people 
+like it?
+A/B testing. How to do A/B testing? How many ways? pros and cons?</p>
+  </li>
+  <li>
+    <p>44.3% vs 47.2% is it significant?</p>
+  </li>
+  <li>
+    <p>Design a function to calculate people’s interest to a place against the
+distance to the place.</p>
+  </li>
+  <li>
+    <p>How to encourage people to write more reviews on Yelp? How to determine 
+who are likely to write reviews? How to increase the registration rate of 
+Yelp? What features to add for a better Yelp app? We are expanding to other 
+countries. Which country we should enter first?</p>
+  </li>
+  <li>
+    <p>What’s the difference between classification and regression?</p>
+  </li>
+  <li>
+    <p>Can you explain how decision tree works? How to build a decision tree 
+from data?</p>
+  </li>
+  <li>
+    <p>What is regularization in regression? Why do regularization? How to do 
+regularization?</p>
+  </li>
+  <li>
+    <p>What is gradient descent? stochastic gradient descent?</p>
+  </li>
+  <li>
+    <p>We have a database of &lt;product_id, name, description, price&gt;. When user 
+inputs a product name, how to return results fast?</p>
+  </li>
+  <li>
+    <p>If user gives a budget value, how to find the most expensive product 
+under budget? Assume the data fits in memory. What data structure, or 
+algorithm you use to find the product quickly? Write the program for it.</p>
+  </li>
+  <li>
+    <p>Given yelp data, how to find top 10 restaurants in America?</p>
+  </li>
+  <li>
+    <p>Given a large file that we don’t know how many lines are there. It 
+doesn’t fit into memory. We want to sample K lines from the file uniformly.
+Write a program for it.</p>
+  </li>
+  <li>
+    <p>How to determine if one advertisement is performing better than the 
+other?</p>
+  </li>
+  <li>
+    <p>How to evaluate classification result? What if the results are in 
+probability mode? 
+If I want to build a classifier, but the data is very unbalanced. I have a 
+few positive samples but a lot of negative samples. What should I do?</p>
+  </li>
+  <li>
+    <p>Given a lot of data, I want to random sample 1% of them. How to do it 
+efficiently?</p>
+  </li>
+  <li>
+    <p>When a new user signs up Pinterest, we want to know its interests. We 
+decide to show the user a few pins, 2 pins at a time. Let the user choose 
+which pin s/he likes. After the user clicks on one of the 2, we select 
+another 2 pins. 
+Question: how to design the system and select the pins so that we can 
+achieve our goal?</p>
+  </li>
+  <li>
+    <p>Write a function to compute sqrt(X). Write a function to compute pow(x, 
+n) [square root and power)</p>
+  </li>
+  <li>
+    <p>Given a matrix
+a b c  d
+e f  g  h
+i  j  k   l
+Print it in this order:
+a  f  k
+b g l
+c h
+d
+e j
+i</p>
+  </li>
+  <li>
+    <p>Given a matrix and an array of words, find if the words are in the 
+matrix. You can search the</p>
+  </li>
+</ol>
+
+<p>matrix in all directions:  from left to right, right to left, up to down, 
+down to up, or diagonally. 
+For example
+w o r x b
+h  e l  o v
+i   n d e m</p>
+
+<p>then the word “world” is in the matrix.</p>
+
+<ol>
+  <li>
+    <p>Given a coordinates, and two points A and B. How many ways to go from A 
+to B? You can only move up or right. 
+For example, from (1, 1) to (5, 7), one possible way is 1,1 -&gt; 2, 1… 5, 1 -
+&gt; 5,2 -&gt; ..5, 7</p>
+  </li>
+  <li>
+    <p>In a city where there are only vertical and horizontal streets. There 
+are people on the cross point. These people want to meet. Please find a 
+cross point to minimize the cost for all the people to move.</p>
+  </li>
+  <li>
+    <p>Design a job search ranking algorithm on glassdoor</p>
+  </li>
+  <li>
+    <p>How to identify review spam?</p>
+  </li>
+  <li>
+    <p>Glassdoor has this kind of data about a job : (position, company, 
+location, salary). For example (Software Engineer, Microsoft, Seattle, $125K
+). For some records, all four entires are available. But for others, the 
+salary is missing. Design a way to estimate salary for those records.</p>
+  </li>
+  <li>
+    <p>When to send emails to users in a day can get maximum click through rate?</p>
+  </li>
+  <li>
+    <p>Youtube has video play log like this:
+Video ID, time
+vid1        t1
+vid2        t2
+…           …
+The log is super large. 
+Find out the top 10 played videos on youtube in a given week.</p>
+  </li>
+  <li>
+    <p>Write a program to copy a graph</p>
+  </li>
+  <li>
+    <p>A bank has this access log:
+IP address, time
+ip1      t1
+ip2      t2
+…        …</p>
+  </li>
+</ol>
+
+<p>If one ip accessed K times within m seconds, it may be an attack. 
+Given the log, identify all IPs that may cause attack.</p>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/blog/2016/03/21/SVM/" data-toggle="tooltip" data-placement="top" title="SVM">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/blog/2016/03/23/Learning_Theory/" data-toggle="tooltip" data-placement="top" title="Learning Theory">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- Duoshuo Share start -->
+                <style>
+                    .ds-share{
+                        text-align: right;
+                    }
+                    
+                    @media only screen and (max-width: 700px) {
+                        .ds-share {
+
+                        }
+                    }
+                </style>
+
+                <div class="ds-share"
+                    data-thread-key="/blog/2016/03/22/DS-Interview" data-title="Data Science Interview Question"
+                    data-images="samshaq19912009.github.io/img/green.jpg"
+                    data-content="
+  
+    Given a coin you don’t know it’s fair or unfair. Throw it 6 times and... | Microdust:Azeril's blog"
+                    data-url="samshaq19912009.github.io/blog/2016/03/22/DS-Interview/">
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- Duoshuo Share end-->
+
+
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread" data-thread-key="/blog/2016/03/22/DS-Interview" data-title="Data Science Interview Question" data-url="samshaq19912009.github.io/blog/2016/03/22/DS-Interview/"></div>
+                </div>
+                <!-- 多说评论框 end -->
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"cnfeat"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <!-- kill the Facebook and Weibo -->
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+                    
+                    <!--
+                    
+                    -->
+
+                    <!--
+                    
+                    -->
+
+                    
+                    <!--
+                    
+                    -->
+
+                </ul>
+                <p class="copyright text-muted">
+                &copy; 2016  Chengcen  ❖ Powered by Jekyll.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+
+<!-- Highlight.js -->
+<script>
+    async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js",function(){
+        hljs.initHighlightingOnLoad();
+    })
+</script>
+<link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+
+
+</body>
+
+</html>

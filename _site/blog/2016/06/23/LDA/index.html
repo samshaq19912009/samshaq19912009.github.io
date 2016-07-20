@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>LDA 简介 - Chengcen</title>
+
+    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/06/23/LDA/">
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\(', '\)'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+    <!-- Icons -->
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+
+
+
+
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Chengcen</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/archive/">Archive</a>
+                </li>
+                
+                <li>
+                    <a href="/milestone/">milestone</a>
+                </li>
+                
+                <li>
+                    <a href="/tags/">Tags</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/green.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="Tags">
+                        
+                        <a class="tag" href="/Tags/#Machine Learning" title="Machine Learning">Machine Learning</a>
+                        
+                        <a class="tag" href="/Tags/#LDA" title="LDA">LDA</a>
+                        
+                    </div>
+                    <h1>LDA 简介</h1>
+                    
+                      
+                    <span class="meta">Posted by Chengcen on June 23, 2016</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
+
+                <h1 id="lda-">LDA 简介</h1>
+
+<p>我们来学习一下LDA（Latent Dirichlet Allocation）模型。</p>
+
+<h2 id="section">前言</h2>
+
+<p>按照wiki上的介绍，LDA由Blei, David M.、Ng, Andrew Y.、Jordan于2003年提出，是一种<a href="https://zh.wikipedia.org/wiki/主题模型">主题模型</a>，它可以将文档集 中每篇文档的主题以概率分布的形式给出，从而通过分析一些文档抽取出它们的主题（分布）出来后，便可以根据主题（分布）进行主题聚类或文本分类。同时，它是一种典型的词袋模型，即一篇文档是由一组词构成，词与词之间没有先后顺序的关系。</p>
+
+<p>一篇文档可以包含多个主题，文档中每一个词都由其中的一个主题生成。当人们需要生成一段文档的时候，首先确定假定这一段文档所包含的topic，而每一个topic都有包含的词汇。如下图所示，包含四个话题。
+<img src="http://img.blog.csdn.net/20141117153816148" alt="model" /></p>
+
+<p>生成文档时，以一定的概率选取上述某个主题，再以一定的概率选取那个主题下的某个单词，不断的重复这两步，最终生成如下图所示的一篇文章</p>
+
+<p><img src="http://img.blog.csdn.net/20141117154035285" alt="test" /></p>
+
+<p>反之，在训练阶段，我们需要反推这一个过程，推断这一段文章是由什么主题组成的。假定们可能会认为作者先确定这篇文章的几个主题，然后围绕这几个主题遣词造句，表达成文。</p>
+
+<p>LDA就是要干这事：根据给定的一篇文档，推测其主题分布。通过此模型生成的文档方式如下：</p>
+
+<p>1.从狄利克雷分布$\alpha$中取样生成文档 i 的主题分布$\theta_i$</p>
+
+<p>2.从主题的多项式分布$\theta_i$中取样生成文档i第 j 个词的主题$z_{ij}$</p>
+
+<p>3.从狄利克雷分布$\beta$中取样生成主题对应的词语分布$\phi_{z_{ij}}$</p>
+
+<p>4.从词语的多项式分布中采样最终生成词语$w_{ij}$</p>
+
+<p><img src="http://img.blog.csdn.net/20141117152903751" alt="dict" /></p>
+
+<h4 id="binomial-distribution">二项分布（Binomial distribution）</h4>
+
+<p>二项分布是从伯努利分布推进的。伯努利分布，又称两点分布或0-1分布，是一个离散型的随机分布，其中的随机变量只有两类取值，非正即负{+，-}。而二项分布即重复n次的伯努利。简言之，只做一次实验，是伯努利分布，重复做了n次，是二项分布。二项分布的概率密度函数为</p>
+
+<p><img src="http://img.blog.csdn.net/20141117234739906" alt="bi" /></p>
+
+<h4 id="multinomial-distribution">多项分布（Multinomial Distribution）</h4>
+
+<p>多项分布是指单次试验中的随机变量的取值不再是0-1的，而是有多种离散值可（1,2,3…,k）。比如投掷6个面的骰子实验，N次实验结果服从K=6的多项分布。其中</p>
+
+<p><img src="http://img.blog.csdn.net/20141117235427677" alt="pro" /></p>
+
+<p>多项分布的概率密度函数为：</p>
+
+<p><img src="http://img.blog.csdn.net/20141117235452512" alt="mulit" /></p>
+
+<h4 id="beta-beta-distribution">Beta 分布（Beta distribution）</h4>
+
+<p>给定参数$\alpha$和$\beta$，取值为[0,1]的随机变量x的概率密度函数为</p>
+
+<p><img src="http://img.blog.csdn.net/20141117235056953" alt="beta" /></p>
+
+<p>其中</p>
+
+<p><img src="http://img.blog.csdn.net/20141117235115532" alt="gamma" />,<img src="http://img.blog.csdn.net/20141117235123035" alt="gamma" /></p>
+
+<p>注意其中的Gamma函数。</p>
+
+<h4 id="dirichlet-dirichlet-distributionbeta">Dirichlet 分布（Dirichlet distribution）是beta分布在高维度上的推广</h4>
+
+<p><img src="http://img.blog.csdn.net/20141117235506350" alt="Dir" /></p>
+
+<p>其中</p>
+
+<p><img src="http://img.blog.csdn.net/20141117235524695" alt="dir1" /></p>
+
+<h2 id="gamma--beta-">Gamma 函数与 Beta 分布</h2>
+
+<p><strong>问题1</strong></p>
+
+<p>给定$x_1, x_2, x_n…..$为均匀[0,1]分布的随机变量，将这n的变量随机排序后，$x_k$的分布为？</p>
+
+<p><img src="http://img.blog.csdn.net/20141117174509835" alt="gamma" /></p>
+
+<p>取定$\alpha=k$和$\beta = n-k+1$</p>
+
+<p><img src="http://img.blog.csdn.net/20141117180513843" alt="fromgamama" /></p>
+
+<h2 id="beta">Beta分布</h2>
+
+<p>以上已经介绍过Beta分布的基本数学公式以及概率含义，为了理解 Beta 分布和 二项分布的共轭关系，我们重新回到上面一个问题</p>
+
+<p><strong>问题2</strong></p>
+
+<p>给定$x_1, x_2, x_n…..$为均匀[0,1]分布的随机变量，将这n的变量随机排序后，$ p = X_k$</p>
+
+<p>给定$y_1, y_2, y_n…..$为均匀[0,1]分布的随机变量, Y 中有 m1 比 P 小， m2 比 p 大，</p>
+
+<p>求问p对Y的条件概率？？？</p>
+
+<p><img src="http://img.blog.csdn.net/20141117183714937" alt="pY" /></p>
+
+<p><strong>先验分布</strong> + <strong>样本信息</strong> = <strong>后验分布</strong></p>
+
+<p>我们知道，这一问题的先验分布为Beta分布，样本信息为[0,1]二项分布</p>
+
+<p>类比以上问题，我们可以得到以下等式</p>
+
+<p><img src="http://img.blog.csdn.net/20141117185216670" alt="x1" /></p>
+
+<p>更一般的关系为</p>
+
+<p><img src="http://img.blog.csdn.net/20141117185325671" alt="con" /></p>
+
+<p>由此，我们可以得到 <strong>针对于这种观测到的数据符合二项分布，参数的先验分布和后验分布都是Beta分布的情况</strong>，<strong>就是Beta-Binomial共轭</strong>。换言之，Beta分布是二项式分布的共轭先验概率分布</p>
+
+<h3 id="section-1">共轭先验概率分布</h3>
+
+<p><strong>在贝叶斯概率理论中，如果后验概率和先验概率满足同样的分布律，那么，先验分布和后验分布被叫做共轭分布，同时，先验分布叫做似然函数的共轭先验分布</strong></p>
+
+<p>举个例子。投掷一个非均匀硬币，可以使用参数为θ的伯努利模型，θ为硬币为正面的概率，那么结果x的分布形式为：</p>
+
+<p><img src="http://img.blog.csdn.net/20141117224140453" alt="re" /></p>
+
+<p>其共轭先验为beta分布，具有两个参数$\alpha$和$\beta$，称为超参数（hyperparameters）。且这两个参数决定了θ参数，其Beta分布形式为</p>
+
+<p><img src="http://img.blog.csdn.net/20141117230028113" alt="re" /></p>
+
+<p>然后计算后验概率为</p>
+
+<p><img src="http://img.blog.csdn.net/20141117230441640" alt="re" /></p>
+
+<p>可以看到，先验假设和后验分布同为Beta分布！</p>
+
+<p>此外，如果变量符合Beta变量，平均值为：</p>
+
+<p><img src="http://img.blog.csdn.net/20141117204010541" alt="average" /></p>
+
+<h2 id="dirichlet-">Dirichlet 分布</h2>
+
+<h3 id="dirichlet--1">3.1 Dirichlet 分布</h3>
+
+<p>根据wikipedia上的介绍，维度K ≥ 2（x1,x2…xK-1维，共K个）的狄利克雷分布在参数α1, …, αK &gt; 0上、基于欧几里得空间里的勒贝格测度有个概率密度函数，定义为：</p>
+
+<p><img src="http://img.blog.csdn.net/20141117232638381" alt="average" /></p>
+
+<p>其中</p>
+
+<p><img src="http://img.blog.csdn.net/20141117233352295" alt="average" /></p>
+
+<h3 id="dirichlet-multinomial-">3.2 Dirichlet-Multinomial 共轭</h3>
+
+<p>下面，在问题2的基础上继续深入，引出<strong>问题3</strong>。</p>
+
+<p>给定$x_1, x_2, x_n…..$为均匀[0,1]分布的随机变量，将这n的变量随机排序后，$x_k$的分布为？以三维变量为例， 这里我们只采用$x1$ $x2$为自由变量， 为了简化计算，取x3满足x1+x2+x3=1,但只有x1,x2是变量，如下图所示</p>
+
+<p><img src="http://img.blog.csdn.net/20141117234134290" alt="fig3" /></p>
+
+<p>从而有：</p>
+
+<p><img src="http://img.blog.csdn.net/20141118003458723" alt="fig3" /></p>
+
+<p>继而我们可以得到联合分布为</p>
+
+<p><img src="http://img.blog.csdn.net/20141118003624156" alt="fig3" /></p>
+
+<p>观察上述式子的最终结果，可以看出上面这个分布其实就是3维形式的 Dirichlet 分布</p>
+
+<p><img src="http://img.blog.csdn.net/20141118003740698" alt="fig3" /></p>
+
+<p>整理变量后 分布密度可以写为</p>
+
+<p><img src="http://img.blog.csdn.net/20141118003817062" alt="fig3" /></p>
+
+<p>下面，跟问题2比较类似的是，加入观测，</p>
+
+<p>给定$x_1, x_2, x_n…..$为均匀[0,1]分布的随机变量，将这n的变量随机排序后</p>
+
+<p>令$p1=X(k1), p2=X(k2), p3 = 1 - p1 - p2$, 要求$P$的分布</p>
+
+<p>给定$y_1, y_2, y_n…..$为均匀[0,1]分布的随机变量, Y 中有 m1 比 p1 小， m2 在 p1 和 p2 之间， 求问 P 对 y 的条件概率分布？？？</p>
+
+<p>同样，根据Bayes定理，分为三步：</p>
+
+<p>1.先验分布为Dir p1, p2, p3</p>
+
+<p>2.观测为 m1, m2, m3</p>
+
+<p>3.后验分布可以写为以下的形式：</p>
+
+<p><img src="http://img.blog.csdn.net/20141118215146718" alt="p" /></p>
+
+<p>以上过程可以直观的表示为</p>
+
+<p><img src="http://img.blog.csdn.net/20141118220632031" alt="p1" /></p>
+
+<p>可把从整数集合延拓到实数集合，从而得到更一般的表达式如下</p>
+
+<p><img src="http://img.blog.csdn.net/20141118220737504" alt="p1" /></p>
+
+<p>针对于这种观测到的数据符合多项分布，<strong>参数的先验分布和后验分布都是Dirichlet 分布的情况，就是Dirichlet-Multinomial 共轭</strong>。换言之，至此已经证明了Dirichlet分布的确就是多项式分布的共轭先验概率分布。
+意味着，如果我们为多项分布的参数p选取的先验分布是Dirichlet分布，那么以p为参数的多项分布用贝叶斯估计得到的后验分布仍然服从Dirichlet分布。</p>
+
+<p>同样，与Beta分布类似， 期望值为</p>
+
+<p><img src="http://img.blog.csdn.net/20141117211142562" alt="daver" /></p>
+
+<h2 id="lda">4 主题模型LDA</h2>
+
+<p>为了更好的理解LDA的模型，我们先来总结一下学到的知识哈。</p>
+
+<p><strong>Beta分布是二项式分布的共轭先验概率分布</strong></p>
+
+<p>对于非负$\alpha$和$\beta$, 我们有如下关系</p>
+
+<p><img src="http://img.blog.csdn.net/20141117185325671" alt="p1" /></p>
+
+<p>针对于这种观测到的数据符合二项分布，参数的先验分布和后验分布都是Beta分布的情况，就是Beta-Binomial 共轭</p>
+
+<p><strong>狄利克雷分布（Dirichlet分布）是多项式分布的共轭先验概率分布</strong></p>
+
+<p>把从整数集合延拓到实数集合，从而得到更一般的表达式如下</p>
+
+<p><img src="http://img.blog.csdn.net/20141118220737504" alt="p1" /></p>
+
+<p>针对于这种观测到的数据符合多项分布，参数的先验分布和后验分布都是Dirichlet 分布的情况，就是 Dirichlet-Multinomial 共轭。</p>
+
+<p>以及贝叶斯派思考问题的固定模式</p>
+
+<p><strong>先验分布</strong> + <strong>样本信息</strong> = <strong>后验分布</strong></p>
+
+<p>顺便提下频率派与贝叶斯派各自不同的思考方式：</p>
+
+<p>频率派把需要推断的参数θ看做是固定的未知常数，即概率虽然是未知的，但最起码是确定的一个值，同时，样本X 是随机的，所以频率派重点研究样本空间，大部分的概率计算都是针对样本X 的分布；</p>
+
+<p>而贝叶斯派的观点则截然相反，他们认为待估计的参数是随机变量，服从一定的分布，而样本X 是固定的，由于样本是固定的，所以他们重点研究的是参数的分布。</p>
+
+<p>为了方便描述，首先定义一些变量：</p>
+
+<p>w 表示词， V 表示所有单词的个数（固定值）</p>
+
+<p>z 表示主题， k 是主题的个数（预先给定，固定值）</p>
+
+<p>$D = {w1, w2,…., w_{M}}$ 表示语料库，其中的 M 是语料库中的文档数（固定值)</p>
+
+<p>$w = {\omega_1, \omega_2,…., \omega_N}$, 其中的 N 表示一个文档中的词数（随机变量）。</p>
+
+<h3 id="section-2">4.1 各种基础模型</h3>
+
+<h4 id="unigram-model">4.4.1 Unigram model</h4>
+
+<p>对于文档$w = {\omega_1, \omega_2,…., \omega_N}$， 用$p(\omega_n)$表示词汇 $\omega_n$ 的先验概率，生成文档$w_n$的概率为</p>
+
+<p><img src="http://img.blog.csdn.net/20141118233228339" alt="p1" /></p>
+
+<p>其图模型为（图中被涂色的w表示可观测变量，N表示一篇文档中总共N个单词，M表示M篇文档）：</p>
+
+<p><img src="http://img.blog.csdn.net/20141118233121976" alt="p1" /></p>
+
+<p>或者</p>
+
+<p><img src="http://img.blog.csdn.net/20141118234545921" alt="p1" /></p>
+
+<p>unigram model假设<strong>文本中的词服从Multinomial分布</strong>，而我们已经知道Multinomial分布的先验分布为Dirichlet分布。</p>
+
+<p>p是词服从的Multinomial分布的参数</p>
+
+<p>α是Dirichlet分布（即Multinomial分布的先验分布）的参数。</p>
+
+<p>一般α由经验事先给定，p由观察到的文本中出现的词学习得到，表示文本中出现每个词的概率。</p>
+
+<h3 id="plsa">4.2 PLSA模型</h3>
+
+<h4 id="plsa-1">4.2.1 pLSA模型下生成文档</h4>
+
+<p>OK，在上面的Mixture of unigrams model中，我们假定一篇文档只有一个主题生成，可实际中，一篇文章往往有多个主题，只是这多个主题各自在文档中出现的概率大小不一样。比如介绍一个国家的文档中，往往会分别从教育、经济、交通等多个主题进行介绍。那么在pLSA中，文档是怎样被生成的呢</p>
+
+<p>假设你要写M篇文档，由于一篇文档由各个不同的词组成，所以你需要确定每篇文档里每个位置上的词。再假定你一共有K个可选的主题，有V个可选的词，咱们来玩一个扔骰子的游戏。</p>
+
+<ol>
+  <li>
+    <p>假设你每写一篇文档会制作一颗K面的“文档-主题”骰子（扔此骰子能得到K个主题中的任意一个），和K个V面的“主题-词项” 骰子（每个骰子对应一个主题，K个骰子对应之前的K个主题，且骰子的每一面对应要选择的词项，V个面对应着V个可选的词）。</p>
+  </li>
+  <li>
+    <p>每写一个词，先扔该“文档-主题”骰子选择主题，得到主题的结果后，使用和主题结果对应的那颗“主题-词项”骰子，扔该骰子选择要写的词。</p>
+  </li>
+</ol>
+
+<p>上面这个投骰子产生词的过程简化下便是：“<strong>先以一定的概率选取主题，再以一定的概率选取词</strong>”。这个随机遵循一定的概率分布。比如可能选取教育主题的概率是0.5，选取经济主题的概率是0.3，选取交通主题的概率是0.2，那么这3个主题的概率分布便是{教育：0.5，经济：0.3，交通：0.2}，<strong>我们把各个主题z在文档d中出现的概率分布称之为主题分布</strong>，且是一个<strong>多项分布</strong>。
+同样的，从主题分布中随机抽取出教育主题后，依然面对着3个词：大学、老师、课程，这3个词都可能被选中，但它们被选中的概率也是不一样的。比如大学这个词被选中的概率是0.5，老师这个词被选中的概率是0.3，课程被选中的概率是0.2，那么这3个词的概率分布便是{大学：0.5，老师：0.3，课程：0.2}，<strong>我们把各个词语w在主题z下出现的概率分布称之为词分布</strong>，这个词分布也是一个<strong>多项分布</strong>。</p>
+
+<p>所以，<strong>选主题和选词都是两个随机的过程</strong>，先从主题分布{教育：0.5，经济：0.3，交通：0.2}中抽取出主题：教育，然后从该主题对应的词分布{大学：0.5，老师：0.3，课程：0.2}中抽取出词：大学。</p>
+
+<p><img src="http://img.blog.csdn.net/20141119110830531" alt="pLSA" /></p>
+
+<ol>
+  <li>最后，你不停的重复扔“文档-主题”骰子和”主题-词项“骰子，重复N次（产生N个词），完成一篇文档，重复这产生一篇文档的方法M次，则完成M篇文档。</li>
+</ol>
+
+<p>上述过程抽象出来即是PLSA的文档生成模型。在这个过程中，我们并未关注词和词之间的出现顺序，所以pLSA是一种<strong>Bag of Words 词袋方法</strong></p>
+
+<p>该模型假设一组共现(co-occurrence)词项关联着一个隐含的主题类别</p>
+
+<p>给定word和document， 生成word的概率为以下的模式。 所以pLSA中生成文档的整个过程便是选定文档生成主题，确定主题生成词。</p>
+
+<p><img src="https://en.wikipedia.org/api/rest_v1/media/math/render/svg/d0b8f7081eedd7947d1f374ff9265defb263d987" alt="" /></p>
+
+<p>###4.2.1 根据文档反推其主题分布</p>
+
+<p>反过来，既然文档已经产生，那么如何根据已经产生好的文档反推其主题呢？这个利用看到的文档推断其隐藏的主题（分布）的过程（其实也就是产生文档的逆过程），便是主题建模的目的：自动地发现文档集中的主题（分布）</p>
+
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Plsi_1.svg/478px-Plsi_1.svg.png" alt="" /></p>
+
+<p>文档d和词w是我们得到的样本（样本随机，参数虽未知但固定，所以pLSA属于<strong>频率派思想</strong>。 可观测得到，所以对于任意一篇文档，其 $P(w_j,d_i) $ 是已知的。</p>
+
+<p>从而可以根据大量已知的文档-词项信息 $P(w_j,d_i) $, 得到 文档-主题 $P(z_k,d_i) $ 和主题 词项  $P(w_j , z_k) $</p>
+
+<p>如以下公式所示</p>
+
+<p><img src="http://img.blog.csdn.net/20141124221914437" alt="" /></p>
+
+<p>故得到文档中每个词的生成概率为：</p>
+
+<p><img src="http://img.blog.csdn.net/20141119005004510" alt="" /></p>
+
+<p>此时，我们的参数θ 为 ($P(z_k,d_i) $  和 $P(w_j , z_k) $）。 因为该待估计的参数中含有隐变量z，所以我们可以考虑EM算法。</p>
+
+<p>假定用$\phi_k$表示词表$V$在主题$z_k$上的一个多项分布，则$\phi_k$可以表示成一个向量，每个元素$\phi_{k j}$表示词项$w_j$出现在主题$z_k$中的概率，即</p>
+
+<p><img src="http://img.blog.csdn.net/20141119231639109" alt="" /></p>
+
+<p>假定用$\theta_i$表示主题$z_j$在文档$d_i$上的一个多项分布，则$\theta_i$可以表示成一个向量，每个元素$\theta_{i k}$表示主题$z_k$出现在文档$d_i$的概率，即</p>
+
+<p><img src="http://img.blog.csdn.net/20141119231850031" alt="" /></p>
+
+<p>这样我们把问题简化成了两个矩阵</p>
+
+<p>$
+\Phi = [\phi_1, \phi_2, \phi_k],   z_k \in Z$</p>
+
+<p>$
+\Theta = [\theta_1, \theta_2, \theta_k],   d_i \in D$</p>
+
+<p>由于词和词之间是相互独立的，所以整篇文档N个词的分布为</p>
+
+<p><img src="http://img.blog.csdn.net/20141212232331064" alt="" /></p>
+
+<p>再由于文档和文档之间也是相互独立的，所以整个语料库中词的分布为（整个语料库M篇文档，每篇文档N个词）</p>
+
+<p><img src="http://img.blog.csdn.net/20141212233703984" alt="" /></p>
+
+<p>从而得到整个语料库的词分布的对数似然函数</p>
+
+<p><img src="http://img.blog.csdn.net/20141119232348890" alt="" /></p>
+
+<p>现在，我们需要最大化上述这个对数似然函数来求解参数$\phi_{k j}$和$\theta_{i k}$。对于这种含有隐变量的最大似然估计，可以使用EM算法。EM算法，分为两个步骤：先E-step，后M-step。</p>
+
+<p>具体步骤这里省略。。。。。</p>
+
+<h3 id="lda--1">4.3 LDA 模型</h3>
+
+<h4 id="plsalda">4.3.1 pLSA跟LDA的对比：生成文档与参数估计</h4>
+
+<p>在pLSA模型中，我们按照如下的步骤得到“文档-词项”的生成模型：</p>
+
+<p>1.按照概率$P(d_i)$选择一篇文档</p>
+
+<p>2.选定文档$d_i$后，确定文章的主题分布</p>
+
+<p>3.从主题分布中按照概率$P(z_k, d_i)$选择一个隐含的主题类别</p>
+
+<p>4.选定$z_k$后，确定主题下的词分布</p>
+
+<p>5.从词分布中$P(w_j, z_k)$按照概率选择一个词</p>
+
+<p>在 LDA 模型中，</p>
+
+<p>1.按照先验概率$P(d_i)$选择一篇文档$d_i$</p>
+
+<p>2.从<strong>狄利克雷分布（即Dirichlet分布）</strong>$\alpha$中取样生成文档 $d_i$的主题分布$\theta_i$，换言之，主题分布$\theta_i$由超参数为$\alpha$的Dirichlet分布生成</p>
+
+<p>3.从主题的多项式分布$\theta_i$中取样生成文档$d_i$第 j 个词的主题$z_{i j}$</p>
+
+<p>4.从<strong>狄利克雷分布</strong>（即Dirichlet分布）$\beta$中取样生成主题$z_{i j}$对应的词语分布$\phi_{i j}$，换言之，词语分布由参数为$\beta$的Dirichlet分布生成</p>
+
+<p>5.从词语的多项式分布$\phi_{i j}$中采样最终生成词语$w_{i j}$</p>
+
+<p>从上面两个过程可以看出，LDA在PLSA的基础上，为主题分布和词分布分别加了两个<strong>Dirichlet先验</strong>。</p>
+
+<p>继续拿之前讲解PLSA的例子进行具体说明。如前所述，在PLSA中，选主题和选词都是两个随机的过程，先从主题分布{教育：0.5，经济：0.3，交通：0.2}中抽取出主题：教育，然后从该主题对应的词分布{大学：0.5，老师：0.3，课程：0.2}中抽取出词：大学</p>
+
+<p>而在LDA中，选主题和选词依然都是两个随机的过程，依然可能是先从主题分布{教育：0.5，经济：0.3，交通：0.2}中抽取出主题：教育，然后再从该主题对应的词分布{大学：0.5，老师：0.3，课程：0.2}中抽取出词：大学。</p>
+
+<p>那PLSA跟LDA的区别在于什么地方呢？区别就在于：</p>
+
+<p><strong>PLSA中，主题分布和词分布是唯一确定的，能明确的指出主题分布可能就是{教育：0.5，经济：0.3，交通：0.2}，词分布可能就是{大学：0.5，老师：0.3，课程：0.2}。</strong></p>
+
+<p><strong>LDA中，主题分布和词分布不再唯一确定不变，即无法确切给出。例如主题分布可能是{教育：0.5，经济：0.3，交通：0.2}，也可能是{教育：0.6，经济：0.2，交通：0.2}，到底是哪个我们不再确定（即不知道），因为它是随机的可变化的。但再怎么变化，也依然服从一定的分布，即主题分布跟词分布由Dirichlet先验随机确定。</strong></p>
+
+<p>在pLSA中， 文档d产生主题z的概率，主题z产生单词w的概率都是两个固定的值。如下图所示</p>
+
+<p><img src="http://img.blog.csdn.net/20141206001916157" alt="" /></p>
+
+<p>但在LDA中， 我们不再认为主题分布（各个主题在文档中出现的概率分布）和词分布（各个词语在某个主题下出现的概率分布）是唯一确定的（而是随机变量），而是有很多种可能。但一篇文档总得对应一个主题分布和一个词分布吧，怎么办呢？LDA为它们弄了两个Dirichlet先验参数，这个Dirichlet先验为某篇文档随机抽取出某个主题分布和词分布</p>
+
+<p><img src="http://img.blog.csdn.net/20141127192035125" alt="" /></p>
+
+<p>LDA在pLSA的基础上给这两参数加了两个<strong>先验分布的参数</strong>（贝叶斯化）：一个主题分布的先验分布Dirichlet分布，和一个词语分布的先验分布Dirichlet分布</p>
+
+<h4 id="lda-1">4.3.2 LDA生成文档过程的进一步理解</h4>
+
+<p><strong>LDA生成文档的过程中，先从dirichlet先验中“随机”抽取出主题分布，然后从主题分布中“随机”抽取出主题</strong>，最后从确定后的主题对应的词分布中“随机”抽取出词。</p>
+
+<p>那么，dirichlet先验到底是如何“随机”抽取主题分布的呢？</p>
+
+<p>事实上，从dirichlet分布中随机抽取主题分布，这个过程不是完全随机的。为了说清楚这个问题，咱们得回顾下dirichlet分布。事实上，如果我们取3个事件的话，可以建立一个三维坐标系，类似xyz三维坐标系，这里，我们把3个坐标轴弄为p1、p2、p3，如下图所示</p>
+
+<p><img src="http://img.blog.csdn.net/20141128165431218" alt="" /></p>
+
+<p>可以想象到，空间里有很多这样的点(p1,p2,p3)，意味着有很多的主题分布可供选择，那dirichlet分布如何选择主题分布呢？把上面的斜三角形放倒，映射到底面的平面上，便得到如下所示的一些彩图（3个彩图中，每一个点对应一个主题分布，高度代表某个主题分布被dirichlet分布选中的概率，且选不同的，dirichlet 分布会偏向不同的主题分布</p>
+
+<p><img src="http://img.blog.csdn.net/20141118174935062" alt="" /></p>
+
+<p>我们来看上图中左边这个图，高度就是代表dirichlet分布选取某个坐标点(p1,p2,p3)（这个点就是一个主题分布）的概率大小。如下图所示，平面投影三角形上的三个顶点上的点：A=(0.9,0.05,0.05)、B=(0.05,0.9,0.05)、C=(0.05,0.05,0.9)各自对应的主题分布被dirichlet分布选中的概率值很大，而平面三角形内部的两个点：D、E对应的主题分布被dirichlet分布选中的概率值很小。</p>
+
+<p><img src="http://img.blog.csdn.net/20141128172421973" alt="" /><img src="http://img.blog.csdn.net/20141128172441161" alt="" /></p>
+
+<h3 id="plsalda-1">4.3.3 pLSA跟LDA的概率图对比</h3>
+
+<p>接下来，对比下LDA跟pLSA的概率模型图模型，左图是pLSA，右图是LDA（右图不太规范，z跟w都得是小写， 其中，阴影圆圈表示可观测的变量，非阴影圆圈表示隐变量，箭头表示两变量间的条件依赖性conditional dependency，方框表示重复抽样，方框右下角的数字代表重复抽样的次数）</p>
+
+<p><img src="http://img.blog.csdn.net/20141118234229125" alt="" /></p>
+
+<p>而对于LDA model：</p>
+
+<p><img src="http://img.blog.csdn.net/20141120172828681" alt="" /></p>
+
+<p>对应到上面右图的LDA，只有W / w是观察到的变量，其他都是隐变量或者参数，其中，Φ表示词分布，Θ表示主题分布， 是主题分布Θ的先验分布（即Dirichlet 分布）的参数，是词分布Φ的先验分布（即Dirichlet 分布）的参数，N表示文档的单词总数，M表示文档的总数</p>
+
+<p>对于一篇文档d中的每一个单词，LDA根据先验知识确定某篇文档的主题分布θ，然后从该文档所对应的多项分布（主题分布）θ中抽取一个主题z，接着根据先验知识确定当前主题的词语分布ϕ，然后从主题z所对应的多项分布（词分布）ϕ中抽取一个单词w。然后将这个过程重复N次，就产生了文档d。</p>
+
+<p>1.假定语料库中共有M篇文章，每篇文章下的Topic的主题分布是一个从参数为的<strong>Dirichlet先验分布</strong>中采样得到的<strong>Multinomial分布</strong>，每个Topic下的词分布是一个从参数为的Dirichlet先验分布中采样得到的Multinomial分布。</p>
+
+<p>2.对于某篇文章中的第n个词，首先从该文章中出现的每个主题的<strong>Multinomial分布</strong>（主题分布）中选择或采样一个主题，然后再在这个主题对应的词的<strong>Multinomial分布</strong>（词分布）中选择或采样一个词。不断重复这个随机生成过程，直到M篇文章全部生成完成。</p>
+
+<p>综上，M 篇文档会对应于 M 个独立的 Dirichlet-Multinomial 共轭结构，K 个 topic 会对应于 K 个独立的 Dirichlet-Multinomial 共轭结构。</p>
+
+<p>其中，$\alpha$→θ→z 表示生成文档中的所有词对应的主题，显然 $\alpha$→θ 对应的是<strong>Dirichlet 分布</strong>，θ→z 对应的是 <strong>Multinomial 分布</strong>，所以整体是一个 <strong>Dirichlet-Multinomial</strong> 共轭结构，如下图所示</p>
+
+<p><img src="http://img.blog.csdn.net/20141120174743000" alt="" /></p>
+
+<p>类似的，β→φ→w，容易看出， 此时β→φ对应的是 Dirichlet 分布， φ→w 对应的是 Multinomial 分布， 所以整体也是一个Dirichlet-Multinomial 共轭结构，如下图所示</p>
+
+<p><img src="http://img.blog.csdn.net/20141120174912796" alt="" /></p>
+
+<h3 id="plsalda-2">4.3.4 pLSA跟LDA参数估计方法的对比</h3>
+
+<p>上面对比了pLSA跟LDA生成文档的不同过程，下面，咱们反过来，假定文档已经产生，反推其主题分布。那么，它们估计未知参数所采用的方法又有什么不同呢</p>
+
+<p>在pLSA中，我们使用EM算法去估计“主题-词项”矩阵Φ（由$P(w_j, z_k)$转换得到）和“文档-主题”矩阵Θ（由$P(z_k, d_i)$转换得到）这两个参数，而且这两参数都是个固定的值，只是未知，使用的思想其实就是极大似然估计MLE。</p>
+
+<p>而在LDA中，估计Φ、Θ这两未知参数可以用<strong>变分(Variational inference)-EM算法</strong>，也可以用<strong>gibbs采样</strong>，前者的思想是<strong>最大后验估计MAP</strong>（MAP与MLE类似，都把未知参数当作固定的值），后者的思想是<strong>贝叶斯估计</strong>。贝叶斯估计是对MAP的扩展，但它与MAP有着本质的不同，即贝叶斯估计把待估计的参数看作是服从某种先验分布的随机变量。</p>
+
+<h3 id="gibbs-sampling-">4.3.5 Gibbs sampling 采样估计</h3>
+
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/blog/2016/06/20/NLP_tutorial/" data-toggle="tooltip" data-placement="top" title="NLP tutorial 电影评论情感分析">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/blog/2016/06/26/Bloom_Filter/" data-toggle="tooltip" data-placement="top" title="Bloom Filter 简介">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- Duoshuo Share start -->
+                <style>
+                    .ds-share{
+                        text-align: right;
+                    }
+                    
+                    @media only screen and (max-width: 700px) {
+                        .ds-share {
+
+                        }
+                    }
+                </style>
+
+                <div class="ds-share"
+                    data-thread-key="/blog/2016/06/23/LDA" data-title="LDA 简介"
+                    data-images="samshaq19912009.github.io/img/green.jpg"
+                    data-content="LDA 简介
+
+我们来学习一下LDA（Latent Dirichlet Allocation）模型。
+
+前言
+
+按照wiki上的介绍，LDA由Blei, ... | Microdust:Azeril's blog"
+                    data-url="samshaq19912009.github.io/blog/2016/06/23/LDA/">
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- Duoshuo Share end-->
+
+
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread" data-thread-key="/blog/2016/06/23/LDA" data-title="LDA 简介" data-url="samshaq19912009.github.io/blog/2016/06/23/LDA/"></div>
+                </div>
+                <!-- 多说评论框 end -->
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"cnfeat"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <!-- kill the Facebook and Weibo -->
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+                    
+                    <!--
+                    
+                    -->
+
+                    <!--
+                    
+                    -->
+
+                    
+                    <!--
+                    
+                    -->
+
+                </ul>
+                <p class="copyright text-muted">
+                &copy; 2016  Chengcen  ❖ Powered by Jekyll.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+
+<!-- Highlight.js -->
+<script>
+    async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js",function(){
+        hljs.initHighlightingOnLoad();
+    })
+</script>
+<link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+
+
+</body>
+
+</html>

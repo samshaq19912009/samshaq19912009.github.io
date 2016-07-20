@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>FP-growth Algorithm - Chengcen</title>
+
+    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/06/16/FP_Tree/">
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\(', '\)'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+    <!-- Icons -->
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+
+
+
+
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Chengcen</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/archive/">Archive</a>
+                </li>
+                
+                <li>
+                    <a href="/milestone/">milestone</a>
+                </li>
+                
+                <li>
+                    <a href="/tags/">Tags</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/green.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="Tags">
+                        
+                        <a class="tag" href="/Tags/#Machine Learning" title="Machine Learning">Machine Learning</a>
+                        
+                        <a class="tag" href="/Tags/#Notes" title="Notes">Notes</a>
+                        
+                    </div>
+                    <h1>FP-growth Algorithm</h1>
+                    
+                      
+                    <span class="meta">Posted by Chengcen on June 16, 2016</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
+
+                <h1 id="fp-growth-algorithm">FP-growth Algorithm</h1>
+
+<h2 id="fp-trees-an-efficient-way-to-encode-data">FP-trees: an efficient way to encode data</h2>
+
+<p><strong>Pros</strong>: Faster than Apriori</p>
+
+<p><strong>Cons</strong>: Difficult to implement; certain datasets degrades performance</p>
+
+<p><strong>Work with</strong>: Nominal values</p>
+
+<p>Unlike a search tree, an item can appear multiple times in the same tree. The FP- tree is used to store the frequency of occurrence for sets of items. Sets are stored as paths in the tree. Sets with similar items will share part of the tree. Only when they differ will the tree split. A node identifies a single item from the set and the number of times it occurred in this sequence. A path will tell you how many times a sequence occurred.</p>
+
+<p>#<img src="/Users/Sakamoto/Documents/blog/samshaq19912009.github.io/_posts/FPTree.png" alt="alt text" title="Logo Title Text 1" /></p>
+
+<p><strong>General Approach</strong></p>
+
+<ol>
+  <li>Collect: Any method</li>
+  <li>Prepare: Discrete data is needed</li>
+  <li>Analyze: any method</li>
+  <li>Train: Build an FP-Tree and mine the tree</li>
+  <li>Use: This can be used to identify commonly occurring items that can be used to make decisions, suggest items, make forecasts, and so on</li>
+</ol>
+
+<h2 id="build-an-fp-tree">Build an FP Tree</h2>
+
+<h3 id="initialize-the-fp-tree-data-strcuture">Initialize the FP-Tree data strcuture</h3>
+
+<p>Each tree node has several attributes: name, count, nodeLink, parent, and children.</p>
+
+<pre><code class="language-Python">class treeNode:
+    def __init__(self, nameValue, numOccur, parentNode):
+        self.name = nameValue
+        self.count = numOccur
+        self.nodeLink = None
+        self.parent = parentNode      #needs to be updated
+        self.children = {} 
+    
+    def inc(self, numOccur):
+        self.count += numOccur
+        
+    def disp(self, ind=1):
+        print '  '*ind, self.name, ' ', self.count
+        for child in self.children.values():
+            child.disp(ind+1)
+
+</code></pre>
+
+<h3 id="constructing-the-fp-tree">Constructing the FP-tree</h3>
+
+<p>Implement the header table to store the frequency of each itemset</p>
+
+<p>Use the dictionary to store the header table. Also to keep track of the total count of every type of element in the FP-Tree</p>
+
+<p>The main function to create the tree, given the dataset, first loop through the data and neglect non-frequent itemset.</p>
+
+<p>Second through the dataset, update the tree with the header</p>
+
+<pre><code class="language-Python">def createTree(dataSet, minSup=1): #create FP-tree from dataset but don't mine
+    headerTable = {}
+    #go over the dataset Twice
+    for trans in dataSet:
+        for item in trans:
+            headerTable[item] = headerTable.get(item, 0) + dataSet[trans]
+    for k in headerTable.keys():
+        if headerTable[k] &lt; minSup:
+            del(headerTable[k])
+    freqItemSet = set(headerTable.keys())
+    #return freqItemSet, headerTable
+    if len(freqItemSet) == 0: return None, None
+    for k in headerTable:
+        headerTable[k] = [headerTable[k], None]
+    return headerTable
+    
+    #create the Tree
+    retTree = treeNode('Null Set', 1, None)
+    #return freqItemSet
+    for tranSet, count in dataSet.items():
+        
+        localD = {}
+        for item in tranSet:
+            if item in freqItemSet:
+                localD[item]= headerTable[item][0]
+                
+                
+        if len(localD) &gt; 0:
+            orderedItems = [v[0] for v in sorted(localD.items(), key = lambda p:p[1], reverse=True)]
+            updateTree(orderedItems, retTree, headerTable, count)
+    
+    
+    return retTree, headerTable
+        
+</code></pre>
+
+<p>Two helpful function, one is the updateTree.</p>
+
+<pre><code class="language-Python">
+###Update the tree, add the node one by one
+
+def updateTree(items, inTree, headerTable, count):
+    if items[0] in inTree.children:
+        inTree.children[items[0]].inc(count)
+    else:
+        inTree.children[items[0]] = treeNode(items[0], count, inTree)
+        if headerTable[items[0]][1] == None:
+            headerTable[items[0]][1] = inTree.children[items[0]]
+        else:
+            updateHeader(headerTable[items[0]][1], inTree.children[items[0]])
+    
+    if len(items) &gt; 1: #call tree on the remaining ordered items
+        updateTree(items[1::], inTree.children[items[0]], headerTable, count)
+
+
+</code></pre>
+
+<p>Another function to recursive find the node header</p>
+
+<pre><code class="language-Python">
+def updateHeader(nodeToTest, targetNode):   #this version does not use recursion
+    while (nodeToTest.nodeLink != None):    #Do not use recursion to traverse a linked list!
+        nodeToTest = nodeToTest.nodeLink
+    nodeToTest.nodeLink = targetNode
+</code></pre>
+
+<h2 id="mining-frequenct-items-from-an-fp-tree">Mining frequenct items from an FP-Tree</h2>
+
+<ol>
+  <li>Get conditional pattern bases from the FP-Tree</li>
+  <li>From the conditional pattern base, construct a conditional FP-Tree</li>
+  <li>Recursively repeat steps 1 and 2 on until the tree contains a single item</li>
+</ol>
+
+<h3 id="extracting-conditional-pattern-bases">Extracting conditional pattern bases</h3>
+
+<p>First function to ascend the tree</p>
+
+<pre><code class="language-Python">def ascendTree(leafNode, prefixPath): #ascends from leaf node to root
+    if leafNode.parent != None:
+        prefixPath.append(leafNode.name)
+        ascendTree(leafNode.parent, prefixPath)
+</code></pre>
+
+<p>Secondly, find the prefixPath and find the conditional paths</p>
+
+<pre><code class="language-Python">
+##Given the base pattern
+##find the conditional pattern bases
+##Use like findPrefixPath('x', myheader['x'][1])
+
+def findPrefixPath(basePat, treeNode): #treeNode comes from header table
+    condPats = {}
+    while treeNode != None:
+        prefixPath = []
+        ascendTree(treeNode, prefixPath)
+        if len(prefixPath) &gt; 1: 
+            condPats[frozenset(prefixPath[1:])] = treeNode.count
+        treeNode = treeNode.nodeLink
+    return condPats
+
+</code></pre>
+
+<h3 id="creating-conditional-fp-tree">Creating conditional FP-Tree</h3>
+
+<p>For each of the frequent items, create a conditional FP-Tree.</p>
+
+<p>Then recursively find frequent items, find conditional bases and generate another tree</p>
+
+<pre><code class="language-Python">
+def mineTree(inTree, headerTable, minSup, preFix, freqItemList):
+
+    bigL = [v[0] for v in sorted(headerTable.items(), key=lambda p: p[1])]#(sort header table)
+    for basePat in bigL:  #start from bottom of header table
+        newFreqSet = preFix.copy()
+        newFreqSet.add(basePat)
+        #print 'finalFrequent Item: ',newFreqSet    #append to set
+        freqItemList.append(newFreqSet)
+        condPattBases = findPrefixPath(basePat, headerTable[basePat][1])
+        #print 'condPattBases :',basePat, condPattBases
+        #2. construct cond FP-tree from cond. pattern base
+        myCondTree, myHead = createTree(condPattBases, minSup)
+        #print 'head from conditional tree: ', myHead
+        if myHead != None: #3. mine cond. FP-tree
+            #print 'conditional tree for: ',newFreqSet
+            #myCondTree.disp(1)            
+            mineTree(myCondTree, myHead, minSup, newFreqSet, freqItemList)
+
+
+</code></pre>
+
+<p>1.Starts by sorting the items in the header table by their frequency of occurrence.</p>
+
+<p>2.Each frequent item is added into freqItemList</p>
+
+<p>3.Recursively call findPath to create a conditional base and then fed into createTree() function</p>
+
+<h1 id="find-co-occuring-words-in-a-tweet">Find co-occuring words in a tweet</h1>
+
+<p>1.Collect: Use the python-twitter module to access tweets.
+2.Prepare: Write a function to remove URLs, remove punctuation, convert to lowercase, and create a set of words from a string.
+3.Analyze: We’ll look at the prepared data in the Python shell to make sure it’s cor- rect.
+4.Train: We’ll use createTree() and mineTree(), developed earlier in this chap- ter, to perform the FP-growth algorithm.</p>
+
+<p>First, use Python twitter api to get lots of tweets</p>
+
+<pre><code class="language-Python">
+def getLotsOfTweets(searchStr):
+    CONSUMER_KEY = ''
+    CONSUMER_SECRET = ''
+    ACCESS_TOKEN_KEY = ''
+    ACCESS_TOKEN_SECRET = ''
+    api = twitter.Api(consumer_key=CONSUMER_KEY, consumer_secret=CONSUMER_SECRET,
+                      access_token_key=ACCESS_TOKEN_KEY, 
+                      access_token_secret=ACCESS_TOKEN_SECRET)
+    #you can get 1500 results 15 pages * 100 per page
+    resultsPages = []
+    for i in range(1,15):
+        print "fetching page %d" % i
+        searchResults = api.GetSearch(searchStr, per_page=100, page=i)
+        resultsPages.append(searchResults)
+        sleep(6)
+    return resultsPages
+
+</code></pre>
+
+<p>Use the regular expression to remove all the urls</p>
+
+<pre><code class="language-Python">
+def textParse(bigString):
+    urlsRemoved = re.sub('(http:[/][/]|www.)([a-z]|[A-Z]|[0-9]|[/.]|[~])*', '', bigString)    
+    listOfTokens = re.split(r'\W*', urlsRemoved)
+    return [tok.lower() for tok in listOfTokens if len(tok) &gt; 2]
+
+</code></pre>
+
+<p>Use the FP-algorithm to find frequent items</p>
+
+<pre><code class="language-Python">def mineTweets(tweetArr, minSup=5):
+    parsedList = []
+    for i in range(14):
+        for j in range(100):
+            parsedList.append(textParse(tweetArr[i][j].text))
+    initSet = createInitSet(parsedList)
+    myFPtree, myHeaderTab = createTree(initSet, minSup)
+    myFreqList = []
+    mineTree(myFPtree, myHeaderTab, minSup, set([]), myFreqList)
+    return myFreqList
+
+</code></pre>
+
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/blog/2016/06/15/Apriori_algorithm/" data-toggle="tooltip" data-placement="top" title="Apriori algorithm">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/blog/2016/06/20/NLP_tutorial/" data-toggle="tooltip" data-placement="top" title="NLP tutorial 电影评论情感分析">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- Duoshuo Share start -->
+                <style>
+                    .ds-share{
+                        text-align: right;
+                    }
+                    
+                    @media only screen and (max-width: 700px) {
+                        .ds-share {
+
+                        }
+                    }
+                </style>
+
+                <div class="ds-share"
+                    data-thread-key="/blog/2016/06/16/FP_Tree" data-title="FP-growth Algorithm"
+                    data-images="samshaq19912009.github.io/img/green.jpg"
+                    data-content="FP-growth Algorithm
+
+FP-trees: an efficient way to encode data
+
+Pros: Faster ... | Microdust:Azeril's blog"
+                    data-url="samshaq19912009.github.io/blog/2016/06/16/FP_Tree/">
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- Duoshuo Share end-->
+
+
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread" data-thread-key="/blog/2016/06/16/FP_Tree" data-title="FP-growth Algorithm" data-url="samshaq19912009.github.io/blog/2016/06/16/FP_Tree/"></div>
+                </div>
+                <!-- 多说评论框 end -->
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"cnfeat"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <!-- kill the Facebook and Weibo -->
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+                    
+                    <!--
+                    
+                    -->
+
+                    <!--
+                    
+                    -->
+
+                    
+                    <!--
+                    
+                    -->
+
+                </ul>
+                <p class="copyright text-muted">
+                &copy; 2016  Chengcen  ❖ Powered by Jekyll.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+
+<!-- Highlight.js -->
+<script>
+    async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js",function(){
+        hljs.initHighlightingOnLoad();
+    })
+</script>
+<link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+
+
+</body>
+
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>Learning Theory - Chengcen</title>
+
+    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/03/23/Learning_Theory/">
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\(', '\)'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+    <!-- Icons -->
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+
+
+
+
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Chengcen</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/archive/">Archive</a>
+                </li>
+                
+                <li>
+                    <a href="/milestone/">milestone</a>
+                </li>
+                
+                <li>
+                    <a href="/tags/">Tags</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/green.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="Tags">
+                        
+                        <a class="tag" href="/Tags/#Machine Learning" title="Machine Learning">Machine Learning</a>
+                        
+                        <a class="tag" href="/Tags/#Notes" title="Notes">Notes</a>
+                        
+                    </div>
+                    <h1>Learning Theory</h1>
+                    
+                      
+                    <span class="meta">Posted by Chengcen on March 23, 2016</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
+
+                <p><strong>Lemma</strong>   <strong>(The union bound)</strong></p>
+
+<script type="math/tex; mode=display">P(A_{1} \cup ....\cup A_{k}) \leq P(A_{1}) +...+ P(A_{k})</script>
+
+<p><strong>Lemma</strong>   <strong>(The Hoeffding inequality)</strong>
+Let $Z_{1}$,….,$Z_{m}$ be m independent and identically distributed random variables drawn from a Bernouli($\phi$) distribution, Let $\hat\phi = (1/m)\sum_{i=1}^{m} Z_{i} $ and let any $\gamma &gt; 0$ be fixed. Then</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+P(|\phi - \hat\phi| > \gamma < 2\exp(-2\gamma^2m) ) %]]></script>
+
+<p><strong>Training error</strong> aka <strong>Empirical risk Empirical error</strong></p>
+
+<script type="math/tex; mode=display">\hat\epsilon (h) = \frac{1}{m}\sum_{i=1}^{m} { {h(x^{i}) \neq y} }</script>
+
+<p><strong>Generalization error</strong></p>
+
+<p>if we draw a new sample, the probability of misclassify</p>
+
+<script type="math/tex; mode=display">\epsilon (h) = P_{(x,y) \sim D} (h(x) \neq y )</script>
+
+<p><strong>Empirical risk minimization(ERM)</strong></p>
+
+<p>Define the <strong>hypothesis class H</strong>, EMR can be regarded as
+<script type="math/tex">\hat h = arg min_{h \in H} \hat\epsilon (h)</script></p>
+
+<h3 id="the-case-of-finite-h">The case of finite H</h3>
+
+<p>Sample $(x,y) \sim D$</p>
+
+<p>Set $Z = 1 { h_{i}(x) \neq y }$</p>
+
+<p>$Z_{j} = 1 { h_{i}(x^{j}) \neq y^{j} }$</p>
+
+<p>Now the training error would be the expected value of $Z$ and $Z_{j}$</p>
+
+<script type="math/tex; mode=display">\hat\epsilon (h_{i}) = \frac{1}{m}\sum_{i=1}^{m} { Z_{j} }</script>
+
+<p>$ \hat\epsilon (h_{i}) $ is exactly the mean of the m random variables $Z_{j}$ are drawn iid from a Bernoulli distribtuion with the mean $ \epsilon (h_{i}) $</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+P(|\hat\epsilon (h_{i})- \epsilon (h_{i}) | > \gamma ) < 2\exp(-2\gamma^2m) ) %]]></script>
+
+<p>Now want to prove this will be applied to be true for all $ h \in H$</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>let $A_{i}$ denote $ P(</td>
+      <td>\hat\epsilon (h_{i})- \epsilon (h_{i})</td>
+      <td>&gt; \gamma $</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Using the union bound:</p>
+
+<script type="math/tex; mode=display">P(\exists h \in H, \hat\epsilon (h_{i})- \epsilon (h_{i}) \geq \gamma ) \leq \sum_{i=1}^{k} 2\exp(-2\gamma^2m)</script>
+
+<p>Now the conclusion</p>
+
+<script type="math/tex; mode=display">P(\neg \exists h \in H, \hat\epsilon (h_{i})- \epsilon (h_{i}) \geq \gamma ) \geq 1 - 2k\exp(-2\gamma^2m)</script>
+
+<p>Given $\gamma$ and some $\delta$ how much $m$ must be before we can guarantee that with probability at least $1- \delta$ tranining error will be within $\gamma$ of generalization error</p>
+
+<p>Setting $\delta = 2k\exp(-2\gamma^2m) $</p>
+
+<script type="math/tex; mode=display">m \geq \frac{1}{2\gamma^2}log\frac{2k}{\delta}</script>
+
+<p>The traininng set size $m$ that a certain method or algorithm requires in order to achieve a certain level of performance is called <strong>sample complexity</strong></p>
+
+<p>The number of training example is only <strong>logarithmic</strong> in k</p>
+
+<p>Similarly, hold $m$ and $\delta$ fixed and solve for $\gamma$ in the previous equation, within probability $1-\delta$ we have that for all $h \in H$</p>
+
+<script type="math/tex; mode=display">P(|\hat\epsilon (h_{i})- \epsilon (h_{i}) | \leq \sqrt{\frac{1}{m}log\frac{2k}{\delta}}</script>
+
+<p>Define $h^{*}$ is the best possible hypothesis</p>
+
+<p><strong>Theorem</strong> let any $m$, $\delta$ be fixed, then with probability at least $1-\delta$ we have that</p>
+
+<script type="math/tex; mode=display">\epsilon(\hat{h}) \leq (min_{h \in H} \epsilon(h)) + 2  \sqrt{\frac{1}{m}log\frac{2k}{\delta}}</script>
+
+<p><strong>Corollary</strong> let any $\delta$, $\gamma$ 
+<script type="math/tex">m \geq \frac{1}{2\gamma^2}log\frac{2k}{\delta}
+      = O(\frac{1}{\gamma^2}log\frac{2k}{\delta})</script></p>
+
+<h2 id="the-case-of-infinite-h">The case of infinite H</h2>
+
+<p><strong>Intuition</strong> :</p>
+
+<p>H is parameterized by d real numbers, $m  &gt; O(d)$, the number of training examples needed is at most linear linear in parameters of the model</p>
+
+<p>$H$ <strong>shatters</strong> S if H can realize any labeling of S</p>
+
+<p>$S = {x^{i},…..,x^{d} }$ for any set of labels, there exists some $ h \in H$ so that $h(x^{(i)}) = y^{i}$ for all $i=1,…..d$</p>
+
+<p><strong>Vapnik-Chervonenkis dimension</strong> VC(H):</p>
+
+<p>the size of largest set that is shattered by H</p>
+
+<p><strong>Theorem</strong> Let H be given, and let d = VC(H), then wih probability at least $1 - \delta$, we have that for all $h \in H$,</p>
+
+<script type="math/tex; mode=display">| \epsilon(h) -\epsilon(\hat{h}) | \leq O(\sqrt{\frac{d}{m}log\frac{m}{d} + \frac{1}{m}log\frac{1}{\delta}})</script>
+
+<p>Thus, with probability at least $1 - \delta$, we also have
+<script type="math/tex">\epsilon(\hat{h}) \leq \epsilon(h) + O(\sqrt{\frac{d}{m}log\frac{m}{d} + \frac{1}{m}log\frac{1}{\delta}})</script></p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>the number of training examples needed is usually roughly <strong>linear</strong> in the number of parameters of H</p>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/blog/2016/03/22/DS-Interview/" data-toggle="tooltip" data-placement="top" title="Data Science Interview Question">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/blog/2016/03/23/Factor-analysis/" data-toggle="tooltip" data-placement="top" title="Factor Analysis">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- Duoshuo Share start -->
+                <style>
+                    .ds-share{
+                        text-align: right;
+                    }
+                    
+                    @media only screen and (max-width: 700px) {
+                        .ds-share {
+
+                        }
+                    }
+                </style>
+
+                <div class="ds-share"
+                    data-thread-key="/blog/2016/03/23/Learning_Theory" data-title="Learning Theory"
+                    data-images="samshaq19912009.github.io/img/green.jpg"
+                    data-content="Lemma   (The union bound)
+
+
+
+Lemma   (The Hoeffding inequality)
+Let $Z_{1}$,…... | Microdust:Azeril's blog"
+                    data-url="samshaq19912009.github.io/blog/2016/03/23/Learning_Theory/">
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- Duoshuo Share end-->
+
+
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread" data-thread-key="/blog/2016/03/23/Learning_Theory" data-title="Learning Theory" data-url="samshaq19912009.github.io/blog/2016/03/23/Learning_Theory/"></div>
+                </div>
+                <!-- 多说评论框 end -->
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"cnfeat"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <!-- kill the Facebook and Weibo -->
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+                    
+                    <!--
+                    
+                    -->
+
+                    <!--
+                    
+                    -->
+
+                    
+                    <!--
+                    
+                    -->
+
+                </ul>
+                <p class="copyright text-muted">
+                &copy; 2016  Chengcen  ❖ Powered by Jekyll.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+
+<!-- Highlight.js -->
+<script>
+    async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js",function(){
+        hljs.initHighlightingOnLoad();
+    })
+</script>
+<link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+
+
+</body>
+
+</html>

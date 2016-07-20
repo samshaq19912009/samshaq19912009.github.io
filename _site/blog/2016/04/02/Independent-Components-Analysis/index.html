@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>Independent Component Analysis - Chengcen</title>
+
+    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/04/02/Independent-Components-Analysis/">
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\(', '\)'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+    <!-- Icons -->
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/clean-blog.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+
+
+
+
+
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Chengcen</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                
+                <li>
+                    <a href="/about/">About</a>
+                </li>
+                
+                <li>
+                    <a href="/archive/">Archive</a>
+                </li>
+                
+                <li>
+                    <a href="/milestone/">milestone</a>
+                </li>
+                
+                <li>
+                    <a href="/tags/">Tags</a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+
+    <!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/green.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="Tags">
+                        
+                        <a class="tag" href="/Tags/#Machine Learning" title="Machine Learning">Machine Learning</a>
+                        
+                        <a class="tag" href="/Tags/#Notes" title="Notes">Notes</a>
+                        
+                    </div>
+                    <h1>Independent Component Analysis</h1>
+                    
+                      
+                    <span class="meta">Posted by Chengcen on April 2, 2016</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
+
+                <p>Image there is some data $s \in \mathbb{R}^n $ that is generated via n independent sources, What we observe is 
+<script type="math/tex">x= As</script>
+where $A$ is an unknown square matrix called the <strong>mixing matrix</strong>.Repeated observations gives us a dataset ${x^{(i)}; i=1,…m  }$, and our goal is to recover the sources $s^{(i)}$.</p>
+
+<p>Let $W = A^{-1}$  be the <strong>unmixing matrix</strong>, $w_i^T$ denote the i-th row of $W$, so that
+<script type="math/tex">W = \begin{pmatrix}
+w_1^T \\
+.\\
+.\\
+.\\
+w_n^T
+\end{pmatrix}</script>
+Thus, $w_i \in \mathbb{R}^n$ and the j-th source can be recovered by computing $s_j^{(i)} = w_j^T x^{(i)}$</p>
+
+<h2 id="ica-ambiguities">ICA ambiguities</h2>
+
+<p><strong>Permuatation matrix</strong></p>
+
+<p><strong>Scaling problem</strong></p>
+
+<p><strong>Rotation for Guassian</strong></p>
+
+<h2 id="densities-and-linear-transformations">Densities and linear transformations</h2>
+
+<script type="math/tex; mode=display">p_x(x) = p_s(Wx) \cdot W</script>
+
+<h2 id="ica-algorithm">ICA algorithm</h2>
+
+<p>We suppose that the distribution of each source $s_i$ is given by a density $p_s$, and that the joint distribution of the source is given by
+<script type="math/tex">p(s) = \prod_{i=1}^m p_s(s_i)</script>
+which gives the following density on $x = As = W^{-1}s$
+<script type="math/tex">p(x) = \prod_{i=1}^m p_s(w_i^T x) \cdot W</script>
+All that remains is to specify a density for the individual sources $p_s$</p>
+
+<p>Recall that, given a real-valued random variable $z$, its cumulative distribtuion function(cdf) $F$ is defined by $F(z_0) = P(z \leq z_0) = \int_{-\infty}^{z_0}p_z(z) dz$. Also the density of $z$ can be found from the cdf by taking its derivative:$p_z(z) = F^{‘}(z)$.</p>
+
+<p>Using the <strong>sigmoid function</strong> $g(s) = 1/(1 + e^{-s})$ as the <strong>cdf</strong> for $p_s(s)$. hence $p_s(s) = g^{‘}(s)$.</p>
+
+<p>The square matrix $W$ is the parameter in our model. Given a training set ${x^{(i)}; i=1,…m  }$, the log likelihood is given by 
+<script type="math/tex">l(W) = \sum_{i=1}^m (\sum_{j=1}^n \log g^{'}(w_j^Tx^{(i)}) + \log W)</script></p>
+
+<p>We would like to maximize this in terms $W$. By taking derivatives and using the fact that $\nabla_W W = W (W^{-1})^T$, doing a stochastic gradient ascent learning rule. Now the update rule is</p>
+
+<script type="math/tex; mode=display">W := W + \alpha \left( \begin{pmatrix}
+1 - 2g(w_1^Tx^{(i)}) \\
+1 - 2g(w_2^Tx^{(i)})\\
+.\\
+.\\
+1 - 2g(w_n^Tx^{(i)})
+\end{pmatrix} {x^{(i)}}^T + (W^T)^{-1} \right)</script>
+
+<p>After the algorithm converges, we then compute $s^{i} = W x^{(i)}$ to recover the original sources.</p>
+
+<p><strong>Remark</strong>. When writing down the likelihood of the data, we implicitly assumed that $x^{(i)}$ were independent of each other.</p>
+
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/blog/2016/04/01/EM/" data-toggle="tooltip" data-placement="top" title="EM Algorithm">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/blog/2016/04/02/Principal-Components-Analysis/" data-toggle="tooltip" data-placement="top" title="Principal Component Analysis">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <!-- Duoshuo Share start -->
+                <style>
+                    .ds-share{
+                        text-align: right;
+                    }
+                    
+                    @media only screen and (max-width: 700px) {
+                        .ds-share {
+
+                        }
+                    }
+                </style>
+
+                <div class="ds-share"
+                    data-thread-key="/blog/2016/04/02/Independent Components Analysis" data-title="Independent Component Analysis"
+                    data-images="samshaq19912009.github.io/img/green.jpg"
+                    data-content="Image there is some data $s \in \mathbb{R}^n $ that is generated via n indepe... | Microdust:Azeril's blog"
+                    data-url="samshaq19912009.github.io/blog/2016/04/02/Independent-Components-Analysis/">
+                    <div class="ds-share-inline">
+                      <ul  class="ds-share-icons-16">
+
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- Duoshuo Share end-->
+
+
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread" data-thread-key="/blog/2016/04/02/Independent Components Analysis" data-title="Independent Component Analysis" data-url="samshaq19912009.github.io/blog/2016/04/02/Independent-Components-Analysis/"></div>
+                </div>
+                <!-- 多说评论框 end -->
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"cnfeat"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    <!-- kill the Facebook and Weibo -->
+                    <li>
+                        <a href="/feed.xml">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+                    
+                    <!--
+                    
+                    -->
+
+                    <!--
+                    
+                    -->
+
+                    
+                    <!--
+                    
+                    -->
+
+                </ul>
+                <p class="copyright text-muted">
+                &copy; 2016  Chengcen  ❖ Powered by Jekyll.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/clean-blog.min.js "></script>
+
+
+
+<!-- Highlight.js -->
+<script>
+    async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js",function(){
+        hljs.initHighlightingOnLoad();
+    })
+</script>
+<link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+
+
+</body>
+
+</html>

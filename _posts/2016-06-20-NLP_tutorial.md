@@ -1,11 +1,10 @@
 ---
 layout: post
-title: NLP tutorial: 电影评论情感分析
+title: NLP tutorial 电影评论情感分析
 date: 2016-06-20
 categories: blog
 tags: [Machine Learning,Notes]
 description: NLP
-use_math: true
 ---
 
 # NLP tutorial: 电影评论情感分析
@@ -29,7 +28,7 @@ from bs4 import BeautifulSoup
 # Initialize the BeautifulSoup object on a single movie review     
 example1 = BeautifulSoup(train["review"][0])  
 
-# Print the raw review and then the output of get_text(), for 
+# Print the raw review and then the output of get_text(), for
 # comparison
 print train["review"][0]
 print example1.get_text()
@@ -58,9 +57,9 @@ words = [w for w in words if not w in stopwords.words("english")]
 print words
 ```
 
-## Bag of words 
+## Bag of words
 
-Bag of words model: 
+Bag of words model:
 从所有的文档出提取出一个词汇表（vocabulary）， 然后对每一个文档统计每一个单词出现的频率。例如以下两个句子：
 
 Sentence 1: "The cat sat on the hat"
@@ -89,15 +88,15 @@ vectorizer = CountVectorizer(analyzer = "word",   \
                              tokenizer = None,    \
                              preprocessor = None, \
                              stop_words = None,   \
-                             max_features = 5000) 
+                             max_features = 5000)
 
 # fit_transform() does two functions: First, it fits the model
 # and learns the vocabulary; second, it transforms our training data
-# into feature vectors. The input to fit_transform should be a list of 
+# into feature vectors. The input to fit_transform should be a list of
 # strings.
 train_data_features = vectorizer.fit_transform(clean_train_reviews)
 
-# Numpy arrays are easy to work with, so convert the result to an 
+# Numpy arrays are easy to work with, so convert the result to an
 # array
 train_data_features = train_data_features.toarray()
 
@@ -112,14 +111,14 @@ print vocab
 # Sum up the counts of each vocabulary word
 dist = np.sum(train_data_features, axis=0)
 
-# For each, print the vocabulary word and the number of times it 
+# For each, print the vocabulary word and the number of times it
 # appears in the training set
 for tag, count in zip(vocab, dist):
     print count, tag
 
 ```
 
-## Random Forest 
+## Random Forest
 
 现在对于每一个review， 已经转换成了一个向量，接下来，使用[Random Forest](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)的方法来进行分类。
 
@@ -128,9 +127,9 @@ print "Training the random forest..."
 from sklearn.ensemble import RandomForestClassifier
 
 # Initialize a Random Forest classifier with 100 trees
-forest = RandomForestClassifier(n_estimators = 100) 
+forest = RandomForestClassifier(n_estimators = 100)
 
-# Fit the forest to the training set, using the bag of words as 
+# Fit the forest to the training set, using the bag of words as
 # features and the sentiment labels as the response variable
 #
 # This may take a few minutes to run
@@ -150,7 +149,7 @@ print test.shape
 
 # Create an empty list and append the clean reviews one by one
 num_reviews = len(test["review"])
-clean_test_reviews = [] 
+clean_test_reviews = []
 
 print "Cleaning and parsing the test set movie reviews...\n"
 for i in xrange(0,num_reviews):
@@ -188,13 +187,13 @@ output.to_csv( "Bag_of_Words_model.csv", index=False, quoting=3 )
 
 # Define a function to split a review into parsed sentences
 def review_to_sentences( review, tokenizer, remove_stopwords=False ):
-    # Function to split a review into parsed sentences. Returns a 
+    # Function to split a review into parsed sentences. Returns a
     # list of sentences, where each sentence is a list of words
     #
     # 1. Use the NLTK tokenizer to split the paragraph into sentences
-    
+
     raw_sentences = tokenizer.tokenize(unicode(review.strip(),errors='ignore'))##convert paragraph into sentences
-    
+
     #
     # 2. Loop over each sentence
     sentences = []
@@ -231,7 +230,7 @@ def review_to_sentences( review, tokenizer, remove_stopwords=False ):
 
 ```Python
 
-# Import the built-in logging module and configure it so that Word2Vec 
+# Import the built-in logging module and configure it so that Word2Vec
 # creates nice output messages
 import logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s',\
@@ -251,11 +250,11 @@ model = word2vec.Word2Vec(sentences, workers=num_workers, \
             size=num_features, min_count = min_word_count, \
             window = context, sample = downsampling)
 
-# If you don't plan to train the model any further, calling 
+# If you don't plan to train the model any further, calling
 # init_sims will make the model much more memory-efficient.
 model.init_sims(replace=True)
 
-# It can be helpful to create a meaningful model name and 
+# It can be helpful to create a meaningful model name and
 # save the model for later use. You can load it later using Word2Vec.load()
 model_name = "300features_40minwords_10context"
 model.save(model_name)
@@ -317,18 +316,18 @@ def makeFeatureVec(words, model, num_features):
     featureVec = np.zeros((num_features,),dtype="float32")
     #
     nwords = 0.
-    # 
-    # Index2word is a list that contains the names of the words in 
-    # the model's vocabulary. Convert it to a set, for speed 
+    #
+    # Index2word is a list that contains the names of the words in
+    # the model's vocabulary. Convert it to a set, for speed
     index2word_set = set(model.index2word)
     #
     # Loop over each word in the review and, if it is in the model's
     # vocaublary, add its feature vector to the total
     for word in words:
-        if word in index2word_set: 
+        if word in index2word_set:
             nwords = nwords + 1.
             featureVec = np.add(featureVec,model[word])
-    # 
+    #
     # Divide the result by the number of words to get the average
     featureVec = np.divide(featureVec,nwords)
     return featureVec
@@ -338,22 +337,22 @@ def makeFeatureVec(words, model, num_features):
 
 ```Python
 def getAvgFeatureVecs(reviews, model, num_features):
-    # Given a set of reviews (each one a list of words), calculate 
-    # the average feature vector for each one and return a 2D numpy array 
-    # 
+    # Given a set of reviews (each one a list of words), calculate
+    # the average feature vector for each one and return a 2D numpy array
+    #
     # Initialize a counter
     counter = 0.
-    # 
+    #
     # Preallocate a 2D numpy array, for speed
     reviewFeatureVecs = np.zeros((len(reviews),num_features),dtype="float32")
-    # 
+    #
     # Loop through the reviews
     for review in reviews:
        #
        # Print a status message every 1000th review
        if counter%1000. == 0.:
            print "Review %d of %d" % (counter, len(reviews))
-       # 
+       #
        # Call the function (defined above) that makes average feature vectors
        reviewFeatureVecs[counter] = makeFeatureVec(review, model, \
            num_features)
@@ -445,7 +444,7 @@ def create_bag_of_centroids( wordlist, word_centroid_map ):
     bag_of_centroids = np.zeros( num_centroids, dtype="float32" )
     #
     # Loop over the words in the review. If the word is in the vocabulary,
-    # find which cluster it belongs to, and increment that cluster count 
+    # find which cluster it belongs to, and increment that cluster count
     # by one
     for word in wordlist:
         if word in word_centroid_map:
@@ -472,7 +471,7 @@ for review in clean_train_reviews:
         word_centroid_map )
     counter += 1
 
-# Repeat for test reviews 
+# Repeat for test reviews
 test_centroids = np.zeros(( test["review"].size, num_clusters), \
     dtype="float32" )
 
