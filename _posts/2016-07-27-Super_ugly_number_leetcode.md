@@ -1,6 +1,6 @@
 ---
 layout: post
-title: [Leetcode] Super Ugly Number
+title: Leetcode Super Ugly Number
 date: 2016-07-26
 categories: blog
 tags: [Leetcode, heap]

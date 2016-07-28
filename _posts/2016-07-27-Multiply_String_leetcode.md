@@ -1,6 +1,6 @@
 ---
 layout: post
-title: [Leetcode] Multiply String
+title: Leetcode Multiply String
 date: 2016-07-27
 categories: blog
 tags: [Leetcode, Math]

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: [Leetcode] Design Twitter
+title: Leetcode Design Twitter
 date: 2016-07-27
 categories: blog
 tags: [Leetcode, Design]
