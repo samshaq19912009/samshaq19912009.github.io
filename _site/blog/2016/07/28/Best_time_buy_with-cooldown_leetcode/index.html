@@ -8,9 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
 
-    <title>CNN 读书笔记（1） - Chengcen</title>
+    <title>Best Time to Buy with Cooldown - Chengcen</title>
 
-    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/07/17/CNN_part_1/">
+    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/07/28/Best_time_buy_with-cooldown_leetcode/">
     <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
     TeX: {
@@ -121,15 +121,15 @@
                 <div class="post-heading">
                     <div class="Tags">
                         
-                        <a class="tag" href="/Tags/#Machine Learning" title="Machine Learning">Machine Learning</a>
+                        <a class="tag" href="/Tags/#Leetcode" title="Leetcode">Leetcode</a>
                         
-                        <a class="tag" href="/Tags/#Notes" title="Notes">Notes</a>
+                        <a class="tag" href="/Tags/#Array" title="Array">Array</a>
                         
                     </div>
-                    <h1>CNN 读书笔记（1）</h1>
+                    <h1>Best Time to Buy with Cooldown</h1>
                     
                       
-                    <span class="meta">Posted by Chengcen on July 17, 2016</span>
+                    <span class="meta">Posted by Chengcen on July 28, 2016</span>
                 </div>
             </div>
         </div>
@@ -145,128 +145,83 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
 
-                <h2 id="image-classification">Image Classification</h2>
+                <p><a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/">Link</a></p>
 
-<h3 id="motivation">Motivation</h3>
+<p>Say you have an array for which the ith element is the price of a given stock on day i.</p>
 
-<p>Assigning an input image one label from a fixed set of categories,one of the core problems in Computer Vision.</p>
+<p>Design an algorithm to find the maximum profit. You may complete as many transactions as you like ( buy one and sell one share of the stock multiple times) with the following restrictions:</p>
 
-<h3 id="example">Example</h3>
+<p>You may not engage in multiple transactions at the same time ( you must sell the stock before you buy again).
+After you sell your stock, you cannot buy stock on next day. ( cooldown 1 day)</p>
 
-<p>takes a single image and assigns probabilities to 4 labels, {cat, dog, hat, mug}. In this example, the cat image is <strong>248 pixels wide</strong>, <strong>400 pixels tall</strong>, and has three color channels Red,Green,Blue (or RGB for short). Therefore, the image consists of 248 x 400 x 3 numbers, or a total of <strong>297,600</strong> numbers.</p>
+<p><strong>Example</strong></p>
 
-<p><img src="http://cs231n.github.io/assets/classify.png" alt="" /></p>
+<p>prices = [1, 2, 3, 0, 2]</p>
 
-<h3 id="challenges">Challenges</h3>
+<p>maxProfit = 3</p>
 
-<p><img src="http://cs231n.github.io/assets/challenges.jpeg" alt="" /></p>
+<p>transactions = [buy, sell, cooldown, buy, sell]</p>
 
-<h3 id="data-driven-approach">Data-driven approach.</h3>
+<p>Solution:</p>
 
-<p><strong>Data-driven approach</strong> : relying on first accumulating a training dataset of labeled images. Here is an example of what such a dataset might look like:</p>
+<p>Then the transaction sequences can end with any of these three states.</p>
 
-<p><img src="http://cs231n.github.io/assets/trainset.jpg" alt="" /></p>
+<p>For each of them we make an array, buy[n], sell[n] and rest[n].</p>
 
-<h2 id="nearest-neighbor-classifier">Nearest Neighbor Classifier</h2>
+<p>buy[i] means before day i what is the maxProfit for any sequence end with buy.</p>
 
-<ul>
-  <li>
-    <p>Train: no need to train,just memorize all the training data X_train, y_train</p>
-  </li>
-  <li>
-    <p>Calculate the distance between each X_test and X_train</p>
-  </li>
-  <li>
-    <p>Collect k most smallest y_train, do a majority to determine y_test</p>
-  </li>
-</ul>
+<p>sell[i] means before day i what is the maxProfit for any sequence end with sell.</p>
 
-<h3 id="the-choice-of-distance">The choice of distance:</h3>
+<p>rest[i] means before day i what is the maxProfit for any sequence end with rest.</p>
 
-<p>L1-norm or L2-norm ?</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>buy[i] = max(buy[i-1], reset[i-1]-price)
 
-<p>$
-d_2 (I_1, I_2) = \sqrt{\sum_{p} \left( I^p_1 - I^p_2 \right)^2}
-$</p>
+reset[i] = max(reset[i-1], sell[i-1], buy[i-1])
 
-<h3 id="vectorize-your-code">Vectorize your code!</h3>
-
-<h4 id="code-1-compute-distance-with-two-loops-native-solution">Code 1: Compute distance with two loops: native solution</h4>
-
-<pre><code class="language-Python">  def compute_distances_two_loops(self, X):
-    """
-    Compute the distance between each test point in X and each training point
-    in self.X_train using a nested loop over both the training data and the
-    test data.
-
-    Inputs:
-    - X: A numpy array of shape (num_test, D) containing test data.
-
-    Returns:
-    - dists: A numpy array of shape (num_test, num_train) where dists[i, j] 
-    - is the Euclidean distance between the ith test point and the jth training
-      point.
-    """
-    num_test = X.shape[0]
-    num_train = self.X_train.shape[0]
-    dists = np.zeros((num_test, num_train))
-    for i in xrange(num_test):
-        for j in xrange(num_train):
-            dists[i][j] = np.linalg.norm(X[i]-self.X_train[j])
-
-
-    return dists
-
+sell[i] = max(buy[i-1]+price, sell[i-1])
 </code></pre>
-<p>#### Code 2: Compute distance with one loop– not much faster</p>
+</div>
 
-<pre><code class="language-Python"> def compute_distances_one_loop(self, X):
-    """
-    Compute the distance between each test point in X and each training point
-    in self.X_train using a single loop over the test data.
+<p>To make sure buy-reset-buy is not going to happen, observe that</p>
 
-    Input / Output: Same as compute_distances_two_loops
-    """
-    num_test = X.shape[0]
-    num_train = self.X_train.shape[0]
-    dists = np.zeros((num_test, num_train))
-    for i in xrange(num_test):
-        dists[i,:] = np.sqrt(np.sum(np.square(self.X_train - X[i]),axis=-1))
+<p>reset[i] &gt;= buy[i-1], so</p>
 
-    return dists
-</code></pre>
+<p>reset[i] = max(reset[i-1], sell[i-1])</p>
 
-<h4 id="code-3-compute-distance-without-loop----much-faster">Code 3 Compute distance without loop – much faster</h4>
+<p>reset[i] &lt;= sell[i] =&gt; reset[i] == sell[i-1]</p>
 
-<pre><code class="language-Python">  def compute_distances_no_loops(self, X):
-    """
-    Compute the distance between each test point in X and each training point
-    in self.X_train using no explicit loops.
+<p>so</p>
 
-    Input / Output: Same as compute_distances_two_loops
-    """
-    num_test = X.shape[0]
-    num_train = self.X_train.shape[0]
-    dists = np.zeros((num_test, num_train))
-    product = np.dot(X, self.X_train.T)
-    test_sum = np.square(X).sum(axis=1)
-    train_sum = np.square(self.X_train).sum(axis=1)
-    dists = np.sqrt(-2*product + np.matrix(test_sum).T + np.matrix(train_sum))
+<div class="highlighter-rouge"><pre class="highlight"><code>buy[i] = max(buy[i-1], sell[i-2]-price)
+
+sell[i] = max(sell[i-1], buy[i-1]+price)
 
 
 </code></pre>
+</div>
 
-<h4 id="speed-compare">Speed Compare</h4>
+<p>The final solution is</p>
 
-<p>Two loop version took 23.563113 seconds</p>
+<pre><code class="language-Python">class Solution(object):
+    def maxProfit(self, prices):
+        """
+        :type prices: List[int]
+        :rtype: int
+        """
+        if len(prices) &lt; 2:
+            return 0
+        sell,buy = 0,-prices[0]
+        pre_sell, pre_buy = 0,0
+        for price in prices:
+            pre_buy = buy
+            buy = max(pre_sell - price, pre_buy)
+            pre_sell = sell
+            sell = max(pre_buy + price, pre_sell)
+            
+        return sell
 
-<p>One loop version took 49.459447 seconds</p>
 
-<p>No loop version took 0.311029 seconds</p>
-
-<h3 id="cross-validation---hyperparameter-tuning">Cross validation - hyperparameter tuning</h3>
-
-<p><img src="http://cs231n.github.io/assets/cvplot.png" alt="" /></p>
+</code></pre>
 
 
 
@@ -275,13 +230,9 @@ $</p>
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/blog/2016/07/10/RNN_tutorial/" data-toggle="tooltip" data-placement="top" title="RNN 算法简介">&larr; Previous Post</a>
+                        <a href="/blog/2016/07/28/Sipral_matrix_leetcode/" data-toggle="tooltip" data-placement="top" title="Leetcode Spiral Matrix">&larr; Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/blog/2016/07/17/CNN_2/" data-toggle="tooltip" data-placement="top" title="CNN 读书笔记（2）">Next Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
@@ -299,14 +250,12 @@ $</p>
                 </style>
 
                 <div class="ds-share"
-                    data-thread-key="/blog/2016/07/17/CNN_part_1" data-title="CNN 读书笔记（1）"
+                    data-thread-key="/blog/2016/07/28/Best_time_buy_with cooldown_leetcode" data-title="Best Time to Buy with Cooldown"
                     data-images="samshaq19912009.github.io/img/green.jpg"
-                    data-content="Image Classification
+                    data-content="Link
 
-Motivation
-
-Assigning an input image one label from a f... | Microdust:Azeril's blog"
-                    data-url="samshaq19912009.github.io/blog/2016/07/17/CNN_part_1/">
+Say you have an array for which the ith element is the price of a given... | Microdust:Azeril's blog"
+                    data-url="samshaq19912009.github.io/blog/2016/07/28/Best_time_buy_with-cooldown_leetcode/">
                     <div class="ds-share-inline">
                       <ul  class="ds-share-icons-16">
 
@@ -325,7 +274,7 @@ Assigning an input image one label from a f... | Microdust:Azeril's blog"
 
                 <!-- 多说评论框 start -->
                 <div class="comment">
-                    <div class="ds-thread" data-thread-key="/blog/2016/07/17/CNN_part_1" data-title="CNN 读书笔记（1）" data-url="samshaq19912009.github.io/blog/2016/07/17/CNN_part_1/"></div>
+                    <div class="ds-thread" data-thread-key="/blog/2016/07/28/Best_time_buy_with cooldown_leetcode" data-title="Best Time to Buy with Cooldown" data-url="samshaq19912009.github.io/blog/2016/07/28/Best_time_buy_with-cooldown_leetcode/"></div>
                 </div>
                 <!-- 多说评论框 end -->
             </div>

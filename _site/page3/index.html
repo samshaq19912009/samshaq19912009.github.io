@@ -136,164 +136,161 @@
 		<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
 			
 <div class="post-preview">
-    <a href="/blog/2016/04/06/Remove_duplicate/">
+    <a href="/blog/2016/06/20/NLP_tutorial/">
         <h2 class="post-title">
-            Remove duplicate
+            NLP tutorial 电影评论情感分析
         </h2>
         
         <div class="post-content-preview">
-            class Solution {
- public:
-  ListNode *deleteDuplicate(ListNode *head) {
-    if (!head || !head-&gt;next) return head;
-    ListNode *p = head-&gt;ne...
+            NLP tutorial: 电影评论情感分析
+
+自然语言处理是用来处理语言文字的工具，目的是为了把自然語言轉化為計算機程序更易于處理的形式。这一篇tutorial是用来分析电影评论的情感（sentimental anaylysis）。
+
+读入数据
+
+首先需要录入data， train data...
         </div>
     </a>
-    <p class="post-meta">Posted by Chengcen on April 6, 2016</p>
+    <p class="post-meta">Posted by Chengcen on June 20, 2016</p>
 </div>
 
 <hr>
 
 <div class="post-preview">
-    <a href="/blog/2016/04/06/QR_Linear/">
+    <a href="/blog/2016/06/16/FP_Tree/">
         <h2 class="post-title">
-            Cholesky and QR algorithm
+            FP-growth Algorithm
         </h2>
         
         <div class="post-content-preview">
-            In linear regression we try to minimize the train error:
+            FP-growth Algorithm
 
-and solve the normal equations :
+FP-trees: an efficient way to encode data
 
-The solution is obtained by 
+Pros: Faster than Apriori
 
-
-However, direct calculat...
+Cons: Difficult to implement; certain datasets degrades ...
         </div>
     </a>
-    <p class="post-meta">Posted by Chengcen on April 6, 2016</p>
+    <p class="post-meta">Posted by Chengcen on June 16, 2016</p>
 </div>
 
 <hr>
 
 <div class="post-preview">
-    <a href="/blog/2016/04/06/Power-method/">
+    <a href="/blog/2016/06/15/Apriori_algorithm/">
         <h2 class="post-title">
-            Power methods
+            Apriori algorithm
         </h2>
         
         <div class="post-content-preview">
-            Power method
+            Apriori algorithm
 
-The eigenvalues of an $n \times n$ matrix A are obtained by solving its characteristic equation
+Assoication analysis
 
+Pros: Easy to code up
 
+Cons: May be slow on large datasets
 
-Dominant Eigenvalue and Dominant E...
+Works with: Numeric values, nominal values
+
+Su...
         </div>
     </a>
-    <p class="post-meta">Posted by Chengcen on April 6, 2016</p>
+    <p class="post-meta">Posted by Chengcen on June 15, 2016</p>
 </div>
 
 <hr>
 
 <div class="post-preview">
-    <a href="/blog/2016/04/02/Principal-Components-Analysis/">
+    <a href="/blog/2016/06/06/dijstra/">
         <h2 class="post-title">
-            Principal Component Analysis
+            Dijkstra Algorithm
         </h2>
         
         <div class="post-content-preview">
-            First, pre-process the data to normalize its mean and variance as follows:
+            Dijkstra Algorithm
 
+Input: Given a graph and a source, compute the smallest distance from the source to all the other node
 
-  Let $\mu = \frac{1}{m}\sum_{i=1}^m x^{(i)}$
-  Replace each $x^{(i)}$...
+Worst Running Time :  $...
         </div>
     </a>
-    <p class="post-meta">Posted by Chengcen on April 2, 2016</p>
+    <p class="post-meta">Posted by Chengcen on June 6, 2016</p>
 </div>
 
 <hr>
 
 <div class="post-preview">
-    <a href="/blog/2016/04/02/Independent-Components-Analysis/">
+    <a href="/blog/2016/06/06/WIS/">
         <h2 class="post-title">
-            Independent Component Analysis
+            Weigthed Independet Set
         </h2>
         
         <div class="post-content-preview">
-            Image there is some data $s \in \mathbb{R}^n $ that is generated via n independent sources, What we observe is 
-
-where $A$ is an unknown square mat...
+            
+def WIS(W):
+    ##Give an weight set , choose the max independent set using DP
+    A = [0 for i in range(len(W)+1)]
+    A[0] = 0
+    A[1] = W[0]
+ ...
         </div>
     </a>
-    <p class="post-meta">Posted by Chengcen on April 2, 2016</p>
+    <p class="post-meta">Posted by Chengcen on June 6, 2016</p>
 </div>
 
 <hr>
 
 <div class="post-preview">
-    <a href="/blog/2016/04/01/EM/">
+    <a href="/blog/2016/06/06/Knapsack_Problem/">
         <h2 class="post-title">
-            EM Algorithm
+            Knapsack Problem
         </h2>
         
         <div class="post-content-preview">
-            Mixtures of Gaussians and the EM algorithm
+            Knapsack Problem
 
-Given a training set ${x^{(1)},….x^{(m)} }$
+2D Solution
 
-Model the data by specifying a joint distribution $p(x^{(i...
+def knapsack(value, weight, wt, length):
+    k = [ [0 for i in range(wt+1)] for j in range(length+1)]
+    for w in r...
         </div>
     </a>
-    <p class="post-meta">Posted by Chengcen on April 1, 2016</p>
+    <p class="post-meta">Posted by Chengcen on June 6, 2016</p>
 </div>
 
 <hr>
 
 <div class="post-preview">
-    <a href="/blog/2016/03/31/Quick_Sort/">
+    <a href="/blog/2016/06/05/Optimal_Cashing/">
         <h2 class="post-title">
-            Quick Sort
+            Optimal Cashing
         </h2>
         
         <div class="post-content-preview">
-            Quick Sort
-
-
-  a “Greatest hit” algorithm
-  Prevalent in practise
-  Beautiful analysis
-  $O(n log n)$ time “on average”
-
-
-Key idea : partition arra...
+            In this programming problem and the next you’ll code up the greedy algorithms from lecture for minimizing the weighted sum of completion times.. Do...
         </div>
     </a>
-    <p class="post-meta">Posted by Chengcen on March 31, 2016</p>
+    <p class="post-meta">Posted by Chengcen on June 5, 2016</p>
 </div>
 
 <hr>
 
 <div class="post-preview">
-    <a href="/blog/2016/03/29/Master_Methods/">
+    <a href="/blog/2016/06/05/Mininum_Spanning_Tree/">
         <h2 class="post-title">
-            Master Methods
+            MST---Prim Algorithm
         </h2>
         
         <div class="post-content-preview">
-            Master Method
+            Minium Spanning Tree
 
-Assumption : all subproblems have equal size.
-
-
-  Base Case $T(n)$ &lt;= a constant for all sufficiently small n
-  
-    For all larg...
+A minimum spanning tree is a spanning tree of a connected, undirected graph. It connects all the vertices together with the m...
         </div>
     </a>
-    <p class="post-meta">Posted by Chengcen on March 29, 2016</p>
+    <p class="post-meta">Posted by Chengcen on June 5, 2016</p>
 </div>
 
 <hr>
