@@ -1,46 +1,40 @@
 ---
 layout: post
-title: Course Schedule
-date: 2016-08-02
+title: Binary Tree Level Order Traversal
+date: 2016-08-09
 categories: blog
-tags: [Leetcode, Array]
+tags: [Leetcode, Tree]
 description: Leetcode Solution
 ---
 
-[Leetcode Link](https://leetcode.com/problems/course-schedule-ii/)
-
-[Wiki page about Topological Sorting](https://en.wikipedia.org/wiki/Topological_sorting)
+[Leetcode Link](https://leetcode.com/problems/binary-tree-level-order-traversal/)
 
 
-### Solution 1 : Topological Sort
+
+
+### Solution 1 : Using Queue
 
 ```Python
 class Solution(object):
-    def canFinish(self, numCourses, prerequisites):
+    def levelOrder(self, root):
         """
-        :type numCourses: int
-        :type prerequisites: List[List[int]]
-        :rtype: bool
+        :type root: TreeNode
+        :rtype: List[List[int]]
         """
-        degrees = [0] * numCourses
-        graph = [ [] for x in range(numCourses)]
-        for node, pre in prerequisites:
-            degrees[node] += 1
-            graph[pre].append(node)
-        courses = set(range(numCourses))
-        flag = True
-        while flag and len(courses):
-            flag = False
-            remove = []
-            for x in courses:
-                if degrees[x] == 0:
-                    for node in graph[x]:
-                        degrees[node] -= 1
-                    remove.append(x)
-                    flag = True
-            for x in remove:
-                courses.discard(x)
-        return len(courses) == 0
+        if not root:
+            return []
+        q = [root]
+        ans = []
+        while q:
+            ans.append([node.val for node in q])
+            new_q = []
+            for node in q:
+                if node.left:
+                    new_q.append(node.left)
+                if node.right:
+                    new_q.append(node.right)
+            q = new_q
+        return ans
 
 ```
 
@@ -50,34 +44,26 @@ class Solution(object):
 
 ```Python
 class Solution(object):
-    def canFinish(self, numCourses, prerequisites):
+    def levelOrder(self, root):
         """
-        :type numCourses: int
-        :type prerequisites: List[List[int]]
-        :rtype: bool
+        :type root: TreeNode
+        :rtype: List[List[int]]
         """
-        graph = [ [] for x in range(numCourses)]
-        visited = [0] * numCourses
+        if not root:
+            return []
+        ans = []
+        self.bfs(root,0, ans)
+        return ans
         
-        for course, pre in prerequisites:
-            graph[course].append(pre)
-            
-        for i in range(numCourses):
-            if not self.dfs(i, visited, graph):
-                return False
-        return True
-    
-    def dfs(self, i, visited, graph):
-        if visited[i] == -1:
-            return False
-        elif visited[i] == 1:
-            return True
-        visited[i] = -1
-        for j in graph[i]:
-            if not self.dfs(j, visited, graph):
-                return False
-        visited[i] = 1
-        return True
+    def bfs(self, node, level, ans):
+        if not node:
+            return
+        
+        if len(ans) < level+1:
+            ans.append([])
+        ans[level].append(node.val)
+        self.bfs(node.left, level+1, ans)
+        self.bfs(node.right, level+1, ans)
 
 
 ```

@@ -5,9 +5,94 @@
     <description></description>
     <link>samshaq19912009.github.io/</link>
     <atom:link href="samshaq19912009.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 01 Aug 2016 13:12:56 +0800</pubDate>
-    <lastBuildDate>Mon, 01 Aug 2016 13:12:56 +0800</lastBuildDate>
+    <pubDate>Wed, 03 Aug 2016 11:45:18 +0800</pubDate>
+    <lastBuildDate>Wed, 03 Aug 2016 11:45:18 +0800</lastBuildDate>
     <generator>Jekyll v3.1.6</generator>
+    
+      <item>
+        <title>Course Schedule</title>
+        <description>&lt;p&gt;&lt;a href=&quot;https://leetcode.com/problems/course-schedule-ii/&quot;&gt;Leetcode Link&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Topological_sorting&quot;&gt;Wiki page about Topological Sorting&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;solution-1--topological-sort&quot;&gt;Solution 1 : Topological Sort&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;class Solution(object):
+    def canFinish(self, numCourses, prerequisites):
+        &quot;&quot;&quot;
+        :type numCourses: int
+        :type prerequisites: List[List[int]]
+        :rtype: bool
+        &quot;&quot;&quot;
+        degrees = [0] * numCourses
+        graph = [ [] for x in range(numCourses)]
+        for node, pre in prerequisites:
+            degrees[node] += 1
+            graph[pre].append(node)
+        courses = set(range(numCourses))
+        flag = True
+        while flag and len(courses):
+            flag = False
+            remove = []
+            for x in courses:
+                if degrees[x] == 0:
+                    for node in graph[x]:
+                        degrees[node] -= 1
+                    remove.append(x)
+                    flag = True
+            for x in remove:
+                courses.discard(x)
+        return len(courses) == 0
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;solution-2-depth-first-search&quot;&gt;Solution 2: Depth First Search&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;class Solution(object):
+    def canFinish(self, numCourses, prerequisites):
+        &quot;&quot;&quot;
+        :type numCourses: int
+        :type prerequisites: List[List[int]]
+        :rtype: bool
+        &quot;&quot;&quot;
+        graph = [ [] for x in range(numCourses)]
+        visited = [0] * numCourses
+        
+        for course, pre in prerequisites:
+            graph[course].append(pre)
+            
+        for i in range(numCourses):
+            if not self.dfs(i, visited, graph):
+                return False
+        return True
+    
+    def dfs(self, i, visited, graph):
+        if visited[i] == -1:
+            return False
+        elif visited[i] == 1:
+            return True
+        visited[i] = -1
+        for j in graph[i]:
+            if not self.dfs(j, visited, graph):
+                return False
+        visited[i] = 1
+        return True
+
+
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Tue, 02 Aug 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/08/02/Course_Schedule_leetcode/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/08/02/Course_Schedule_leetcode/</guid>
+        
+        <category>Leetcode</category>
+        
+        <category>Array</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
     
       <item>
         <title>Best Time to Buy with Cooldown</title>
@@ -939,145 +1024,6 @@ def softmax_loss_vectorized(W, X, y, reg):
         <category>CNN</category>
         
         <category>SVM</category>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>CNN 读书笔记（1）</title>
-        <description>&lt;h2 id=&quot;image-classification&quot;&gt;Image Classification&lt;/h2&gt;
-
-&lt;h3 id=&quot;motivation&quot;&gt;Motivation&lt;/h3&gt;
-
-&lt;p&gt;Assigning an input image one label from a fixed set of categories,one of the core problems in Computer Vision.&lt;/p&gt;
-
-&lt;h3 id=&quot;example&quot;&gt;Example&lt;/h3&gt;
-
-&lt;p&gt;takes a single image and assigns probabilities to 4 labels, {cat, dog, hat, mug}. In this example, the cat image is &lt;strong&gt;248 pixels wide&lt;/strong&gt;, &lt;strong&gt;400 pixels tall&lt;/strong&gt;, and has three color channels Red,Green,Blue (or RGB for short). Therefore, the image consists of 248 x 400 x 3 numbers, or a total of &lt;strong&gt;297,600&lt;/strong&gt; numbers.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/classify.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;challenges&quot;&gt;Challenges&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/challenges.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;data-driven-approach&quot;&gt;Data-driven approach.&lt;/h3&gt;
-
-&lt;p&gt;&lt;strong&gt;Data-driven approach&lt;/strong&gt; : relying on first accumulating a training dataset of labeled images. Here is an example of what such a dataset might look like:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/trainset.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;nearest-neighbor-classifier&quot;&gt;Nearest Neighbor Classifier&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Train: no need to train,just memorize all the training data X_train, y_train&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Calculate the distance between each X_test and X_train&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Collect k most smallest y_train, do a majority to determine y_test&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;the-choice-of-distance&quot;&gt;The choice of distance:&lt;/h3&gt;
-
-&lt;p&gt;L1-norm or L2-norm ?&lt;/p&gt;
-
-&lt;p&gt;$
-d_2 (I_1, I_2) = \sqrt{\sum_{p} \left( I^p_1 - I^p_2 \right)^2}
-$&lt;/p&gt;
-
-&lt;h3 id=&quot;vectorize-your-code&quot;&gt;Vectorize your code!&lt;/h3&gt;
-
-&lt;h4 id=&quot;code-1-compute-distance-with-two-loops-native-solution&quot;&gt;Code 1: Compute distance with two loops: native solution&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;  def compute_distances_two_loops(self, X):
-    &quot;&quot;&quot;
-    Compute the distance between each test point in X and each training point
-    in self.X_train using a nested loop over both the training data and the
-    test data.
-
-    Inputs:
-    - X: A numpy array of shape (num_test, D) containing test data.
-
-    Returns:
-    - dists: A numpy array of shape (num_test, num_train) where dists[i, j] 
-    - is the Euclidean distance between the ith test point and the jth training
-      point.
-    &quot;&quot;&quot;
-    num_test = X.shape[0]
-    num_train = self.X_train.shape[0]
-    dists = np.zeros((num_test, num_train))
-    for i in xrange(num_test):
-        for j in xrange(num_train):
-            dists[i][j] = np.linalg.norm(X[i]-self.X_train[j])
-
-
-    return dists
-
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;#### Code 2: Compute distance with one loop– not much faster&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt; def compute_distances_one_loop(self, X):
-    &quot;&quot;&quot;
-    Compute the distance between each test point in X and each training point
-    in self.X_train using a single loop over the test data.
-
-    Input / Output: Same as compute_distances_two_loops
-    &quot;&quot;&quot;
-    num_test = X.shape[0]
-    num_train = self.X_train.shape[0]
-    dists = np.zeros((num_test, num_train))
-    for i in xrange(num_test):
-        dists[i,:] = np.sqrt(np.sum(np.square(self.X_train - X[i]),axis=-1))
-
-    return dists
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&quot;code-3-compute-distance-without-loop----much-faster&quot;&gt;Code 3 Compute distance without loop – much faster&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;  def compute_distances_no_loops(self, X):
-    &quot;&quot;&quot;
-    Compute the distance between each test point in X and each training point
-    in self.X_train using no explicit loops.
-
-    Input / Output: Same as compute_distances_two_loops
-    &quot;&quot;&quot;
-    num_test = X.shape[0]
-    num_train = self.X_train.shape[0]
-    dists = np.zeros((num_test, num_train))
-    product = np.dot(X, self.X_train.T)
-    test_sum = np.square(X).sum(axis=1)
-    train_sum = np.square(self.X_train).sum(axis=1)
-    dists = np.sqrt(-2*product + np.matrix(test_sum).T + np.matrix(train_sum))
-
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&quot;speed-compare&quot;&gt;Speed Compare&lt;/h4&gt;
-
-&lt;p&gt;Two loop version took 23.563113 seconds&lt;/p&gt;
-
-&lt;p&gt;One loop version took 49.459447 seconds&lt;/p&gt;
-
-&lt;p&gt;No loop version took 0.311029 seconds&lt;/p&gt;
-
-&lt;h3 id=&quot;cross-validation---hyperparameter-tuning&quot;&gt;Cross validation - hyperparameter tuning&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/cvplot.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Sun, 17 Jul 2016 00:00:00 +0800</pubDate>
-        <link>samshaq19912009.github.io/blog/2016/07/17/CNN_part_1/</link>
-        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/07/17/CNN_part_1/</guid>
-        
-        <category>Machine Learning</category>
-        
-        <category>Notes</category>
         
         
         <category>blog</category>
