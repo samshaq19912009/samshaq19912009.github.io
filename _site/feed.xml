@@ -5,89 +5,73 @@
     <description></description>
     <link>samshaq19912009.github.io/</link>
     <atom:link href="samshaq19912009.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 03 Aug 2016 11:45:18 +0800</pubDate>
-    <lastBuildDate>Wed, 03 Aug 2016 11:45:18 +0800</lastBuildDate>
+    <pubDate>Thu, 11 Aug 2016 01:49:52 +0800</pubDate>
+    <lastBuildDate>Thu, 11 Aug 2016 01:49:52 +0800</lastBuildDate>
     <generator>Jekyll v3.1.6</generator>
     
       <item>
-        <title>Course Schedule</title>
-        <description>&lt;p&gt;&lt;a href=&quot;https://leetcode.com/problems/course-schedule-ii/&quot;&gt;Leetcode Link&lt;/a&gt;&lt;/p&gt;
+        <title>Binary Tree Level Order Traversal</title>
+        <description>&lt;p&gt;&lt;a href=&quot;https://leetcode.com/problems/binary-tree-level-order-traversal/&quot;&gt;Leetcode Link&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Topological_sorting&quot;&gt;Wiki page about Topological Sorting&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;solution-1--topological-sort&quot;&gt;Solution 1 : Topological Sort&lt;/h3&gt;
+&lt;h3 id=&quot;solution-1--using-queue&quot;&gt;Solution 1 : Using Queue&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;class Solution(object):
-    def canFinish(self, numCourses, prerequisites):
+    def levelOrder(self, root):
         &quot;&quot;&quot;
-        :type numCourses: int
-        :type prerequisites: List[List[int]]
-        :rtype: bool
+        :type root: TreeNode
+        :rtype: List[List[int]]
         &quot;&quot;&quot;
-        degrees = [0] * numCourses
-        graph = [ [] for x in range(numCourses)]
-        for node, pre in prerequisites:
-            degrees[node] += 1
-            graph[pre].append(node)
-        courses = set(range(numCourses))
-        flag = True
-        while flag and len(courses):
-            flag = False
-            remove = []
-            for x in courses:
-                if degrees[x] == 0:
-                    for node in graph[x]:
-                        degrees[node] -= 1
-                    remove.append(x)
-                    flag = True
-            for x in remove:
-                courses.discard(x)
-        return len(courses) == 0
+        if not root:
+            return []
+        q = [root]
+        ans = []
+        while q:
+            ans.append([node.val for node in q])
+            new_q = []
+            for node in q:
+                if node.left:
+                    new_q.append(node.left)
+                if node.right:
+                    new_q.append(node.right)
+            q = new_q
+        return ans
 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&quot;solution-2-depth-first-search&quot;&gt;Solution 2: Depth First Search&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;class Solution(object):
-    def canFinish(self, numCourses, prerequisites):
+    def levelOrder(self, root):
         &quot;&quot;&quot;
-        :type numCourses: int
-        :type prerequisites: List[List[int]]
-        :rtype: bool
+        :type root: TreeNode
+        :rtype: List[List[int]]
         &quot;&quot;&quot;
-        graph = [ [] for x in range(numCourses)]
-        visited = [0] * numCourses
+        if not root:
+            return []
+        ans = []
+        self.bfs(root,0, ans)
+        return ans
         
-        for course, pre in prerequisites:
-            graph[course].append(pre)
-            
-        for i in range(numCourses):
-            if not self.dfs(i, visited, graph):
-                return False
-        return True
-    
-    def dfs(self, i, visited, graph):
-        if visited[i] == -1:
-            return False
-        elif visited[i] == 1:
-            return True
-        visited[i] = -1
-        for j in graph[i]:
-            if not self.dfs(j, visited, graph):
-                return False
-        visited[i] = 1
-        return True
+    def bfs(self, node, level, ans):
+        if not node:
+            return
+        
+        if len(ans) &amp;lt; level+1:
+            ans.append([])
+        ans[level].append(node.val)
+        self.bfs(node.left, level+1, ans)
+        self.bfs(node.right, level+1, ans)
 
 
 &lt;/code&gt;&lt;/pre&gt;
 </description>
-        <pubDate>Tue, 02 Aug 2016 00:00:00 +0800</pubDate>
-        <link>samshaq19912009.github.io/blog/2016/08/02/Course_Schedule_leetcode/</link>
-        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/08/02/Course_Schedule_leetcode/</guid>
+        <pubDate>Tue, 09 Aug 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/08/09/Course_Schedule_leetcode/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/08/09/Course_Schedule_leetcode/</guid>
         
         <category>Leetcode</category>
         
-        <category>Array</category>
+        <category>Tree</category>
         
         
         <category>blog</category>
