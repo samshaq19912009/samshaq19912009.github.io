@@ -5,9 +5,414 @@
     <description></description>
     <link>samshaq19912009.github.io/</link>
     <atom:link href="samshaq19912009.github.io/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 11 Aug 2016 01:49:52 +0800</pubDate>
-    <lastBuildDate>Thu, 11 Aug 2016 01:49:52 +0800</lastBuildDate>
+    <pubDate>Thu, 11 Aug 2016 11:01:46 +0800</pubDate>
+    <lastBuildDate>Thu, 11 Aug 2016 11:01:46 +0800</lastBuildDate>
     <generator>Jekyll v3.1.6</generator>
+    
+      <item>
+        <title>Optimal Binary Search Tree</title>
+        <description>&lt;h3 id=&quot;problem-descirption&quot;&gt;Problem Descirption&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Recall&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;For a given set of keys, there are lots of valid search Tree&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://upload.wikimedia.org/wikipedia/commons/d/da/Binary_search_tree.svg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Question&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;What is the “best” search tree&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;A good answer&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;A balanced search tree&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Input&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;Frequencies $p1, p2, p_n$ for items $1,2,….n$&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Goal&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;Compute a valid search tree that minimized the weighted average search time:&lt;/p&gt;
+
+&lt;p&gt;$C(T) = \sum_{items i}p_i * [\mbox{search time in T}]$&lt;/p&gt;
+
+&lt;h4 id=&quot;comparison-with-huffman-codes&quot;&gt;Comparison with Huffman Codes&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;Similarities:&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Output = a binary tree&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Goal is (essentially) to minimize average depth with respect to
+given probabilities&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Differences&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;With Huffman codes, constraint was prefix-freeness&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Constraint = search tree property&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;greedy-doesnt-work&quot;&gt;Greedy Doesn’t Work&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Issue&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;With the top-down approach, the choice of root has hard-to-predict repercussions further down the tree.&lt;/p&gt;
+
+&lt;h3 id=&quot;optimal-substructure&quot;&gt;Optimal Substructure&lt;/h3&gt;
+
+&lt;p&gt;Suppose an optimal BST for keys {1, 2, . . . , n} has root r, left subtree T1, right subtree T2.&lt;/p&gt;
+
+&lt;p&gt;T1 is optimal for the keys {1,2,…,r −1} and T2 for the keys {r +1,r +2,…,n}&lt;/p&gt;
+
+&lt;h4 id=&quot;proof-of--optimal-substructure&quot;&gt;Proof of  Optimal Substructure&lt;/h4&gt;
+
+&lt;p&gt;$C(T) = C(T_1) + C(T_2)$&lt;/p&gt;
+
+&lt;h3 id=&quot;the-recurrence&quot;&gt;The Recurrence&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Notation:&lt;/strong&gt; For 1 ≤ i ≤ j ≤ n, let $C_{ij}$ = weighted search cost of an optimal BST for the items {i, i + 1, . . . , j − 1, j} [with probabilities pi,pi+1,…,pj]&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Recurrence:&lt;/strong&gt; 
+$C_{i j} = min_{r=i,..j}{ \sum_{k=i}^j p_k + C_{i,r-1} + C_{r+1, j} }$&lt;/p&gt;
+
+&lt;h3 id=&quot;running-time&quot;&gt;Running Time&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;$O(n^2)$ subproblems&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;$O(j-i)$ time to compute subproblem&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;$O(n^3)$ time overall&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;python-implementation&quot;&gt;Python implementation&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;def optimal_BST(key, freq):
+    n = len(key)
+    cost = [[0 for i in range(n)] for i in range(n)]
+    for i in range(n):
+        cost[i][i] = freq[i]
+    for s in range(1, n):#s means i-j
+        for i in range(n-s):
+            j = i+s
+            
+            cost[i][j] = 10000
+            for r in range(i,j+1):
+                left = cost[i][r-1] if r &amp;gt; i else 0
+                right = cost[r+1][j] if r &amp;lt; j else 0
+                temp = left + right + sum_freq(freq,i,j)
+                if temp &amp;lt; cost[i][j]:
+                    cost[i][j] = temp
+    return cost[0][n-1]
+    
+    
+def sum_freq(freq, i, j):
+    total = sum(freq[i:j+1])
+    
+    return total
+
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+</description>
+        <pubDate>Tue, 09 Aug 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/08/09/Optimal_BST/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/08/09/Optimal_BST/</guid>
+        
+        <category>Algorithms</category>
+        
+        <category>Notes</category>
+        
+        <category>Dynamics programming</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>The Bellman-Ford Algorithm</title>
+        <description>&lt;p&gt;&lt;strong&gt;Input:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Directed graph G = (V,E), edge lengths $c_e$ for each e ∈ E, source vertex s ∈ V . [Can assume no parallel edges.]&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Goal:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;For every destination v ∈ V , compute the length (sum of edge costs) of a shortest s-v path.&lt;/p&gt;
+
+&lt;h3 id=&quot;on-dijkstras-algorithm&quot;&gt;On Dijkstra’s Algorithm&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Good News&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;O(E log V) running time using heaps&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Bad News&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Not always correct with negative edge lengths&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Not very distributed&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;optimal-substructure&quot;&gt;Optimal Substructure&lt;/h3&gt;
+
+&lt;p&gt;Suppose the input graph G has no negative cycles, &lt;strong&gt;For every v, there is a shortest s-v path with ≤ n − 1 edges&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Key idea:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Artificially restrict the &lt;strong&gt;number of edges&lt;/strong&gt; in a path. Subproblem size ⇐⇒ Number of permitted edges&lt;/p&gt;
+
+&lt;h3 id=&quot;the-recurrence&quot;&gt;The Recurrence&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Notation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;$L_{i,v}$ minimum length of a s-v path, with no bigger than i edges&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Recurrence&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;$L_{i,v}$ = min ( $L_{i-1,v}$, $min_{u,v \in E} L_{i-1,w} + C_{wv}  $ )&lt;/p&gt;
+
+&lt;h3 id=&quot;running-time&quot;&gt;Running Time&lt;/h3&gt;
+
+&lt;p&gt;$O(n^2)$ Space Complexity&lt;/p&gt;
+
+&lt;p&gt;Outer loop: V loop&lt;/p&gt;
+
+&lt;p&gt;Inner Choice: $\sum_{v \in V} \mbox(indeg) V$&lt;/p&gt;
+
+&lt;p&gt;Time $O(E * V)$&lt;/p&gt;
+
+&lt;h3 id=&quot;python-implentation&quot;&gt;Python Implentation&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def bellman_ford(graph,	node):
+    n =	len(graph.keys())
+    distance = [float(&quot;inf&quot;) for _ in range(n)]
+    predecessor	[ None for _ in	range(n)]
+    distance[node] = 0
+    #relax
+    for	i in range(1,n-1):
+	for u in graph.keys():
+            for	v,w in graph[v]:
+		if distance[u]+w&amp;lt;distance[v]:
+                    distance[v] = distance[u]+w
+                    predecessor[v] = u
+    #check if there is any negative circle
+    for	u in graph.keys():
+	for v, w in graph[u]:
+            if distance[v] &amp;gt; distance[u] + w:
+		print &quot;Found a negative circle!&quot;
+		return
+    return distance, predecessor
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+</description>
+        <pubDate>Tue, 09 Aug 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/08/09/Bellman_Ford/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/08/09/Bellman_Ford/</guid>
+        
+        <category>Algorithms</category>
+        
+        <category>Notes</category>
+        
+        <category>Dynamics programming</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>The All-pairs short Paths Problem</title>
+        <description>&lt;h3 id=&quot;problem-definition&quot;&gt;Problem Definition&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Input:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Directed graph G = (V , E ) with edge costs ce for each edge e ∈ E .&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Goal:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Compute the length of a shortest u → v path for all pairs of
+vertices u, v ∈ V&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Correctly report that G contains a negative cycle.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;N&lt;/strong&gt; invocations of a single-source shortest-path subroutine are needed to solve the all-pairs shortest path problem?&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Running time (nonnegative edge costs):&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;V· &lt;strong&gt;Dijkstra&lt;/strong&gt; = O(V E logV)&lt;/p&gt;
+
+&lt;p&gt;$O(n^3 \log{n}) \mbox{if  m }= O(n^2)$&lt;/p&gt;
+
+&lt;p&gt;$O(n^2 \log{n}) \mbox{if  m = O(n)}$&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Running time (general edge costs):&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;V &lt;strong&gt;Bellman-Ford&lt;/strong&gt; = $O(V^2 E)$&lt;/p&gt;
+
+&lt;p&gt;$O(n^3 ) \mbox{if  m }= O(n)$&lt;/p&gt;
+
+&lt;p&gt;$O(n^4) \mbox{if  m }= O(n^2)$&lt;/p&gt;
+
+&lt;h3 id=&quot;floyd-warshall-algorithm&quot;&gt;Floyd-Warshall algorithm&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Time Complexity&lt;/strong&gt; $O(n^3)$&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;At least as good as n Bellman-Fords, better in dense graphs.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;In graphs with nonnegative edge costs, competitive with n Dijkstra’s in dense graphs.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;optimal-sub-problem&quot;&gt;Optimal sub-problem&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Optimal substructure lemma:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Suppose G has no negative cost cycle. Let P be a shortest (cycle-free) i-j path with all internal nodes in V (k). Then:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Case 1&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;If k not internal to P, then P is a shortest (cycle-free) i-j path with all internal vertices in V(k−1).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Case 2&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;P1 = shortest (cycle-free) i-k path with all internal nodes in
+V(k−1)&lt;/p&gt;
+
+&lt;p&gt;P2 = shortest (cycle-free) k-j path with all internal nodes in
+V(k−1&lt;/p&gt;
+
+&lt;h3 id=&quot;code-implementation&quot;&gt;Code Implementation&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def floyd_warshall_2D(graph):
+    n = len(graph.keys())
+    A = [[0 for _ in range(n)] for _ in range(n)]
+    for i in graph.keys():
+        for j in graph.keys():
+            if i == j:
+                A[i][i] = 0
+            if j in graph[i]:
+                A[i][j] = graph[i][j]
+            else:
+                A[i][j] = float(&quot;inf&quot;)
+            if i in graph[j]:
+                A[j][i] = graph[j][i]
+            else:
+                A[j][i] = float(&quot;inf&quot;)
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                if A[i][j] &amp;gt; A[i][k] + A[k][j]:
+                    A[i][j] = A[i][k] + A[j][j]
+    return A
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;johnsons-algorithm-intuition&quot;&gt;Johnson’s algorithm Intuition&lt;/h3&gt;
+
+&lt;p&gt;1 invocation of Bellman-Ford  O(V E logV)&lt;/p&gt;
+
+&lt;p&gt;n n invocations of Dijkstra $O(V E)$&lt;/p&gt;
+
+&lt;h4 id=&quot;reweighting-technique&quot;&gt;Reweighting Technique&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;Lemma 1:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;When all s-t paths in G have the same number of edges, adding a constant M to every edge &lt;strong&gt;does not change&lt;/strong&gt; the shorted s-t path&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Lemma 2&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Set up&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;G = (V , E ) is a directed graph with general edge lengths $c_e$. Fix a real number $p_v$ for each vertex v ∈ V&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Definition:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;For every edge e=(u,v) of G, $c_e′$ := $c_e$ + $p_u$ − $p_v$&lt;/p&gt;
+
+&lt;p&gt;If s-t path has originial length L: the new length is $L + p_s - p_t$&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Summary:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Reweighting using vertex weights $p_v$ adds the same amount (namely, $p_s$ − $p_t$ ) to every s -t path&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Consequence&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Reweighting always leaves the shortest path unchanged.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;After re-weighting, all edegs become positive!!&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;johnsons-algorithm-implementation&quot;&gt;Johnson’s algorithm Implementation&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Input:&lt;/strong&gt; Directed graph G = (V , E ), general edge lengths $c_e$&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Form G′ by adding a new vertex s and a new edge (s,v) with
+length 0 for each v ∈ G&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Run Bellman-Ford on G′ with source vertex s. [If B-F detects a negative-cost cycle in G′ (which must lie in G), halt + report this.]&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;For each v∈G,define pv =length of a shortest s→v path in G′. For each edgee = (u,v)∈G, define $c_e′$ := $c_e$ + $p_u$ − $p_v$&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;For each vertex u of G: Run Dijkstra’s algorithm in G, with edge lengths {ce′}, with source vertex u, to compute the shortest-path distance d′(u,v) for each v ∈ G.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;For each pair u, v ∈ G , return the shortest-path distance d(u,v):=d′(u,v)−pu +pvp&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+</description>
+        <pubDate>Tue, 09 Aug 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/08/09/All_pair_shorted_path/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/08/09/All_pair_shorted_path/</guid>
+        
+        <category>Algorithms</category>
+        
+        <category>Notes</category>
+        
+        <category>Dynamics programming</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
     
       <item>
         <title>Binary Tree Level Order Traversal</title>
@@ -72,6 +477,297 @@
         <category>Leetcode</category>
         
         <category>Tree</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>CNN 读书笔记（4） Batch Normalization</title>
+        <description>&lt;h2 id=&quot;batch-normalization&quot;&gt;Batch Normalization&lt;/h2&gt;
+
+&lt;h3 id=&quot;inutition&quot;&gt;&lt;strong&gt;Inutition&lt;/strong&gt;:&lt;/h3&gt;
+
+&lt;p&gt;Machine learning methods tend to work better when their input data consists of uncorrelated features with zero mean and unit variance.&lt;/p&gt;
+
+&lt;h3 id=&quot;problem&quot;&gt;&lt;strong&gt;Problem&lt;/strong&gt;:&lt;/h3&gt;
+
+&lt;p&gt;Even if we preprocess the input data, the activations at deeper layers of the network will likely no longer be decorrelated and will no longer have zero mean or unit variance since they are output from earlier layers in the network.&lt;/p&gt;
+
+&lt;h3 id=&quot;methods&quot;&gt;&lt;strong&gt;Methods&lt;/strong&gt;:&lt;/h3&gt;
+
+&lt;p&gt;At training time, a &lt;strong&gt;batch normalization layer&lt;/strong&gt; uses a minibatch of data to estimate the mean and standard deviation of each feature. These estimated means and standard deviations are then used to center and normalize the features of the minibatch. A &lt;strong&gt;running average of these means&lt;/strong&gt; and standard deviations is kept during training, and at test time these running averages are used to center and normalize features.&lt;/p&gt;
+
+&lt;h3 id=&quot;show-the-code&quot;&gt;Show the code:&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def batchnorm_forward(x, gamma, beta, bn_param):
+  &quot;&quot;&quot;
+  Forward pass for batch normalization.
+
+  During training the sample mean and (uncorrected) sample variance are
+  computed from minibatch statistics and used to normalize the incoming data.
+  During training we also keep an exponentially decaying running mean of the mean
+  and variance of each feature, and these averages are used to normalize data
+  at test-time.
+
+  At each timestep we update the running averages for mean and variance using
+  an exponential decay based on the momentum parameter:
+
+  running_mean = momentum * running_mean + (1 - momentum) * sample_mean
+  running_var = momentum * running_var + (1 - momentum) * sample_var
+  Input:
+  - x: Data of shape (N, D)
+  - gamma: Scale parameter of shape (D,)
+  - beta: Shift paremeter of shape (D,)
+  - bn_param: Dictionary with the following keys:
+    - mode: &#39;train&#39; or &#39;test&#39;; required
+    - eps: Constant for numeric stability
+    - momentum: Constant for running mean / variance.
+    - running_mean: Array of shape (D,) giving running mean of features
+    - running_var Array of shape (D,) giving running variance of features
+
+  Returns a tuple of:
+  - out: of shape (N, D)
+  - cache: A tuple of values needed in the backward pass
+  &quot;&quot;&quot;
+  mode = bn_param[&#39;mode&#39;]
+  eps = bn_param.get(&#39;eps&#39;, 1e-5)
+  momentum = bn_param.get(&#39;momentum&#39;, 0.9)
+
+  N, D = x.shape
+  running_mean = bn_param.get(&#39;running_mean&#39;, np.zeros(D, dtype=x.dtype))
+  running_var = bn_param.get(&#39;running_var&#39;, np.zeros(D, dtype=x.dtype))
+
+  out, cache = None, None
+  if mode == &#39;train&#39;:
+      sample_mean = np.mean(x, axis=0)
+      sample_var  = np.var(x, axis=0)
+
+      running_mean = momentum * running_mean + (1 - momentum) * sample_mean
+      running_var = momentum * running_var + (1 - momentum) * sample_var
+
+      x_normed = (x - sample_mean) / np.sqrt(sample_var + eps)
+      y = x_normed * gamma + beta
+
+      out = y
+
+      cache = (x, x_normed, gamma, beta, sample_mean, sample_var, eps)
+
+  elif mode == &#39;test&#39;:
+      x_normed = (x - running_mean) / np.sqrt(running_var + eps)
+      y = gamma * x_normed + beta
+
+      out = y
+  else:
+      raise ValueError(&#39;Invalid forward batchnorm mode &quot;%s&quot;&#39; % mode)
+
+  # Store the updated running means back into bn_param
+  bn_param[&#39;running_mean&#39;] = running_mean
+  bn_param[&#39;running_var&#39;] = running_var
+
+  return out, cache
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;### Backprogogation in Batch Normalization&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
+def batchnorm_backward(dout, cache):
+  &quot;&quot;&quot;
+  Backward pass for batch normalization.
+
+
+  Inputs:
+  - dout: Upstream derivatives, of shape (N, D)
+  - cache: Variable of intermediates from batchnorm_forward.
+
+  Returns a tuple of:
+  - dx: Gradient with respect to inputs x, of shape (N, D)
+  - dgamma: Gradient with respect to scale parameter gamma, of shape (D,)
+  - dbeta: Gradient with respect to shift parameter beta, of shape (D,)
+  &quot;&quot;&quot;
+
+  x, x_normed,gamma,beta, mean, var, eps = cache
+
+  N = x.shape[0]
+
+
+  dbeta = np.sum(dout, axis=0)
+  dgamma = np.sum(dout * x_normed, axis=0)
+  dx_normed = gamma * dout
+  dx_std = np.sum(-1.0/2*dx_normed*(x-mean)  / (var+eps)**(3.0/2), axis=0)
+  dx_mean = np.sum(dx_normed * -1.0 / np.sqrt(var+eps), axis=0) + 1.0/N * dx_std*np.sum(-2*(x - mean), axis=0)
+
+  dx = dx_normed*1/np.sqrt(var+eps) + dx_std * 2.0/N*(x-mean)+ 1.0/N * dx_mean
+
+  return dx, dgamma, dbeta
+
+&lt;/code&gt;&lt;/pre&gt;
+
+</description>
+        <pubDate>Tue, 02 Aug 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/08/02/CNN_Bacth_Normal/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/08/02/CNN_Bacth_Normal/</guid>
+        
+        <category>Machine Learning</category>
+        
+        <category>Notes</category>
+        
+        <category>CNN</category>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>CNN 读书笔记（4） Netural Network 初入门(2)</title>
+        <description>&lt;h2 id=&quot;data-preprocessing&quot;&gt;Data Preprocessing&lt;/h2&gt;
+
+&lt;p&gt;Input vector: $X [ N * D ]$&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Mean subtraction&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;X -= np.mean(X, axis = 0)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Normalization&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;(X /= np.std(X, axis = 0)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/nn2/prepro1.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;PCA and weighting&lt;/strong&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Compute the covariance matrix&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# Assume input data matrix X of size [N x D]
+X -= np.mean(X, axis = 0) # zero-center the data (important)
+cov = np.dot(X.T, X) / X.shape[0] # get the data covariance matrix
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Perform singluar value decomposition&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;the columns of U are eigenvectors. S is the eigenvalues&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;U,S,V = np.linalg.svd(cov)
+
+Xrot = np.dot(X, U) # decorrelate the data
+
+Xrot_reduced = np.dot(X, U[:,:100]) # Xrot_reduced becomes [N x 100]
+
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Weightening&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# whiten the data:
+# divide by the eigenvalues (which are square roots of the singular values)
+Xwhite = Xrot / np.sqrt(S + 1e-5)
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/nn2/prepro2.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;In practise&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;No PCA and weighten, only zero-centered the data&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Common Pitfall&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;An important point to make about the preprocessing is that any preprocessing statistics (e.g. the data mean) must only be &lt;strong&gt;computed on the training data&lt;/strong&gt;, and then applied to the validation / test data. E.g. computing the mean and subtracting it from every image across the entire dataset and then splitting the data into train/val/test splits would be a mistake. Instead, the mean must be computed &lt;strong&gt;only over the training data&lt;/strong&gt; and then &lt;strong&gt;subtracted equally from all splits&lt;/strong&gt; (train/val/test).&lt;/p&gt;
+
+&lt;h2 id=&quot;weight-initialization&quot;&gt;Weight Initialization&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;Pitfall: all zero initialization&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;p&gt;There is no source of asymmetry between neurons if their weights are initialized to be the same.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Small random numbers with variance calibraion&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;w = np.random.randn(n) / sqrt(n)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Initution: Output $s = \sum_i^n w_i x_i$ has the same variance&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+% &lt;![CDATA[
+\begin{align}
+\text{Var}(s) &amp;= \text{Var}(\sum_i^n w_ix_i) \\\\
+&amp;= \sum_i^n \text{Var}(w_ix_i) \\\\
+&amp;= \sum_i^n [E(w_i)]^2\text{Var}(x_i) + E[(x_i)]^2\text{Var}(w_i) + \text{Var}(x_i)\text{Var}(w_i) \\\\
+&amp;= \sum_i^n \text{Var}(x_i)\text{Var}(w_i) \\\\
+&amp;= \left( n \text{Var}(w) \right) \text{Var}(x)
+\end{align} %]]&gt; %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;&lt;strong&gt;In practise with Relu activation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;w = np.random.randn(n) * sqrt(2.0/n)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;regularization&quot;&gt;Regularization&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;L2 regularization&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;L1 regularization&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;In practice, if you are not concerned with explicit feature selection, L2 regularization can be expected to give superior performance over L1.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Drouout&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/nn2/dropout.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;loss-function&quot;&gt;Loss function&lt;/h2&gt;
+
+&lt;h3 id=&quot;classification&quot;&gt;&lt;strong&gt;Classification&lt;/strong&gt;&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;SVM Loss&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;$L_i = \sum_{j\neq y_i} \max(0, f_j - f_{y_i} + 1)$&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Softmax Loss&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;$L_i = -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right)$&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cross-entropy Loss&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;$L_i = \sum_j y_{ij} \log(\sigma(f_j)) + (1 - y_{ij}) \log(1 - \sigma(f_j))$&lt;/p&gt;
+
+&lt;h3 id=&quot;regression&quot;&gt;Regression&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;L2 norm&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;$L_i = \Vert f - y_i \Vert_2^2$&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Caution&lt;/strong&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;When faced with a regression task, first consider if it is absolutely necessary. Instead, have a strong preference to discretizing your outputs to bins and perform classification over them whenever possible.&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+        <pubDate>Mon, 01 Aug 2016 00:00:00 +0800</pubDate>
+        <link>samshaq19912009.github.io/blog/2016/08/01/CNN_Data-Preprocessing/</link>
+        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/08/01/CNN_Data-Preprocessing/</guid>
+        
+        <category>Machine Learning</category>
+        
+        <category>Notes</category>
+        
+        <category>CNN</category>
         
         
         <category>blog</category>
@@ -352,662 +1048,6 @@ class Solution(object):
         <category>Leetcode</category>
         
         <category>sort</category>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>Leetcode Multiply String</title>
-        <description>&lt;p&gt;&lt;a href=&quot;https://leetcode.com/problems/multiply-strings/&quot;&gt;Link&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Given two numbers represented as strings, return multiplication of the numbers as a string.&lt;/p&gt;
-
-&lt;p&gt;Note:
-The numbers can be arbitrarily large and are non-negative.
-Converting the input string to integer is NOT allowed.
-You should NOT use internal library such as BigInteger.&lt;/p&gt;
-
-&lt;p&gt;题目解析：&lt;/p&gt;
-
-&lt;p&gt;先将字符串翻转，从末尾开始计数。计算临时结果，先不要进位。&lt;/p&gt;
-
-&lt;p&gt;然后开始计算进位，每次保留carry向前一位。在ans的开头插入每一步的结果。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;class Solution(object):
-    def multiply(self, num1, num2):
-        &quot;&quot;&quot;
-        :type num1: str
-        :type num2: str
-        :rtype: str
-        &quot;&quot;&quot;
-        num1 = num1[::-1]
-        num2 = num2[::-1]
-        ans = [0] * (len(num1)+len(num2))
-        for i in range(len(num1)):
-            for j in range(len(num2)):
-                ans[i+j] += int(num1[i]) * int(num2[j])
-        
-        result = []
-        for i in range(len(ans)):
-            digit = ans[i] % 10
-            carry = ans[i] / 10
-            if i &amp;lt; len(ans) - 1:
-                ans[i+1] += carry
-            result.insert(0, str(digit))
-        while result[0] == &#39;0&#39; and len(result) &amp;gt; 1:
-            del result[0]
-        return &quot;&quot;.join(result)
-            
-
-
-&lt;/code&gt;&lt;/pre&gt;
-</description>
-        <pubDate>Wed, 27 Jul 2016 00:00:00 +0800</pubDate>
-        <link>samshaq19912009.github.io/blog/2016/07/27/Multiply_String_leetcode/</link>
-        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/07/27/Multiply_String_leetcode/</guid>
-        
-        <category>Leetcode</category>
-        
-        <category>Math</category>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>Leetcode Design Twitter</title>
-        <description>&lt;p&gt;&lt;a href=&quot;https://leetcode.com/problems/design-twitter/&quot;&gt;Link&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Design a simplified version of Twitter where users can post tweets, follow/unfollow another user and is able to see the 10 most recent tweets in the user’s news feed. Your design should support the following methods:&lt;/p&gt;
-
-&lt;p&gt;postTweet(userId, tweetId): Compose a new tweet.
-getNewsFeed(userId): Retrieve the 10 most recent tweet ids in the user’s news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent.&lt;/p&gt;
-
-&lt;p&gt;follow(followerId, followeeId): Follower follows a followee.&lt;/p&gt;
-
-&lt;p&gt;unfollow(followerId, followeeId): Follower unfollows a followee.&lt;/p&gt;
-
-&lt;p&gt;Solution:&lt;/p&gt;
-
-&lt;p&gt;Use deque to store and tweets&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
-class Twitter(object):
-
-    def __init__(self):
-        &quot;&quot;&quot;
-        Initialize your data structure here.
-        &quot;&quot;&quot;
-        self.tweets = collections.defaultdict(collections.deque)
-        self.followees = collections.defaultdict(set)
-        self.timer = itertools.count(step=-1)
-        
-
-    def postTweet(self, userId, tweetId):
-        &quot;&quot;&quot;
-        Compose a new tweet.
-        :type userId: int
-        :type tweetId: int
-        :rtype: void
-        &quot;&quot;&quot;
-        self.tweets[userId].appendleft((next(self.timer), tweetId))
-        
-
-    def getNewsFeed(self, userId):
-        &quot;&quot;&quot;
-        Retrieve the 10 most recent tweet ids in the user&#39;s news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent.
-        :type userId: int
-        :rtype: List[int]
-        &quot;&quot;&quot;
-        tweets = heapq.merge(*(self.tweets[u] for u in self.followees[userId] | {userId}))
-        return [t for _, t in itertools.islice(tweets, 10)]
-        
-
-    def follow(self, followerId, followeeId):
-        &quot;&quot;&quot;
-        Follower follows a followee. If the operation is invalid, it should be a no-op.
-        :type followerId: int
-        :type followeeId: int
-        :rtype: void
-        &quot;&quot;&quot;
-        self.followees[followerId].add(followeeId)
-        
-
-    def unfollow(self, followerId, followeeId):
-        &quot;&quot;&quot;
-        Follower unfollows a followee. If the operation is invalid, it should be a no-op.
-        :type followerId: int
-        :type followeeId: int
-        :rtype: void
-        &quot;&quot;&quot;
-        self.followees[followerId].discard(followeeId)
-
-
-# Your Twitter object will be instantiated and called as such:
-# obj = Twitter()
-# obj.postTweet(userId,tweetId)
-# param_2 = obj.getNewsFeed(userId)
-# obj.follow(followerId,followeeId)
-# obj.unfollow(followerId,followeeId)
-
-
-&lt;/code&gt;&lt;/pre&gt;
-</description>
-        <pubDate>Wed, 27 Jul 2016 00:00:00 +0800</pubDate>
-        <link>samshaq19912009.github.io/blog/2016/07/27/Design_twitter_leetcode/</link>
-        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/07/27/Design_twitter_leetcode/</guid>
-        
-        <category>Leetcode</category>
-        
-        <category>Design</category>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>Leetcode Super Ugly Number</title>
-        <description>&lt;p&gt;&lt;a href=&quot;https://leetcode.com/problems/super-ugly-number/&quot;&gt;Link&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Write a program to find the nth super ugly number.&lt;/p&gt;
-
-&lt;p&gt;Super ugly numbers are positive numbers whose all prime factors are in the given prime list primes of size k. For example, [1, 2, 4, 7, 8, 13, 14, 16, 19, 26, 28, 32] is the sequence of the first 12 super ugly numbers given primes = [2, 7, 13, 19] of size 4.&lt;/p&gt;
-
-&lt;p&gt;Note:
-(1) 1 is a super ugly number for any given primes.
-(2) The given numbers in primes are in ascending order.
-(3) 0 &amp;lt; k ≤ 100, 0 &amp;lt; n ≤ 106, 0 &amp;lt; primes[i] &amp;lt; 1000.&lt;/p&gt;
-
-&lt;p&gt;题目解析：&lt;/p&gt;
-
-&lt;p&gt;可以使用&lt;a href=&quot;https://leetcode.com/problems/ugly-number-ii/&quot;&gt;Ugly Number II&lt;/a&gt;的解法，开辟一个index的序列记录primen number的下标。每次更新选择其中一个最小的，但这样的解法太慢。比较好的是利用heapq和yield 生成器。具体代码如下&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;class Solution(object):
-    def nthSuperUglyNumber(self, n, primes):
-        &quot;&quot;&quot;
-        :type n: int
-        :type primes: List[int]
-        :rtype: int
-        &quot;&quot;&quot;
-        ans = [1]
-        def gen(prime):
-            for x in ans:
-                yield x * prime
-        merged = heapq.merge(*map(gen, primes))
-        while len(ans) &amp;lt; n:
-            ugly = next(merged)
-            if ugly != ans[-1]:
-                ans.append(ugly)
-        return ans[-1]
-
-&lt;/code&gt;&lt;/pre&gt;
-</description>
-        <pubDate>Tue, 26 Jul 2016 00:00:00 +0800</pubDate>
-        <link>samshaq19912009.github.io/blog/2016/07/26/Super_ugly_number_leetcode/</link>
-        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/07/26/Super_ugly_number_leetcode/</guid>
-        
-        <category>Leetcode</category>
-        
-        <category>heap</category>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>CNN 读书笔记（3） Netural Network 初入门</title>
-        <description>&lt;h3 id=&quot;different-activation-function&quot;&gt;Different Activation Function&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/nn1/sigmoid.jpeg&quot; alt=&quot;Two common activation function&quot; /&gt;&lt;img src=&quot;http://cs231n.github.io/assets/nn1/tanh.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;drawback-for-sigmod-function&quot;&gt;Drawback for sigmod function&lt;/h4&gt;
-
-&lt;p&gt;&lt;strong&gt;Sigmoids saturate and kill gradients&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Sigmoid outputs are not zero-centered.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Tanh function&lt;/strong&gt; is zero-centered&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Why Relu&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;Converge faster&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Simply calculation&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Unfortunately, ReLU units can be fragile during training and can “die”&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;neural-network-architectures&quot;&gt;Neural Network architectures&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/nn1/neural_net.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;representational-power&quot;&gt;Representational power&lt;/h3&gt;
-
-&lt;p&gt;Neural Networks with at least one hidden layer are universal approximators :&lt;/p&gt;
-
-&lt;p&gt;given any continuous function f(x) and some ϵ&amp;gt;0 , there exists a Neural Network g(x) with one hidden layer (with a reasonable choice of non-linearity, e.g. sigmoid) such that ∀x,∣f(x)−g(x)∣&amp;lt;ϵ. In other words, the &lt;strong&gt;neural network can approximate any continuous function&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;setting-the-number-of-layers-in-sizes&quot;&gt;Setting the number of layers in sizes&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/nn1/layer_sizes.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;controlling-the-complexity&quot;&gt;Controlling the complexity&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/nn1/reg_strengths.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-</description>
-        <pubDate>Sun, 17 Jul 2016 00:00:00 +0800</pubDate>
-        <link>samshaq19912009.github.io/blog/2016/07/17/CNN_3/</link>
-        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/07/17/CNN_3/</guid>
-        
-        <category>Machine Learning</category>
-        
-        <category>Notes</category>
-        
-        <category>CNN</category>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>CNN 读书笔记（2）</title>
-        <description>&lt;h1 id=&quot;linear-classification&quot;&gt;Linear Classification&lt;/h1&gt;
-
-&lt;p&gt;Two disadvantages for KNN classifier:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;remember all the training data and store it for future comparisons&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Classify new test sample is expensive&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;parameterized-mapping-from-images-to-label-scores&quot;&gt;Parameterized mapping from images to label scores&lt;/h2&gt;
-
-&lt;p&gt;&lt;strong&gt;Score functions&lt;/strong&gt; Maps the raw data to class scores&lt;/p&gt;
-
-&lt;p&gt;Assume traning dataset of images $x_i \in R^D$, each associated with a label $y_i$, here $ i = 1 \dots N$ and $y_i \in { 1 \dots K }$. That is, we have N samples and K distance label features. The &lt;strong&gt;score function&lt;/strong&gt; $f: R^D \mapsto R^K$ that maps the raw image pixels to class scores.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Linear functions&lt;/strong&gt; 
-&lt;script type=&quot;math/tex&quot;&gt;f(x_i, W, b) =  W x_i + b&lt;/script&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Interpreting a linear classifier&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/imagemap.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Bias trick&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;$f(x_i, W, b) =  W x_i + b$&lt;/p&gt;
-
-&lt;p&gt;Adding extra dimensions:&lt;/p&gt;
-
-&lt;p&gt;$f(x_i, W) =  W x_i$&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/wb.jpeg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Loss functions&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Quantifies the agreement between the predicted scores and the ground truth labels&lt;/p&gt;
-
-&lt;h2 id=&quot;loss-function&quot;&gt;Loss Function&lt;/h2&gt;
-
-&lt;h3 id=&quot;multiclass-support-vector-machine-loss&quot;&gt;Multiclass Support Vector Machine Loss&lt;/h3&gt;
-
-&lt;p&gt;$L_i = \sum_{j\neq y_i} \max(0, s_j - s_{y_i} + \Delta)
-$&lt;/p&gt;
-
-&lt;p&gt;In summary, the SVM loss function wants the score of the correct class $y_i$ to be larger than the incorrect class scores by at least by Δ (delta). If this is not the case, we will accumulate loss.&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;The loss function quantifies our unhappiness with predictions on the training set&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;In this linear setting&lt;/p&gt;
-
-&lt;p&gt;$L_i = \sum_{j\neq y_i} \max(0, w_j^T x_i - w_{y_i}^T x_i + \Delta)$&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://cs231n.github.io/assets/margin.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;regularization&quot;&gt;Regularization&lt;/h4&gt;
-
-&lt;p&gt;$ R(W) = \sum_k\sum_l W_{k,l}^2$&lt;/p&gt;
-
-&lt;h4 id=&quot;total-loss-functions&quot;&gt;Total loss functions&lt;/h4&gt;
-
-&lt;p&gt;$L = \frac{1}{N} \sum_i \sum_{j\neq y_i} \left[ \max(0, f(x_i; W)&lt;em&gt;j - f(x_i; W)&lt;/em&gt;{y_i} + \Delta) \right] + \lambda \sum_k\sum_l W_{k,l}^2$&lt;/p&gt;
-
-&lt;h2 id=&quot;code-implementation&quot;&gt;Code implementation&lt;/h2&gt;
-
-&lt;h3 id=&quot;svm-naive&quot;&gt;SVM naive&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def svm_loss_naive(W, X, y, reg):
-  &quot;&quot;&quot;
-  Structured SVM loss function, naive implementation (with loops).
-
-  Inputs have dimension D, there are C classes, and we operate on minibatches
-  of N examples.
-
-  Inputs:
-  - W: A numpy array of shape (D, C) containing weights.
-  - X: A numpy array of shape (N, D) containing a minibatch of data.
-  - y: A numpy array of shape (N,) containing training labels; y[i] = c means
-    that X[i] has label c, where 0 &amp;lt;= c &amp;lt; C.
-  - reg: (float) regularization strength
-
-  Returns a tuple of:
-  - loss as single float
-  - gradient with respect to weights W; an array of same shape as W
-  &quot;&quot;&quot;
-  dW = np.zeros(W.shape) # initialize the gradient as zero
-
-  # compute the loss and the gradient
-  num_classes = W.shape[1]
-  num_train = X.shape[0]
-  loss = 0.0
-  for i in xrange(num_train):
-    scores = X[i].dot(W) ## C*1 score
-
-    #dS = np.sum(X[i])
-    correct_class_score = scores[y[i]]
-    diff_count = 0
-    for j in xrange(num_classes):
-
-        if j == y[i]:
-            continue
-        margin = scores[j] - correct_class_score + 1 # note delta = 1
-        if margin &amp;gt; 0:
-            diff_count += 1 #count for all the incorrect
-            dW[:,j] += X[i] #gradient update for incorrect rows
-            loss += margin
-    dW[:,y[i]] += -diff_count* X[i]#gradient update for correct rows
-
-  # Right now the loss is a sum over all training examples, but we want it
-  # to be an average instead so we divide by num_train.
-  loss /= num_train
-  dW /= num_train
-  # Add regularization to the loss.
-  loss += 0.5 * reg * np.sum(W * W)
-  dW += reg*W
-
-  return loss, dW
-
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&quot;svm-vectorized&quot;&gt;SVM Vectorized&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
-def svm_loss_vectorized(W, X, y, reg):
-  &quot;&quot;&quot;
-  Structured SVM loss function, vectorized implementation.
-
-  Inputs and outputs are the same as svm_loss_naive.
-  &quot;&quot;&quot;
-  loss = 0.0
-  dW = np.zeros(W.shape) # initialize the gradient as zero
-
-  num_train = X.shape[0]
-
-  scores = X.dot(W)
-  correct_class_score = scores[np.arange(num_train), y]
-  margins = np.maximum(0, scores - correct_class_score[:, np.newaxis] + 1)
-  margins[np.arange(num_train), y] = 0
-  loss = np.sum(margins)
-  loss /= num_train
-  loss += 0.5 * reg * reg * np.sum(W*W)
-
-
-  X_mask = np.zeros(margins.shape)
-  X_mask[margins &amp;gt; 0] = 1
-  incorrect_counts = np.sum(X_mask, axis=1)
-  X_mask[np.arange(num_train),y] = -incorrect_counts
-  dW = X.T.dot(X_mask)
-
-  dW /= num_train
-  dW += reg * W
-
-
-  return loss, dW
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;softmax-classifer&quot;&gt;Softmax classifer&lt;/h2&gt;
-
-&lt;p&gt;The Softmax classifier gives a slightly more intuitive output: &lt;strong&gt;normalized class probabilities&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;$L_i = -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right) \hspace{0.5in} \text{or equivalently} \hspace{0.5in} L_i = -f_{y_i} + \log\sum_j e^{f_j}$&lt;/p&gt;
-
-&lt;h4 id=&quot;information-theory-view&quot;&gt;Information theory view&lt;/h4&gt;
-
-&lt;p&gt;The cross-entropy between a “true” distribution p and an estimated distribution q is defined as:&lt;/p&gt;
-
-&lt;p&gt;$H(p,q) = - \sum_x p(x) \log q(x)$&lt;/p&gt;
-
-&lt;p&gt;The Softmax classifier is hence minimizing the cross-entropy between the estimated class probabilities $q = e^{f_{y_i}}  / \sum_j e^{f_j}$as seen above) and the “true” distribution, which in this interpretation is the distribution where all probability mass is on the correct class ($p = [0, \ldots 1, \ldots, 0]$ contains a single 1 at the yi y i-th position.)&lt;/p&gt;
-
-&lt;h4 id=&quot;softmax-naive&quot;&gt;Softmax naive&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;def softmax_loss_naive(W, X, y, reg):
-    &quot;&quot;&quot;
-  Softmax loss function, naive implementation (with loops)
-
-  Inputs have dimension D, there are C classes, and we operate on minibatches
-  of N examples.
-
-  Inputs:
-  - W: A numpy array of shape (D, C) containing weights.
-  - X: A numpy array of shape (N, D) containing a minibatch of data.
-  - y: A numpy array of shape (N,) containing training labels; y[i] = c means
-    that X[i] has label c, where 0 &amp;lt;= c &amp;lt; C.
-  - reg: (float) regularization strength
-
-  Returns a tuple of:
-  - loss as single float
-  - gradient with respect to weights W; an array of same shape as W
-  &quot;&quot;&quot;
-    # Initialize the loss and gradient to zero.
-    loss = 0.0
-    dW = np.zeros(W.shape)
-    # return loss, dW
-    # dW = np.zeros(W.shape) # initialize the gradient as zero
-
-    # compute the loss and the gradient
-    num_classes = W.shape[1]
-    num_train = X.shape[0]
-    loss = 0.0
-    for i in xrange(num_train):
-        scores = X[i].dot(W)  ## C*1 score
-        scores -= np.max(scores)
-
-        
-        correct_class_score = scores[y[i]]
-        
-        sum_j = np.sum(np.exp(scores))
-
-        n = np.exp(correct_class_score)
-        loss -= np.log(n / sum_j)
-
-        for j in xrange(num_classes):
-          if j == y[i]:
-            dW[:,j] -= X[i]
-          pj = np.exp(scores[j]) / sum_j
-          dW[:,j] += pj * X[i]
-
-    loss /= num_train
-    dW /= num_train
-
-    # Add regularization to the loss.
-    loss += 0.5 * reg * np.sum(W * W)
-
-    dW += reg * W
-    return loss, dW
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&quot;softmax-vectorized&quot;&gt;Softmax Vectorized&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;
-def softmax_loss_vectorized(W, X, y, reg):
-    &quot;&quot;&quot;
-  Softmax loss function, vectorized version.
-
-  Inputs and outputs are the same as softmax_loss_naive.
-  &quot;&quot;&quot;
-    # Initialize the loss and gradient to zero.
-
-    num_train = X.shape[0]
-
-    dW = np.zeros_like(W)
-    scores = X.dot(W)
-    scores -= np.max(scores,axis=1)[:,np.newaxis]
-
-
-    correct_class_score = scores[np.arange(num_train), y]
-    divide = np.sum(np.exp(scores),axis=1)
-    n = np.exp(correct_class_score)
-    error = -1 * np.log( n / divide)
-    loss = np.sum(error)
-
-
-    X_mask = np.exp(scores) / divide[:,np.newaxis]
-
-    #X_mask = np.zeros(error.shape)
-    X_mask[np.arange(num_train),y] -= 1
-
-    dW = X.T.dot(X_mask)
-
-    loss /= num_train
-    dW /= num_train
-
-    loss += 0.5 * reg * np.sum(W * W)
-    dW += reg * W
-
-    return loss, dW
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&quot;stochastic-gradient-decent&quot;&gt;Stochastic gradient Decent&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-Python&quot;&gt;class LinearClassifier(object):
-
-  def __init__(self):
-    self.W = None
-
-  def train(self, X, y, learning_rate=1e-3, reg=1e-5, num_iters=100,
-            batch_size=200, verbose=False):
-    &quot;&quot;&quot;
-    Train this linear classifier using stochastic gradient descent.
-
-    Inputs:
-    - X: A numpy array of shape (N, D) containing training data; there are N
-      training samples each of dimension D.
-    - y: A numpy array of shape (N,) containing training labels; y[i] = c
-      means that X[i] has label 0 &amp;lt;= c &amp;lt; C for C classes.
-    - learning_rate: (float) learning rate for optimization.
-    - reg: (float) regularization strength.
-    - num_iters: (integer) number of steps to take when optimizing
-    - batch_size: (integer) number of training examples to use at each step.
-    - verbose: (boolean) If true, print progress during optimization.
-
-    Outputs:
-    A list containing the value of the loss function at each training iteration.
-    &quot;&quot;&quot;
-    num_train, dim = X.shape[0], X.shape[1]
-    num_classes = np.max(y) + 1 # assume y takes values 0...K-1 where K is number of classes
-    if self.W is None:
-      # lazily initialize W
-      self.W = 0.001 * np.random.randn(dim, num_classes)
-
-    # Run stochastic gradient descent to optimize W
-    loss_history = []
-    for it in xrange(num_iters):
-      X_batch = None
-      y_batch = None
-
-
-
-      
-
-      # evaluate loss and gradient
-      loss, grad = self.loss(X, y, reg)
-      loss_history.append(loss)
-
-      self.W +=  - grad * learning_rate
-
-
-      # perform parameter update
-
-
-      if verbose and it % 100 == 0:
-        print &#39;iteration %d / %d: loss %f&#39; % (it, num_iters, loss)
-
-    return loss_history
-
-  def predict(self, X):
-    &quot;&quot;&quot;
-    Use the trained weights of this linear classifier to predict labels for
-    data points.
-
-    Inputs:
-    - X: D x N array of training data. Each column is a D-dimensional point.
-
-    Returns:
-    - y_pred: Predicted labels for the data in X. y_pred is a 1-dimensional
-      array of length N, and each element is an integer giving the predicted
-      class.
-    &quot;&quot;&quot;
-    y_pred = np.zeros(X.shape[1])
-
-    score = X.dot(self.W)
-
-    y_pred = np.argmax(score,axis=1)
-
-   
-    return y_pred
-
-  def loss(self, X_batch, y_batch, reg):
-    &quot;&quot;&quot;
-    Compute the loss function and its derivative.
-    Subclasses will override this.
-
-    Inputs:
-    - X_batch: A numpy array of shape (N, D) containing a minibatch of N
-      data points; each point has dimension D.
-    - y_batch: A numpy array of shape (N,) containing labels for the minibatch.
-    - reg: (float) regularization strength.
-
-    Returns: A tuple containing:
-    - loss as a single float
-    - gradient with respect to self.W; an array of the same shape as W
-    &quot;&quot;&quot;
-    pass
-
-
-&lt;/code&gt;&lt;/pre&gt;
-</description>
-        <pubDate>Sun, 17 Jul 2016 00:00:00 +0800</pubDate>
-        <link>samshaq19912009.github.io/blog/2016/07/17/CNN_2/</link>
-        <guid isPermaLink="true">samshaq19912009.github.io/blog/2016/07/17/CNN_2/</guid>
-        
-        <category>Machine Learning</category>
-        
-        <category>Notes</category>
-        
-        <category>CNN</category>
-        
-        <category>SVM</category>
         
         
         <category>blog</category>

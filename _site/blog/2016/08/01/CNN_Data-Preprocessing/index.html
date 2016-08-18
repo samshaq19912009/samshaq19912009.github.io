@@ -8,9 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
 
-    <title>Binary Tree Level Order Traversal - Chengcen</title>
+    <title>CNN 读书笔记（4） Netural Network 初入门(2) - Chengcen</title>
 
-    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/08/09/Course_Schedule_leetcode/">
+    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/08/01/CNN_Data-Preprocessing/">
     <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
     TeX: {
@@ -121,15 +121,17 @@
                 <div class="post-heading">
                     <div class="Tags">
                         
-                        <a class="tag" href="/Tags/#Leetcode" title="Leetcode">Leetcode</a>
+                        <a class="tag" href="/Tags/#Machine Learning" title="Machine Learning">Machine Learning</a>
                         
-                        <a class="tag" href="/Tags/#Tree" title="Tree">Tree</a>
+                        <a class="tag" href="/Tags/#Notes" title="Notes">Notes</a>
+                        
+                        <a class="tag" href="/Tags/#CNN" title="CNN">CNN</a>
                         
                     </div>
-                    <h1>Binary Tree Level Order Traversal</h1>
+                    <h1>CNN 读书笔记（4） Netural Network 初入门(2)</h1>
                     
                       
-                    <span class="meta">Posted by Chengcen on August 9, 2016</span>
+                    <span class="meta">Posted by Chengcen on August 1, 2016</span>
                 </div>
             </div>
         </div>
@@ -145,59 +147,142 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
 
-                <p><a href="https://leetcode.com/problems/binary-tree-level-order-traversal/">Leetcode Link</a></p>
+                <h2 id="data-preprocessing">Data Preprocessing</h2>
 
-<h3 id="solution-1--using-queue">Solution 1 : Using Queue</h3>
+<p>Input vector: $X [ N * D ]$</p>
 
-<pre><code class="language-Python">class Solution(object):
-    def levelOrder(self, root):
-        """
-        :type root: TreeNode
-        :rtype: List[List[int]]
-        """
-        if not root:
-            return []
-        q = [root]
-        ans = []
-        while q:
-            ans.append([node.val for node in q])
-            new_q = []
-            for node in q:
-                if node.left:
-                    new_q.append(node.left)
-                if node.right:
-                    new_q.append(node.right)
-            q = new_q
-        return ans
+<p><strong>Mean subtraction</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>X -= np.mean(X, axis = 0)
+</code></pre>
+</div>
+
+<p><strong>Normalization</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>(X /= np.std(X, axis = 0)
+</code></pre>
+</div>
+
+<p><img src="http://cs231n.github.io/assets/nn2/prepro1.jpeg" alt="" /></p>
+
+<p><strong>PCA and weighting</strong></p>
+
+<blockquote>
+  <p>Compute the covariance matrix</p>
+</blockquote>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># Assume input data matrix X of size [N x D]
+X -= np.mean(X, axis = 0) # zero-center the data (important)
+cov = np.dot(X.T, X) / X.shape[0] # get the data covariance matrix
 
 </code></pre>
+</div>
 
-<h3 id="solution-2-depth-first-search">Solution 2: Depth First Search</h3>
+<blockquote>
+  <p>Perform singluar value decomposition</p>
+</blockquote>
 
-<pre><code class="language-Python">class Solution(object):
-    def levelOrder(self, root):
-        """
-        :type root: TreeNode
-        :rtype: List[List[int]]
-        """
-        if not root:
-            return []
-        ans = []
-        self.bfs(root,0, ans)
-        return ans
-        
-    def bfs(self, node, level, ans):
-        if not node:
-            return
-        
-        if len(ans) &lt; level+1:
-            ans.append([])
-        ans[level].append(node.val)
-        self.bfs(node.left, level+1, ans)
-        self.bfs(node.right, level+1, ans)
+<p>the columns of U are eigenvectors. S is the eigenvalues</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>U,S,V = np.linalg.svd(cov)
+
+Xrot = np.dot(X, U) # decorrelate the data
+
+Xrot_reduced = np.dot(X, U[:,:100]) # Xrot_reduced becomes [N x 100]
 
 
 </code></pre>
+</div>
+<blockquote>
+  <p>Weightening</p>
+</blockquote>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># whiten the data:
+# divide by the eigenvalues (which are square roots of the singular values)
+Xwhite = Xrot / np.sqrt(S + 1e-5)
+
+</code></pre>
+</div>
+
+<p><img src="http://cs231n.github.io/assets/nn2/prepro2.jpeg" alt="" /></p>
+
+<p><strong>In practise</strong></p>
+
+<p>No PCA and weighten, only zero-centered the data</p>
+
+<p><strong>Common Pitfall</strong></p>
+
+<p>An important point to make about the preprocessing is that any preprocessing statistics (e.g. the data mean) must only be <strong>computed on the training data</strong>, and then applied to the validation / test data. E.g. computing the mean and subtracting it from every image across the entire dataset and then splitting the data into train/val/test splits would be a mistake. Instead, the mean must be computed <strong>only over the training data</strong> and then <strong>subtracted equally from all splits</strong> (train/val/test).</p>
+
+<h2 id="weight-initialization">Weight Initialization</h2>
+
+<p><strong>Pitfall: all zero initialization</strong>:</p>
+
+<p>There is no source of asymmetry between neurons if their weights are initialized to be the same.</p>
+
+<p><strong>Small random numbers with variance calibraion</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>w = np.random.randn(n) / sqrt(n)
+</code></pre>
+</div>
+
+<p>Initution: Output $s = \sum_i^n w_i x_i$ has the same variance</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+% <![CDATA[
+\begin{align}
+\text{Var}(s) &= \text{Var}(\sum_i^n w_ix_i) \\\\
+&= \sum_i^n \text{Var}(w_ix_i) \\\\
+&= \sum_i^n [E(w_i)]^2\text{Var}(x_i) + E[(x_i)]^2\text{Var}(w_i) + \text{Var}(x_i)\text{Var}(w_i) \\\\
+&= \sum_i^n \text{Var}(x_i)\text{Var}(w_i) \\\\
+&= \left( n \text{Var}(w) \right) \text{Var}(x)
+\end{align} %]]> %]]></script>
+
+<p><strong>In practise with Relu activation</strong></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>w = np.random.randn(n) * sqrt(2.0/n)
+</code></pre>
+</div>
+
+<h2 id="regularization">Regularization</h2>
+
+<p><strong>L2 regularization</strong></p>
+
+<p><strong>L1 regularization</strong></p>
+
+<p>In practice, if you are not concerned with explicit feature selection, L2 regularization can be expected to give superior performance over L1.</p>
+
+<p><strong>Drouout</strong></p>
+
+<p><img src="http://cs231n.github.io/assets/nn2/dropout.jpeg" alt="" /></p>
+
+<h2 id="loss-function">Loss function</h2>
+
+<h3 id="classification"><strong>Classification</strong></h3>
+
+<p><strong>SVM Loss</strong></p>
+
+<p>$L_i = \sum_{j\neq y_i} \max(0, f_j - f_{y_i} + 1)$</p>
+
+<p><strong>Softmax Loss</strong></p>
+
+<p>$L_i = -\log\left(\frac{e^{f_{y_i}}}{ \sum_j e^{f_j} }\right)$</p>
+
+<p><strong>Cross-entropy Loss</strong></p>
+
+<p>$L_i = \sum_j y_{ij} \log(\sigma(f_j)) + (1 - y_{ij}) \log(1 - \sigma(f_j))$</p>
+
+<h3 id="regression">Regression</h3>
+
+<p><strong>L2 norm</strong></p>
+
+<p>$L_i = \Vert f - y_i \Vert_2^2$</p>
+
+<p><strong>Caution</strong></p>
+
+<blockquote>
+  <p>When faced with a regression task, first consider if it is absolutely necessary. Instead, have a strong preference to discretizing your outputs to bins and perform classification over them whenever possible.</p>
+</blockquote>
 
 
                 <hr>
@@ -205,12 +290,12 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/blog/2016/08/02/CNN_Bacth_Normal/" data-toggle="tooltip" data-placement="top" title="CNN 读书笔记（4） Batch Normalization">&larr; Previous Post</a>
+                        <a href="/blog/2016/07/28/Best_time_buy_with-cooldown_leetcode/" data-toggle="tooltip" data-placement="top" title="Best Time to Buy with Cooldown">&larr; Previous Post</a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/blog/2016/08/09/All_pair_shorted_path/" data-toggle="tooltip" data-placement="top" title="The All-pairs short Paths Problem">Next Post &rarr;</a>
+                        <a href="/blog/2016/08/02/CNN_Bacth_Normal/" data-toggle="tooltip" data-placement="top" title="CNN 读书笔记（4） Batch Normalization">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -229,15 +314,16 @@
                 </style>
 
                 <div class="ds-share"
-                    data-thread-key="/blog/2016/08/09/Course_Schedule_leetcode" data-title="Binary Tree Level Order Traversal"
+                    data-thread-key="/blog/2016/08/01/CNN_Data Preprocessing" data-title="CNN 读书笔记（4） Netural Network 初入门(2)"
                     data-images="samshaq19912009.github.io/img/green.jpg"
-                    data-content="Leetcode Link
+                    data-content="Data Preprocessing
 
-Solution 1 : Using Queue
+Input vector: $X [ N * D ]$
 
-class Solution(object):
-    def leve... | Microdust:Azeril's blog"
-                    data-url="samshaq19912009.github.io/blog/2016/08/09/Course_Schedule_leetcode/">
+Mean subtraction
+
+X -= np.me... | Microdust:Azeril's blog"
+                    data-url="samshaq19912009.github.io/blog/2016/08/01/CNN_Data-Preprocessing/">
                     <div class="ds-share-inline">
                       <ul  class="ds-share-icons-16">
 
@@ -256,7 +342,7 @@ class Solution(object):
 
                 <!-- 多说评论框 start -->
                 <div class="comment">
-                    <div class="ds-thread" data-thread-key="/blog/2016/08/09/Course_Schedule_leetcode" data-title="Binary Tree Level Order Traversal" data-url="samshaq19912009.github.io/blog/2016/08/09/Course_Schedule_leetcode/"></div>
+                    <div class="ds-thread" data-thread-key="/blog/2016/08/01/CNN_Data Preprocessing" data-title="CNN 读书笔记（4） Netural Network 初入门(2)" data-url="samshaq19912009.github.io/blog/2016/08/01/CNN_Data-Preprocessing/"></div>
                 </div>
                 <!-- 多说评论框 end -->
             </div>

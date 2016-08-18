@@ -8,9 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
 
-    <title>Binary Tree Level Order Traversal - Chengcen</title>
+    <title>The All-pairs short Paths Problem - Chengcen</title>
 
-    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/08/09/Course_Schedule_leetcode/">
+    <link rel="canonical" href="samshaq19912009.github.io/blog/2016/08/09/All_pair_shorted_path/">
     <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
     TeX: {
@@ -121,12 +121,14 @@
                 <div class="post-heading">
                     <div class="Tags">
                         
-                        <a class="tag" href="/Tags/#Leetcode" title="Leetcode">Leetcode</a>
+                        <a class="tag" href="/Tags/#Algorithms" title="Algorithms">Algorithms</a>
                         
-                        <a class="tag" href="/Tags/#Tree" title="Tree">Tree</a>
+                        <a class="tag" href="/Tags/#Notes" title="Notes">Notes</a>
+                        
+                        <a class="tag" href="/Tags/#Dynamics programming" title="Dynamics programming">Dynamics programming</a>
                         
                     </div>
-                    <h1>Binary Tree Level Order Traversal</h1>
+                    <h1>The All-pairs short Paths Problem</h1>
                     
                       
                     <span class="meta">Posted by Chengcen on August 9, 2016</span>
@@ -145,59 +147,161 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
 
-                <p><a href="https://leetcode.com/problems/binary-tree-level-order-traversal/">Leetcode Link</a></p>
+                <h3 id="problem-definition">Problem Definition</h3>
 
-<h3 id="solution-1--using-queue">Solution 1 : Using Queue</h3>
+<p><strong>Input:</strong></p>
 
-<pre><code class="language-Python">class Solution(object):
-    def levelOrder(self, root):
-        """
-        :type root: TreeNode
-        :rtype: List[List[int]]
-        """
-        if not root:
-            return []
-        q = [root]
-        ans = []
-        while q:
-            ans.append([node.val for node in q])
-            new_q = []
-            for node in q:
-                if node.left:
-                    new_q.append(node.left)
-                if node.right:
-                    new_q.append(node.right)
-            q = new_q
-        return ans
+<p>Directed graph G = (V , E ) with edge costs ce for each edge e ∈ E .</p>
+
+<p><strong>Goal:</strong></p>
+
+<ul>
+  <li>
+    <p>Compute the length of a shortest u → v path for all pairs of
+vertices u, v ∈ V</p>
+  </li>
+  <li>
+    <p>Correctly report that G contains a negative cycle.</p>
+  </li>
+</ul>
+
+<p><strong>N</strong> invocations of a single-source shortest-path subroutine are needed to solve the all-pairs shortest path problem?</p>
+
+<p><strong>Running time (nonnegative edge costs):</strong></p>
+
+<p>V· <strong>Dijkstra</strong> = O(V E logV)</p>
+
+<p>$O(n^3 \log{n}) \mbox{if  m }= O(n^2)$</p>
+
+<p>$O(n^2 \log{n}) \mbox{if  m = O(n)}$</p>
+
+<p><strong>Running time (general edge costs):</strong></p>
+
+<p>V <strong>Bellman-Ford</strong> = $O(V^2 E)$</p>
+
+<p>$O(n^3 ) \mbox{if  m }= O(n)$</p>
+
+<p>$O(n^4) \mbox{if  m }= O(n^2)$</p>
+
+<h3 id="floyd-warshall-algorithm">Floyd-Warshall algorithm</h3>
+
+<p><strong>Time Complexity</strong> $O(n^3)$</p>
+
+<ul>
+  <li>
+    <p>At least as good as n Bellman-Fords, better in dense graphs.</p>
+  </li>
+  <li>
+    <p>In graphs with nonnegative edge costs, competitive with n Dijkstra’s in dense graphs.</p>
+  </li>
+</ul>
+
+<h3 id="optimal-sub-problem">Optimal sub-problem</h3>
+
+<p><strong>Optimal substructure lemma:</strong></p>
+
+<p>Suppose G has no negative cost cycle. Let P be a shortest (cycle-free) i-j path with all internal nodes in V (k). Then:</p>
+
+<p><strong>Case 1</strong>:</p>
+
+<p>If k not internal to P, then P is a shortest (cycle-free) i-j path with all internal vertices in V(k−1).</p>
+
+<p><strong>Case 2</strong>:</p>
+
+<p>P1 = shortest (cycle-free) i-k path with all internal nodes in
+V(k−1)</p>
+
+<p>P2 = shortest (cycle-free) k-j path with all internal nodes in
+V(k−1</p>
+
+<h3 id="code-implementation">Code Implementation</h3>
+
+<pre><code class="language-Python">def floyd_warshall_2D(graph):
+    n = len(graph.keys())
+    A = [[0 for _ in range(n)] for _ in range(n)]
+    for i in graph.keys():
+        for j in graph.keys():
+            if i == j:
+                A[i][i] = 0
+            if j in graph[i]:
+                A[i][j] = graph[i][j]
+            else:
+                A[i][j] = float("inf")
+            if i in graph[j]:
+                A[j][i] = graph[j][i]
+            else:
+                A[j][i] = float("inf")
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                if A[i][j] &gt; A[i][k] + A[k][j]:
+                    A[i][j] = A[i][k] + A[j][j]
+    return A
 
 </code></pre>
 
-<h3 id="solution-2-depth-first-search">Solution 2: Depth First Search</h3>
+<h3 id="johnsons-algorithm-intuition">Johnson’s algorithm Intuition</h3>
 
-<pre><code class="language-Python">class Solution(object):
-    def levelOrder(self, root):
-        """
-        :type root: TreeNode
-        :rtype: List[List[int]]
-        """
-        if not root:
-            return []
-        ans = []
-        self.bfs(root,0, ans)
-        return ans
-        
-    def bfs(self, node, level, ans):
-        if not node:
-            return
-        
-        if len(ans) &lt; level+1:
-            ans.append([])
-        ans[level].append(node.val)
-        self.bfs(node.left, level+1, ans)
-        self.bfs(node.right, level+1, ans)
+<p>1 invocation of Bellman-Ford  O(V E logV)</p>
 
+<p>n n invocations of Dijkstra $O(V E)$</p>
 
-</code></pre>
+<h4 id="reweighting-technique">Reweighting Technique</h4>
+
+<p><strong>Lemma 1:</strong></p>
+
+<p>When all s-t paths in G have the same number of edges, adding a constant M to every edge <strong>does not change</strong> the shorted s-t path</p>
+
+<p><strong>Lemma 2</strong>:</p>
+
+<p><strong>Set up</strong>:</p>
+
+<p>G = (V , E ) is a directed graph with general edge lengths $c_e$. Fix a real number $p_v$ for each vertex v ∈ V</p>
+
+<p><strong>Definition:</strong></p>
+
+<p>For every edge e=(u,v) of G, $c_e′$ := $c_e$ + $p_u$ − $p_v$</p>
+
+<p>If s-t path has originial length L: the new length is $L + p_s - p_t$</p>
+
+<p><strong>Summary:</strong></p>
+
+<p>Reweighting using vertex weights $p_v$ adds the same amount (namely, $p_s$ − $p_t$ ) to every s -t path</p>
+
+<p><strong>Consequence</strong></p>
+
+<ol>
+  <li>
+    <p>Reweighting always leaves the shortest path unchanged.</p>
+  </li>
+  <li>
+    <p>After re-weighting, all edegs become positive!!</p>
+  </li>
+</ol>
+
+<h3 id="johnsons-algorithm-implementation">Johnson’s algorithm Implementation</h3>
+
+<p><strong>Input:</strong> Directed graph G = (V , E ), general edge lengths $c_e$</p>
+
+<ol>
+  <li>
+    <p>Form G′ by adding a new vertex s and a new edge (s,v) with
+length 0 for each v ∈ G</p>
+  </li>
+  <li>
+    <p>Run Bellman-Ford on G′ with source vertex s. [If B-F detects a negative-cost cycle in G′ (which must lie in G), halt + report this.]</p>
+  </li>
+  <li>
+    <p>For each v∈G,define pv =length of a shortest s→v path in G′. For each edgee = (u,v)∈G, define $c_e′$ := $c_e$ + $p_u$ − $p_v$</p>
+  </li>
+  <li>
+    <p>For each vertex u of G: Run Dijkstra’s algorithm in G, with edge lengths {ce′}, with source vertex u, to compute the shortest-path distance d′(u,v) for each v ∈ G.</p>
+  </li>
+  <li>
+    <p>For each pair u, v ∈ G , return the shortest-path distance d(u,v):=d′(u,v)−pu +pvp</p>
+  </li>
+</ol>
+
 
 
                 <hr>
@@ -205,12 +309,12 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/blog/2016/08/02/CNN_Bacth_Normal/" data-toggle="tooltip" data-placement="top" title="CNN 读书笔记（4） Batch Normalization">&larr; Previous Post</a>
+                        <a href="/blog/2016/08/09/Course_Schedule_leetcode/" data-toggle="tooltip" data-placement="top" title="Binary Tree Level Order Traversal">&larr; Previous Post</a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/blog/2016/08/09/All_pair_shorted_path/" data-toggle="tooltip" data-placement="top" title="The All-pairs short Paths Problem">Next Post &rarr;</a>
+                        <a href="/blog/2016/08/09/Bellman_Ford/" data-toggle="tooltip" data-placement="top" title="The Bellman-Ford Algorithm">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -229,15 +333,14 @@
                 </style>
 
                 <div class="ds-share"
-                    data-thread-key="/blog/2016/08/09/Course_Schedule_leetcode" data-title="Binary Tree Level Order Traversal"
+                    data-thread-key="/blog/2016/08/09/All_pair_shorted_path" data-title="The All-pairs short Paths Problem"
                     data-images="samshaq19912009.github.io/img/green.jpg"
-                    data-content="Leetcode Link
+                    data-content="Problem Definition
 
-Solution 1 : Using Queue
+Input:
 
-class Solution(object):
-    def leve... | Microdust:Azeril's blog"
-                    data-url="samshaq19912009.github.io/blog/2016/08/09/Course_Schedule_leetcode/">
+Directed graph G = (V , E ) with edge costs ce fo... | Microdust:Azeril's blog"
+                    data-url="samshaq19912009.github.io/blog/2016/08/09/All_pair_shorted_path/">
                     <div class="ds-share-inline">
                       <ul  class="ds-share-icons-16">
 
@@ -256,7 +359,7 @@ class Solution(object):
 
                 <!-- 多说评论框 start -->
                 <div class="comment">
-                    <div class="ds-thread" data-thread-key="/blog/2016/08/09/Course_Schedule_leetcode" data-title="Binary Tree Level Order Traversal" data-url="samshaq19912009.github.io/blog/2016/08/09/Course_Schedule_leetcode/"></div>
+                    <div class="ds-thread" data-thread-key="/blog/2016/08/09/All_pair_shorted_path" data-title="The All-pairs short Paths Problem" data-url="samshaq19912009.github.io/blog/2016/08/09/All_pair_shorted_path/"></div>
                 </div>
                 <!-- 多说评论框 end -->
             </div>
